@@ -1,0 +1,7 @@
+name: ParkourPlugin
+version: '1.0-SNAPSHOT'
+main: org.zeroxamr.parkourEX.Main
+api-version: '1.21'
+commands:
+  psetup:
+    description: setup plugin
