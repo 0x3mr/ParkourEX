@@ -1,4 +1,4 @@
-name: ParkourPlugin
+name: ParkourEX
 version: '1.0-SNAPSHOT'
 main: org.zeroxamr.parkourEX.Main
 api-version: '1.21'
