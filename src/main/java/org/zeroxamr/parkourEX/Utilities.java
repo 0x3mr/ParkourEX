@@ -140,14 +140,17 @@ public class Utilities {
     }
 
     public static Boolean doCloneExist(LinkedHashMap<Location, Integer> newLocations) {
-        Location newFirst = newLocations.keySet().iterator().next();
         for (Map.Entry<UUID, ParkourGame> pg : Main.getParkourGames().entrySet()) {
-            Location existingFirst = pg.getValue().getCoordinates().keySet().iterator().next();
-            if (newFirst.getBlockX() == existingFirst.getBlockX() &&
-                newFirst.getBlockY() == existingFirst.getBlockY() &&
-                newFirst.getBlockZ() == existingFirst.getBlockZ()) {
-                plugin.getLogger().info("Existing parkour found! Failed to save parkour locations.");
-                return true;
+            LinkedHashMap<Location, Integer> existingLocations = pg.getValue().getCoordinates();
+            for (Location newLoc : newLocations.keySet()) {
+                for (Location existingLoc : existingLocations.keySet()) {
+                    if (newLoc.getBlockX() == existingLoc.getBlockX() &&
+                        newLoc.getBlockY() == existingLoc.getBlockY() &&
+                        newLoc.getBlockZ() == existingLoc.getBlockZ()) {
+                        plugin.getLogger().info("Existing parkour found! Failed to save parkour locations.");
+                        return true;
+                    }
+                }
             }
         }
         return false;
