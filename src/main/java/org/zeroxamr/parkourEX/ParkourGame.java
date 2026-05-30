@@ -151,4 +151,8 @@ public class ParkourGame implements Listener {
             Utilities.resetPlayerInfo(player);
         }
     }
+
+    public LinkedHashMap<Location, Integer> getCoordinates() {
+        return coordinates;
+    }
 }

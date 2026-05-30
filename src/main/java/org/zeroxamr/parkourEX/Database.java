@@ -67,13 +67,14 @@ public class Database {
             return;
         }
 
-        String ParkourTablesQuery = "CREATE TABLE IF NOT EXISTS Parkour (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "world TEXT NOT NULL," +
-                "checkpoints TEXT NOT NULL," +
-                "checkpointsAmount INTEGER NOT NULL," +
-                "parkourCreator TEXT NOT NULL" +
-                ")";
+        String ParkourTablesQuery =
+        "CREATE TABLE IF NOT EXISTS Parkour (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "world TEXT NOT NULL," +
+            "checkpoints TEXT NOT NULL," +
+            "checkpointsAmount INTEGER NOT NULL," +
+            "parkourCreator TEXT NOT NULL" +
+        ")";
 
         try (Connection con = this.getConnection();
              PreparedStatement qst = con.prepareStatement(ParkourTablesQuery)) {
@@ -90,8 +91,9 @@ public class Database {
             return;
         }
 
-        String fakeSQL = "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator)" +
-                "VALUES (?, ?, ?, ?)";
+        String fakeSQL =
+        "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator)" +
+        "VALUES (?, ?, ?, ?)";
 
         World world = Bukkit.getWorld("test");
         Location start = new Location(world, -3, -60, 3, 45, 0);
@@ -120,8 +122,9 @@ public class Database {
             return;
         }
 
-        String fakeSQL = "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator)" +
-                "VALUES (?, ?, ?, ?)";
+        String fakeSQL =
+        "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator)" +
+        "VALUES (?, ?, ?, ?)";
 
         World world = Bukkit.getWorld("test");
         Location start = new Location(world, -19, -60, -8, 45, 0);
@@ -173,5 +176,11 @@ public class Database {
 
     public Boolean isOnline() {
         return dataSource != null && !dataSource.isClosed();
+    }
+
+    public void shutdown() {
+        if (isOnline()) {
+            dataSource.close();
+        }
     }
 }

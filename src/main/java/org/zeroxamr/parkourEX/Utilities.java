@@ -2,12 +2,22 @@ package org.zeroxamr.parkourEX;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.checkerframework.checker.units.qual.N;
 
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class Utilities {
@@ -105,5 +115,41 @@ public class Utilities {
                 Float.parseFloat(parts[5])
         );
     }
-//    public static ParkourGame getGame(UUID uuid) { return Main.getParkourGames().get(uuid); }
+
+    public static void attachID(ItemStack item, String id, String value) {
+        ItemMeta meta = item.getItemMeta();
+        NamespacedKey NSK = new NamespacedKey(plugin, id);
+        meta.getPersistentDataContainer().set(NSK, PersistentDataType.STRING, value);
+        item.setItemMeta(meta);
+    }
+
+    public static Boolean hasID(ItemStack item, String id) {
+        if (item == null || item.getType() == Material.AIR) return false;
+        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
+        NamespacedKey key = new NamespacedKey(plugin, id);
+        return pdc.has(key, PersistentDataType.STRING);
+    }
+
+    public static String getAttachedID(ItemStack item, String id) {
+        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
+        NamespacedKey key = new NamespacedKey(plugin, id);
+        if (pdc.has(key, PersistentDataType.STRING)) {
+            return pdc.get(key, PersistentDataType.STRING);
+        }
+        return "none";
+    }
+
+    public static Boolean doCloneExist(LinkedHashMap<Location, Integer> newLocations) {
+        Location newFirst = newLocations.keySet().iterator().next();
+        for (Map.Entry<UUID, ParkourGame> pg : Main.getParkourGames().entrySet()) {
+            Location existingFirst = pg.getValue().getCoordinates().keySet().iterator().next();
+            if (newFirst.getBlockX() == existingFirst.getBlockX() &&
+                newFirst.getBlockY() == existingFirst.getBlockY() &&
+                newFirst.getBlockZ() == existingFirst.getBlockZ()) {
+                plugin.getLogger().info("Existing parkour found! Failed to save parkour locations.");
+                return true;
+            }
+        }
+        return false;
+    }
 }
