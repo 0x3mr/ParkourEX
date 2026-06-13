@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ParkourGame implements Listener {
+    private String gameAdmin = "none";
     private final UUID id;
     private final Main plugin;
     private LinkedHashMap<Location, Integer> coordinates = new LinkedHashMap<>();
@@ -154,5 +155,13 @@ public class ParkourGame implements Listener {
 
     public LinkedHashMap<Location, Integer> getCoordinates() {
         return coordinates;
+    }
+
+    public List<Location> getCoordinatesLocation() {
+        return coordinatesLocation;
+    }
+
+    public String getGameAdmin() {
+        return gameAdmin;
     }
 }

@@ -15,10 +15,7 @@ import org.checkerframework.checker.units.qual.N;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Utilities {
     private static Main plugin = null;
@@ -55,11 +52,11 @@ public class Utilities {
         return String.format("%02d:%02d.%d", m, s, ms);
     }
 
-    public static String serializeLocations(Location[] locations) {
+    public static String serializeLocations(List<Location> locations) {
         StringBuilder fullString = new StringBuilder();
-        int size = locations.length;
+        int size = locations.size();
         for (int i = 0; i < size; i++) {
-            Location location = locations[i];
+            Location location = locations.get(i);
             StringBuilder temp = new StringBuilder();
             temp.append(location.getWorld().getName()).append(",");
             temp.append(location.getX()).append(",");

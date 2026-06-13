@@ -11,9 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.UUID;
+import java.util.*;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -100,7 +98,7 @@ public class Database {
         Location one = new Location(world, -6, -60, 6, 90, 0);
         Location two = new Location(world, -10, -60, 6, 135, 0);
         Location end = new Location(world, -12, -60, 3, 0, 0);
-        Location[] locations = {start, one, two, end};
+        List<Location> locations = new ArrayList<>(List.of(start, one, two, end));
 
         String serializedCheckpoints = Utilities.serializeLocations(locations);
 
@@ -108,7 +106,7 @@ public class Database {
              PreparedStatement qst = con.prepareStatement(fakeSQL)) {
             qst.setString(1, start.getWorld().getName());
             qst.setString(2, serializedCheckpoints);
-            qst.setInt(3, locations.length);
+            qst.setInt(3, locations.size());
             qst.setString(4, "0x3mr");
             qst.executeUpdate();
         } catch (SQLException e) {
@@ -131,7 +129,7 @@ public class Database {
         Location one = new Location(world, -24, -60, -8, 90, 0);
         Location two = new Location(world, -25, -60, -4, 135, 0);
         Location end = new Location(world, -21, -60, -1, 0, 0);
-        Location[] locations = {start, one, two, end};
+        List<Location> locations = new ArrayList<>(List.of(start, one, two, end));
 
         String serializedCheckpoints = Utilities.serializeLocations(locations);
 
@@ -139,11 +137,39 @@ public class Database {
              PreparedStatement qst = con.prepareStatement(fakeSQL)) {
             qst.setString(1, start.getWorld().getName());
             qst.setString(2, serializedCheckpoints);
-            qst.setInt(3, locations.length);
+            qst.setInt(3, locations.size());
             qst.setString(4, "0x3mr");
             qst.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to insert fake data: " + e.getMessage());
+        }
+    }
+
+    public void saveGame(ParkourGame game) {
+        if (!isOnline()) {
+            plugin.getLogger().info("Database is offline! Failed to save new game data.");
+            return;
+        }
+
+        String newGameSQL =
+            "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator) " +
+            "VALUES (?, ?, ?, ?)";
+
+        List<Location> locations = game.getCoordinatesLocation();
+        String world = locations.getFirst().getWorld().getName();
+        String checkpoints = Utilities.serializeLocations(game.getCoordinatesLocation());
+        int checkpointsAmount = locations.size();
+        String parkourCreator = game.getGameAdmin();
+
+        try (Connection con = this.getConnection();
+             PreparedStatement qst = con.prepareStatement(newGameSQL)) {
+            qst.setString(1, world);
+            qst.setString(2, checkpoints);
+            qst.setInt(3, checkpointsAmount);
+            qst.setString(4, parkourCreator);
+            qst.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Failed to save new game data: " + e.getMessage());
         }
     }
 
@@ -154,11 +180,11 @@ public class Database {
              PreparedStatement qst = con.prepareStatement(ParkourGamesQuery);
              ResultSet res = qst.executeQuery()) {
             while (res.next()) {
-                int id = res.getInt("id");
-                String world = res.getString("world");
+//                int id = res.getInt("id");
+//                String world = res.getString("world");
                 LinkedHashMap<Location, Integer> parkourLocations = Utilities.deserializeLocations(res.getString("checkpoints"));
-                int checkpointsAmount = res.getInt("checkpointsAmount");
-                String parkourCreator = res.getString("parkourCreator");
+//                int checkpointsAmount = res.getInt("checkpointsAmount");
+//                String parkourCreator = res.getString("parkourCreator");
 
                 UUID uuid = Utilities.generateRandomID();
                 ParkourGame parkourGame = new ParkourGame(plugin, uuid, parkourLocations);

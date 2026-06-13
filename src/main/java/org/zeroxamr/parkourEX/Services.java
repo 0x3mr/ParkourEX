@@ -142,8 +142,6 @@ public class Services implements Listener {
                 event.getPlayer().getInventory().setItem(4, newItem);
                 event.getPlayer().getInventory().setItem(5, newItem2);
 
-                event.getPlayer().sendMessage("" + ChatColor.GREEN + "New parkour created!");
-                event.getPlayer().sendMessage("" + ChatColor.GRAY + " - ID: " + ChatColor.DARK_GRAY + id);
                 event.getPlayer().sendMessage("" + ChatColor.GOLD + "Select the location of your next checkpoint.");
                 break;
             case "checkpoint":
@@ -169,23 +167,26 @@ public class Services implements Listener {
 
                 if (Services.registerParkour(createdGames.get(uuid), uuid)) {
                     plugin.getLogger().info("Successfully registered parkour game: " + uuid.toString());
-                    event.getPlayer().sendMessage("" + ChatColor.GREEN + "You have successfully saved the parkour!");
+
+                    event.getPlayer().sendMessage("" + ChatColor.GREEN + "New parkour created!");
+                    event.getPlayer().sendMessage("" + ChatColor.GRAY + " - ID: " + ChatColor.DARK_GRAY + id);
                 } else {
                     event.getPlayer().sendMessage("" + ChatColor.RED + "The parkour was not saved! Check console for more details.");
                 }
         }
     }
 
-    public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations) {
-        if (Utilities.doCloneExist(locations)) return false;
-
-        UUID uuid = Utilities.generateRandomID();
-        ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations);
-        getServer().getPluginManager().registerEvents(parkourGame, plugin);
-        Main.getParkourGames().put(uuid, parkourGame);
-
-        return true;
-    }
+//    Outdated
+//    public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations) {
+//        if (Utilities.doCloneExist(locations)) return false;
+//
+//        UUID uuid = Utilities.generateRandomID();
+//        ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations);
+//        getServer().getPluginManager().registerEvents(parkourGame, plugin);
+//        Main.getParkourGames().put(uuid, parkourGame);
+//
+//        return true;
+//    }
 
     public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations, UUID uuid) {
         if (Utilities.doCloneExist(locations)) return false;
@@ -193,6 +194,7 @@ public class Services implements Listener {
         ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations);
         getServer().getPluginManager().registerEvents(parkourGame, plugin);
         Main.getParkourGames().put(uuid, parkourGame);
+        Main.getDBM().saveGame(parkourGame);
 
         return true;
     }

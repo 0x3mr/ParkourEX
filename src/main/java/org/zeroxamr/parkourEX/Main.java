@@ -8,7 +8,7 @@ import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
     private static final HashMap<UUID, ParkourGame> parkourGames = new HashMap<>();
-    Database DBM = null;
+    private static Database DBM = null;
 
     @Override
     public void onEnable() {
@@ -19,10 +19,10 @@ public final class Main extends JavaPlugin implements Listener {
         ParkourItems.initialize(this);
         Commands.initialize(this);
 
-        this.DBM = new Database();
+        DBM = new Database();
 //        DBM.fakeInsert();
 //        DBM.fakeInsert2();
-        this.DBM.loadGames(parkourGames);
+        DBM.loadGames(parkourGames);
 
         Utilities.resetPlayersInfo();
 
@@ -41,6 +41,15 @@ public final class Main extends JavaPlugin implements Listener {
         // Plugin shutdown logic
         parkourGames.clear();
         DBM.shutdown();
+    }
+
+    public void reload() {
+        getLogger().info("Reloading plugin configs...");
+//        DBM.saveGames(parkourGames);
+    }
+
+    public static Database getDBM() {
+        return DBM;
     }
 
     public static HashMap<UUID, ParkourGame> getParkourGames() { return parkourGames; }
