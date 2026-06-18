@@ -31,7 +31,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         Utilities.resetPlayersInfo();
 
-        this.getCommand("psetup").setExecutor(new Commands());
+        this.getCommand("parkourex").setExecutor(new Commands());
         getServer().getPluginManager().registerEvents(new ParkourItems(), this);
         getServer().getPluginManager().registerEvents(new Services(), this);
     }

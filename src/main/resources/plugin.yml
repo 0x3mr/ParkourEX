@@ -3,5 +3,6 @@ version: '1.0-SNAPSHOT'
 main: org.zeroxamr.parkourEX.Main
 api-version: '1.21'
 commands:
-  psetup:
-    description: setup plugin
+  parkourex:
+    aliases: [pk, px]
+    description: Plugin description & instructions
