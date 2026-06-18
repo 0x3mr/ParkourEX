@@ -120,11 +120,21 @@ public class Utilities {
         item.setItemMeta(meta);
     }
 
+    public static void attachID(PersistentDataContainer PDC, String id, String value) {
+        NamespacedKey NSK = new NamespacedKey(plugin, id);
+        PDC.set(NSK, PersistentDataType.STRING, value);
+    }
+
     public static Boolean hasID(ItemStack item, String id) {
         if (item == null || item.getType() == Material.AIR) return false;
         PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
         NamespacedKey key = new NamespacedKey(plugin, id);
         return pdc.has(key, PersistentDataType.STRING);
+    }
+
+    public static Boolean hasID(PersistentDataContainer PDC, String id) {
+        NamespacedKey key = new NamespacedKey(plugin, id);
+        return PDC.has(key, PersistentDataType.STRING);
     }
 
     public static String getAttachedID(ItemStack item, String id) {

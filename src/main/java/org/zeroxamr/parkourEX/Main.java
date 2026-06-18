@@ -1,8 +1,10 @@
 package org.zeroxamr.parkourEX;
 
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -12,16 +14,19 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        saveResource("config.yml", false);
+        if (!new File(getDataFolder(), "config.yml").exists()) {
+            saveResource("config.yml", false);
+        }
+
         Services.initialize(this);
         Database.initialize(this);
         Utilities.initialize(this);
         ParkourItems.initialize(this);
         Commands.initialize(this);
 
+        ParkourTags.cleanup();
+
         DBM = new Database();
-//        DBM.fakeInsert();
-//        DBM.fakeInsert2();
         DBM.loadGames(parkourGames);
 
         Utilities.resetPlayersInfo();
@@ -39,6 +44,7 @@ public final class Main extends JavaPlugin implements Listener {
     public void onDisable() {
         // Add saved current parkours logic
         // Plugin shutdown logic
+        ParkourTags.cleanup();
         parkourGames.clear();
         DBM.shutdown();
     }

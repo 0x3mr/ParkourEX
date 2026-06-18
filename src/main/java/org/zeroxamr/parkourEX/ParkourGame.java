@@ -39,6 +39,8 @@ public class ParkourGame implements Listener {
 
             i++;
         }
+
+        ParkourTags.build(coordinatesLocation, id.toString());
     }
 
     @EventHandler
