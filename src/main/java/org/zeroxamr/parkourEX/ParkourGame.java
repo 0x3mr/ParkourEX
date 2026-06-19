@@ -22,7 +22,6 @@ public class ParkourGame implements Listener {
     private String gameAdmin = "none";
 
     private LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
-    private List<Location> checkpointLocations = new ArrayList<>();
     private List<Float> checkpointYaws = new ArrayList<>();
 
     ParkourGame(Main plugin, UUID id, LinkedHashMap<Location, Integer> incomingCheckpointMap) {
@@ -35,13 +34,12 @@ public class ParkourGame implements Listener {
             Float locYaw = loc.getYaw();
 
             checkpointMap.put(location, i);
-            checkpointLocations.add(location);
             checkpointYaws.add(locYaw);
 
             i++;
         }
 
-        ParkourTags.build(checkpointLocations, id.toString());
+        ParkourTags.build(new ArrayList<Location>(checkpointMap.keySet()), id.toString());
     }
 
     @EventHandler
@@ -81,12 +79,13 @@ public class ParkourGame implements Listener {
 
                 UUID gameID = UUID.fromString(player.getMetadata("parkourID").getFirst().asString());
 
-                if (!plugin.getParkourGame(gameID).checkpointLocations.contains(playerLocation)) {
+                if (!plugin.getParkourGame(gameID).checkpointMap.containsKey(playerLocation)) {
 //                  // If interfered with another parkour, do nothing
                     return;
                 }
 
-                if (playerLocation.equals(checkpointLocations.getFirst())) {
+
+                if (playerLocation.equals(checkpointMap.firstEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Reset your timer to 00:00! Get to the finish line!");
                     setPlayerState(player);
                 }
@@ -134,12 +133,12 @@ public class ParkourGame implements Listener {
                     // If went back to an older checkpoint, do nothing
                 }
             } else {
-                if (playerLocation.equals(checkpointLocations.getFirst())) {
+                if (playerLocation.equals(checkpointMap.firstEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Parkour challenge started!");
                     player.setMetadata("parkourID", new FixedMetadataValue(plugin, id));
                     setPlayerState(player);
                 }
-                else if (playerLocation.equals(checkpointLocations.getLast())) {
+                else if (playerLocation.equals(checkpointMap.lastEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "This is the finish line for the parkour! Get to the start line and climb back up here!");
                 }
             }
@@ -149,7 +148,7 @@ public class ParkourGame implements Listener {
     }
 
     public void setPlayerState(Player player) {
-        Location respawnLocation = checkpointLocations.getFirst().clone();
+        Location respawnLocation = checkpointMap.firstEntry().getKey().clone();
         respawnLocation.setYaw(checkpointYaws.getFirst());
 
         player.setMetadata("inParkour", new FixedMetadataValue(plugin, true));
