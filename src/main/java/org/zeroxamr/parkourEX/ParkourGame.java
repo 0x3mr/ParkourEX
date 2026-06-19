@@ -80,6 +80,7 @@ public class ParkourGame implements Listener {
                 }
 
                 UUID gameID = UUID.fromString(player.getMetadata("parkourID").getFirst().asString());
+
                 if (!plugin.getParkourGame(gameID).checkpointLocations.contains(playerLocation)) {
 //                  // If interfered with another parkour, do nothing
                     return;
@@ -163,10 +164,6 @@ public class ParkourGame implements Listener {
 
     public LinkedHashMap<Location, Integer> getCheckpointMap() {
         return checkpointMap;
-    }
-
-    public List<Location> getCheckpointLocations() {
-        return checkpointLocations;
     }
 
     public String getGameAdmin() {

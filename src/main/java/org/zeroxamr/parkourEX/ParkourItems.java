@@ -2,6 +2,7 @@ package org.zeroxamr.parkourEX;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,6 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.checkerframework.checker.units.qual.N;
 
 public class ParkourItems implements Listener {
     private static Main plugin = null;
@@ -25,16 +27,14 @@ public class ParkourItems implements Listener {
         ItemStack cursor = event.getCursor();
 
         if (item != null && item.getItemMeta() != null) {
-            PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-            if (pdc.has(Services.key, PersistentDataType.STRING)) {
+            if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "checkpointNumber")) {
                 event.setCancelled(true);
                 return;
             }
         }
 
         if (cursor != null && cursor.getItemMeta() != null) {
-            PersistentDataContainer pdc2 = cursor.getItemMeta().getPersistentDataContainer();
-            if (pdc2.has(Services.key, PersistentDataType.STRING)) {
+            if (Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "checkpointNumber")) {
                 event.setCancelled(true);
             }
         }
@@ -42,9 +42,7 @@ public class ParkourItems implements Listener {
 
     @EventHandler
     public void onPlayerDropCheckpoint(PlayerDropItemEvent event) {
-        ItemStack item = event.getItemDrop().getItemStack();
-        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-        if (pdc.has(Services.key, PersistentDataType.STRING)) {
+        if (Utilities.hasID(event.getItemDrop().getItemStack(), "checkpointNumber")) {
             event.setCancelled(true);
         }
     }
@@ -54,14 +52,15 @@ public class ParkourItems implements Listener {
         Player player = event.getPlayer();
         if (event.getAction().isRightClick() || event.getAction().isLeftClick()) {
             ItemStack item = event.getItem();
+
             if (item == null) return;
             if (!item.getType().equals(Material.ARROW)) return;
 
-            PersistentDataContainer PDC = item.getItemMeta().getPersistentDataContainer();
-
-            if (PDC.has(Services.key, PersistentDataType.STRING)) {
+            if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "checkpointNumber")) {
                 if (!player.isOnline()) return;
-                if (player.hasMetadata("inParkour") && player.hasMetadata("checkpointNumber") && player.hasMetadata("checkpointLocation")) {
+                if (player.hasMetadata("inParkour")
+                    && player.hasMetadata("checkpointNumber")
+                    && player.hasMetadata("checkpointLocation")) {
                     Location location = Utilities.deserializeLocation(player.getMetadata("checkpointLocation").getFirst().asString());
                     location.setX(location.getX() + 0.5);
                     location.setZ(location.getZ() + 0.5);
