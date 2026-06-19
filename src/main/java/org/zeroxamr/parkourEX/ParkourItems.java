@@ -7,12 +7,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 import org.checkerframework.checker.units.qual.N;
 
 import java.util.UUID;
@@ -54,6 +56,16 @@ public class ParkourItems implements Listener {
     }
 
     @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        ItemStack item = event.getItemInHand();
+        if (item != null && item.getType().equals(Material.RED_BED)) {
+            if (Utilities.hasID(item, "resetParkour")) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (event.getAction().isRightClick() || event.getAction().isLeftClick()) {
@@ -81,7 +93,13 @@ public class ParkourItems implements Listener {
                         && player.hasMetadata("checkpointLocation")) {
                     Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).setPlayerState(player);
 
-                    Location location = new Location(Bukkit.getWorld("test"), 0, -59, 0, 0, 0);
+                    Location location = Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).getCheckpointMapWithYaw().firstEntry().getKey();
+                    location.setX(location.getX() + 0.5);
+                    location.setZ(location.getZ() + 0.5);
+
+                    Vector direction = location.getDirection();
+                    direction.setY(0).normalize().multiply(-1.5);
+                    location.add(direction);
 
                     player.teleport(location);
                 }

@@ -138,11 +138,18 @@ public class Utilities {
     }
 
     public static String getAttachedID(ItemStack item, String id) {
-        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
+        if (item == null) return "none";
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return "none";
+
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
         NamespacedKey key = new NamespacedKey(plugin, id);
+
         if (pdc.has(key, PersistentDataType.STRING)) {
             return pdc.get(key, PersistentDataType.STRING);
         }
+
         return "none";
     }
 
