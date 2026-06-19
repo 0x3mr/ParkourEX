@@ -196,7 +196,7 @@ public class Services implements Listener {
         ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations);
         getServer().getPluginManager().registerEvents(parkourGame, plugin);
         Main.getParkourGames().put(uuid, parkourGame);
-        Main.getDBM().saveGame(parkourGame, locations);
+        Main.getDBM().saveGame(parkourGame);
 
         return true;
     }

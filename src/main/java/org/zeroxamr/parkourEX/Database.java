@@ -145,7 +145,7 @@ public class Database {
         }
     }
 
-    public void saveGame(ParkourGame game, LinkedHashMap<Location, Integer> incomingLocations) {
+    public void saveGame(ParkourGame game) {
         if (!isOnline()) {
             plugin.getLogger().info("Database is offline! Failed to save new game data.");
             return;
@@ -155,7 +155,7 @@ public class Database {
             "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator) " +
             "VALUES (?, ?, ?, ?)";
 
-        List<Location> locations = new ArrayList<>(incomingLocations.keySet());
+        List<Location> locations = new ArrayList<>(game.getCheckpointMapWithYaw().keySet());
 
         int checkpointsAmount = locations.size();
 

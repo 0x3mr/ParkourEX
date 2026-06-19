@@ -11,18 +11,15 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ParkourGame implements Listener {
     private final UUID id;
     private final Main plugin;
-    private String gameAdmin = "none";
+    private final String gameAdmin = "none";
 
-    private LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
-    private List<Float> checkpointYaws = new ArrayList<>();
+    private final LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
+    private final List<Float> checkpointYaws = new ArrayList<>();
 
     ParkourGame(Main plugin, UUID id, LinkedHashMap<Location, Integer> incomingCheckpointMap) {
         this.plugin = plugin;
@@ -31,10 +28,9 @@ public class ParkourGame implements Listener {
         int i = 0;
         for (Location loc : incomingCheckpointMap.keySet()) {
             Location location = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
-            Float locYaw = loc.getYaw();
 
             checkpointMap.put(location, i);
-            checkpointYaws.add(locYaw);
+            checkpointYaws.add(loc.getYaw());
 
             i++;
         }
@@ -166,6 +162,19 @@ public class ParkourGame implements Listener {
 
     public LinkedHashMap<Location, Integer> getCheckpointMap() {
         return checkpointMap;
+    }
+
+    public LinkedHashMap<Location, Integer> getCheckpointMapWithYaw() {
+        int i = 0;
+        LinkedHashMap<Location, Integer> checkpointMapWithYaw = new LinkedHashMap<>();
+        for (Map.Entry<Location, Integer> entry : checkpointMap.entrySet()) {
+            Location location = entry.getKey().clone();
+            location.setYaw(checkpointYaws.get(i));
+            location.setPitch(0);
+            checkpointMapWithYaw.put(location, entry.getValue());
+            i++;
+        }
+        return checkpointMapWithYaw;
     }
 
     public String getGameAdmin() {
