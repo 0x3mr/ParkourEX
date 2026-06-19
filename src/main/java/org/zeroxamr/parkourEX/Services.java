@@ -81,6 +81,8 @@ public class Services implements Listener {
         Utilities.attachID(item, "cp-state", "start");
 
         player.getInventory().setItem(4, item);
+        player.sendMessage("" + ChatColor.LIGHT_PURPLE + "Place the [Start] block to set the parkour's first checkpoint");
+        player.sendMessage("" + ChatColor.LIGHT_PURPLE + "TIP: The direction you face while placing a checkpoint will be used as the respawn orientation for that checkpoint");
     }
 
     @EventHandler
