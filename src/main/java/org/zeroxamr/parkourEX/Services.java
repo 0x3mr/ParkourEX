@@ -32,14 +32,41 @@ public class Services implements Listener {
         Services.key = new NamespacedKey(plugin, "checkpointNumber");
     }
 
+    public static void addResetParkour(Player player) {
+        ItemStack item = new ItemStack(Material.RED_BED);
+        ItemMeta arr = item.getItemMeta();
+
+        arr.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset");
+        item.setItemMeta(arr);
+
+        Utilities.attachID(item, "resetParkour", "resetParkour");
+
+        player.getInventory().setItem(plugin.getConfig().getInt("resetSlot"), item);
+    }
+
+    public static void removeResetParkour(Player player) {
+        if (!player.getInventory().contains(Material.RED_BED)) return;
+
+        ItemStack item = player.getInventory().getItem(player.getInventory().first(Material.RED_BED));
+        if (item == null) return;
+
+        ItemMeta arr = item.getItemMeta();
+        if (arr == null) return;
+
+        PersistentDataContainer pdc = arr.getPersistentDataContainer();
+        if (Objects.equals(pdc.get(new NamespacedKey(plugin, "resetParkour"), PersistentDataType.STRING), "resetParkour")) {
+            player.getInventory().remove(item);
+        }
+    }
+
     public static void addLastCheckpoint(Player player) {
         ItemStack item = new ItemStack(Material.ARROW);
         ItemMeta arr = item.getItemMeta();
 
         arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Teleport to Last Checkpoint");
-        arr.getPersistentDataContainer().set(Services.key, PersistentDataType.STRING, "checkpointNumber");
-
         item.setItemMeta(arr);
+
+        Utilities.attachID(item, "checkpointNumber", "checkpointNumber");
 
         player.getInventory().setItem(plugin.getConfig().getInt("checkpointSlot"), item);
     }
@@ -54,7 +81,7 @@ public class Services implements Listener {
         if (arr == null) return;
 
         PersistentDataContainer pdc = arr.getPersistentDataContainer();
-        if (Objects.equals(pdc.get(Services.key, PersistentDataType.STRING), "checkpointNumber")) {
+        if (Objects.equals(pdc.get(new NamespacedKey(plugin, "checkpointNumber"), PersistentDataType.STRING), "checkpointNumber")) {
             player.getInventory().remove(item);
         }
     }

@@ -112,6 +112,7 @@ public class ParkourGame implements Listener {
                         player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "That's a new record of " + ChatColor.YELLOW + ChatColor.BOLD + time + ChatColor.GREEN + ChatColor.BOLD + "! Try again to get an even better record!");
                         player.removeMetadata("parkourID", plugin);
                         Services.removeLastCheckpoint(player);
+                        Services.removeResetParkour(player);
                         return;
                     }
 
@@ -127,6 +128,7 @@ public class ParkourGame implements Listener {
                     player.sendMessage("" + ChatColor.RED + "You skipped a checkpoint! Parkour failed!");
                     player.removeMetadata("parkourID", plugin);
                     Services.removeLastCheckpoint(player);
+                    Services.removeResetParkour(player);
                 }
                 else if (playerCheckpoint > parkourCheckpoint) {
                     // If went back to an older checkpoint, do nothing
@@ -160,6 +162,7 @@ public class ParkourGame implements Listener {
         player.setMetadata("latestCheckpointTime", new FixedMetadataValue(plugin, playerTime));
 
         Services.addLastCheckpoint(player);
+        Services.addResetParkour(player);
     }
 
     public LinkedHashMap<Location, Integer> getCheckpointMap() {

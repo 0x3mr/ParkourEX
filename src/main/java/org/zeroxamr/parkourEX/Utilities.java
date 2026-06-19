@@ -27,6 +27,7 @@ public class Utilities {
         e.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, -1));
         e.removeMetadata("parkourID", plugin);
         Services.removeLastCheckpoint(e);
+        Services.removeResetParkour(e);
     }
 
     public static void resetPlayersInfo() {
@@ -35,6 +36,7 @@ public class Utilities {
             player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, -1));
             player.removeMetadata("parkourID", plugin);
             Services.removeLastCheckpoint(player);
+            Services.removeResetParkour(player);
         }
     }
 
