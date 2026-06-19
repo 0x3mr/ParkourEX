@@ -17,30 +17,31 @@ import java.util.List;
 import java.util.UUID;
 
 public class ParkourGame implements Listener {
-    private String gameAdmin = "none";
     private final UUID id;
     private final Main plugin;
-    private LinkedHashMap<Location, Integer> coordinates = new LinkedHashMap<>();
-    private List<Location> coordinatesLocation = new ArrayList<>();
-    private List<Float> coordinatesYaw = new ArrayList<>();
+    private String gameAdmin = "none";
 
-    ParkourGame(Main plugin, UUID id, LinkedHashMap<Location, Integer> coordinates) {
+    private LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
+    private List<Location> checkpointLocations = new ArrayList<>();
+    private List<Float> checkpointYaws = new ArrayList<>();
+
+    ParkourGame(Main plugin, UUID id, LinkedHashMap<Location, Integer> incomingCheckpointMap) {
         this.plugin = plugin;
         this.id = id;
 
         int i = 0;
-        for (Location loc : coordinates.keySet()) {
-            Location locCoord = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
+        for (Location loc : incomingCheckpointMap.keySet()) {
+            Location location = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
             Float locYaw = loc.getYaw();
 
-            this.coordinates.put(locCoord, i);
-            coordinatesLocation.add(locCoord);
-            coordinatesYaw.add(locYaw);
+            checkpointMap.put(location, i);
+            checkpointLocations.add(location);
+            checkpointYaws.add(locYaw);
 
             i++;
         }
 
-        ParkourTags.build(coordinatesLocation, id.toString());
+        ParkourTags.build(checkpointLocations, id.toString());
     }
 
     @EventHandler
@@ -51,64 +52,61 @@ public class ParkourGame implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
-        Location oldLocation = e.getFrom();
-        Location playerLocation = e.getTo();
 
-        if (oldLocation.getBlockX() == playerLocation.getBlockX() &&
-            oldLocation.getBlockY() == playerLocation.getBlockY() &&
-            oldLocation.getBlockZ() == playerLocation.getBlockZ()) {
+        Location oldLocation = e.getFrom();
+        Location currLocation = e.getTo();
+
+        if (oldLocation.getBlockX() == currLocation.getBlockX() &&
+            oldLocation.getBlockY() == currLocation.getBlockY() &&
+            oldLocation.getBlockZ() == currLocation.getBlockZ()) {
             return;
         }
 
-        if (player.hasMetadata("inParkour") && player.hasMetadata("checkpoint")) {
-            Location playerL = playerLocation.getBlock().getLocation();
+        if (player.hasMetadata("inParkour") && player.hasMetadata("checkpointNumber")) {
+            Location playerLocation = currLocation.getBlock().getLocation();
 
-            if (!coordinates.containsKey(playerL)) return;
+            if (!checkpointMap.containsKey(playerLocation)) return;
 
-            Integer checkpoint = player.getMetadata("checkpoint").getFirst().asInt();
-            Integer blockCheckpoint = coordinates.get(playerL);
+            Integer playerCheckpoint = player.getMetadata("checkpointNumber").getFirst().asInt();
+            Integer parkourCheckpoint = checkpointMap.get(playerLocation);
 
-            Location savedLoc = playerL.clone();
-            savedLoc.setYaw(coordinatesYaw.get(blockCheckpoint));
+            Location respawnLocation = playerLocation.clone();
+            respawnLocation.setYaw(checkpointYaws.get(parkourCheckpoint));
 
             if (player.getMetadata("inParkour").getFirst().asBoolean()) {
                 if (!player.hasMetadata("parkourID")) {
-//                    plugin.getLogger().info(player.getName() + " is not in a parkour!");
+                    // This edge case scenario *should* never happen, but just as a safeguard
                     return;
                 }
 
                 UUID gameID = UUID.fromString(player.getMetadata("parkourID").getFirst().asString());
-                if (!plugin.getParkourGame(gameID).coordinatesLocation.contains(playerL)) {
-//                    plugin.getLogger().info(player.getName() + " interfered with another parkour!");
+                if (!plugin.getParkourGame(gameID).checkpointLocations.contains(playerLocation)) {
+//                  // If interfered with another parkour, do nothing
                     return;
                 }
 
-                if (playerL.equals(coordinatesLocation.getFirst())) {
+                if (playerLocation.equals(checkpointLocations.getFirst())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Reset your timer to 00:00! Get to the finish line!");
-                    player.setMetadata("inParkour", new FixedMetadataValue(plugin, true));
-                    player.setMetadata("checkpoint", new FixedMetadataValue(plugin, 0));
-                    player.setMetadata("lastCheckpoint", new FixedMetadataValue(plugin, Utilities.serializeLocation(savedLoc)));
-                    String playerTime = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
-                    player.setMetadata("timer", new FixedMetadataValue(plugin, playerTime));
-                    player.setMetadata("checkpointTimer", new FixedMetadataValue(plugin, playerTime));
+                    setPlayerState(player);
                 }
-                else if (checkpoint.equals(blockCheckpoint)) {
-                    // Do nothing
-                } else if (checkpoint + 1 == blockCheckpoint) {
-                    // advance to this checkpoint
+                else if (playerCheckpoint.equals(parkourCheckpoint)) {
+                    // If entered the same checkpoint multiple times, do nothing
+                }
+                else if (playerCheckpoint + 1 == parkourCheckpoint) {
+                    // advance to this new parkour checkpoint
 
-                    player.setMetadata("checkpoint", new FixedMetadataValue(plugin, blockCheckpoint));
-                    player.setMetadata("lastCheckpoint", new FixedMetadataValue(plugin, Utilities.serializeLocation(savedLoc)));
+                    player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, parkourCheckpoint));
+                    player.setMetadata("checkpointLocation", new FixedMetadataValue(plugin, Utilities.serializeLocation(respawnLocation)));
 
                     LocalTime nowTime = LocalTime.now();
-                    LocalTime startTime = LocalTime.parse(player.getMetadata("timer").getFirst().asString());
-                    LocalTime oldTime = LocalTime.parse(player.getMetadata("checkpointTimer").getFirst().asString());
+                    LocalTime startTime = LocalTime.parse(player.getMetadata("startTime").getFirst().asString());
+                    LocalTime oldTime = LocalTime.parse(player.getMetadata("latestCheckpointTime").getFirst().asString());
 
                     String time = Utilities.getDurationBetween(startTime, nowTime);
                     String diffTime = Utilities.getDurationBetween(oldTime, nowTime);
                     String bestTime = "UNKNOWN";
 
-                    if (blockCheckpoint + 1 == coordinates.size()) {
+                    if (parkourCheckpoint + 1 == checkpointMap.size()) {
                         Utilities.resetPlayerInfo(player);
                         player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "That's a new record of " + ChatColor.YELLOW + ChatColor.BOLD + time + ChatColor.GREEN + ChatColor.BOLD + "! Try again to get an even better record!");
                         player.removeMetadata("parkourID", plugin);
@@ -116,37 +114,29 @@ public class ParkourGame implements Listener {
                         return;
                     }
 
-                    player.setMetadata("checkpointTimer", new FixedMetadataValue(plugin, nowTime.format(DateTimeFormatter.ISO_LOCAL_TIME)));
+                    player.setMetadata("latestCheckpointTime", new FixedMetadataValue(plugin, nowTime.format(DateTimeFormatter.ISO_LOCAL_TIME)));
 
-                    player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "You reached " + ChatColor.YELLOW + ChatColor.BOLD + "Checkpoint #" + blockCheckpoint + ChatColor.GREEN + ChatColor.BOLD + " after " + ChatColor.YELLOW + ChatColor.BOLD + time + ChatColor.GREEN + ChatColor.BOLD + ".");
+                    player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "You reached " + ChatColor.YELLOW + ChatColor.BOLD + "Checkpoint #" + parkourCheckpoint + ChatColor.GREEN + ChatColor.BOLD + " after " + ChatColor.YELLOW + ChatColor.BOLD + time + ChatColor.GREEN + ChatColor.BOLD + ".");
                     player.sendMessage("" + ChatColor.GRAY + "You finished this part of the parkour in " + diffTime + ".");
 //                    player.sendMessage("" + ChatColor.GRAY + "You finished this part of the parkour in " + diffTime + " (personal best: " + bestTime + ").");
-                } else if (checkpoint < blockCheckpoint) {
+                }
+                else if (playerCheckpoint < parkourCheckpoint) {
                     // skipped a checkpoint!
                     Utilities.resetPlayerInfo(player);
                     player.sendMessage("" + ChatColor.RED + "You skipped a checkpoint! Parkour failed!");
                     player.removeMetadata("parkourID", plugin);
                     Services.removeLastCheckpoint(player);
-                } else if (checkpoint > blockCheckpoint) {
-                    // Do nothing
+                }
+                else if (playerCheckpoint > parkourCheckpoint) {
+                    // If went back to an older checkpoint, do nothing
                 }
             } else {
-                if (playerL.equals(coordinatesLocation.getFirst())) {
+                if (playerLocation.equals(checkpointLocations.getFirst())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Parkour challenge started!");
-                    player.setMetadata("inParkour", new FixedMetadataValue(plugin, true));
-                    player.setMetadata("checkpoint", new FixedMetadataValue(plugin, 0));
-                    player.setMetadata("lastCheckpoint", new FixedMetadataValue(plugin, Utilities.serializeLocation(savedLoc)));
                     player.setMetadata("parkourID", new FixedMetadataValue(plugin, id));
-
-                    LocalTime localTime = LocalTime.now();
-                    String playerTime = localTime.format(DateTimeFormatter.ISO_LOCAL_TIME);
-
-                    player.setMetadata("timer", new FixedMetadataValue(plugin, playerTime));
-                    player.setMetadata("checkpointTimer", new FixedMetadataValue(plugin, playerTime));
-
-                    Services.giveLastCheckpoint(player);
-                } else if (playerL.equals(coordinatesLocation.getLast())) {
-                    // let this be sent to finish line only
+                    setPlayerState(player);
+                }
+                else if (playerLocation.equals(checkpointLocations.getLast())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "This is the finish line for the parkour! Get to the start line and climb back up here!");
                 }
             }
@@ -155,12 +145,28 @@ public class ParkourGame implements Listener {
         }
     }
 
-    public LinkedHashMap<Location, Integer> getCoordinates() {
-        return coordinates;
+    public void setPlayerState(Player player) {
+        Location respawnLocation = checkpointLocations.getFirst().clone();
+        respawnLocation.setYaw(checkpointYaws.getFirst());
+
+        player.setMetadata("inParkour", new FixedMetadataValue(plugin, true));
+        player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, 0));
+        player.setMetadata("checkpointLocation", new FixedMetadataValue(plugin, Utilities.serializeLocation(respawnLocation)));
+
+        String playerTime = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
+
+        player.setMetadata("startTime", new FixedMetadataValue(plugin, playerTime));
+        player.setMetadata("latestCheckpointTime", new FixedMetadataValue(plugin, playerTime));
+
+        Services.addLastCheckpoint(player);
     }
 
-    public List<Location> getCoordinatesLocation() {
-        return coordinatesLocation;
+    public LinkedHashMap<Location, Integer> getCheckpointMap() {
+        return checkpointMap;
+    }
+
+    public List<Location> getCheckpointLocations() {
+        return checkpointLocations;
     }
 
     public String getGameAdmin() {

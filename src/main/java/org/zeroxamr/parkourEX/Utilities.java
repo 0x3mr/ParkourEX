@@ -4,14 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.checkerframework.checker.units.qual.N;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -26,7 +24,7 @@ public class Utilities {
 
     public static void resetPlayerInfo(Player e) {
         e.setMetadata("inParkour", new FixedMetadataValue(plugin, false));
-        e.setMetadata("checkpoint", new FixedMetadataValue(plugin, -1));
+        e.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, -1));
         e.removeMetadata("parkourID", plugin);
         Services.removeLastCheckpoint(e);
     }
@@ -34,7 +32,7 @@ public class Utilities {
     public static void resetPlayersInfo() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.setMetadata("inParkour", new FixedMetadataValue(plugin, false));
-            player.setMetadata("checkpoint", new FixedMetadataValue(plugin, -1));
+            player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, -1));
             player.removeMetadata("parkourID", plugin);
             Services.removeLastCheckpoint(player);
         }
@@ -148,7 +146,7 @@ public class Utilities {
 
     public static Boolean doCloneExist(LinkedHashMap<Location, Integer> newLocations) {
         for (Map.Entry<UUID, ParkourGame> pg : Main.getParkourGames().entrySet()) {
-            LinkedHashMap<Location, Integer> existingLocations = pg.getValue().getCoordinates();
+            LinkedHashMap<Location, Integer> existingLocations = pg.getValue().getCheckpointMap();
             for (Location newLoc : newLocations.keySet()) {
                 for (Location existingLoc : existingLocations.keySet()) {
                     if (newLoc.getBlockX() == existingLoc.getBlockX() &&

@@ -1,5 +1,6 @@
 package org.zeroxamr.parkourEX;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,15 +19,6 @@ public class ParkourItems implements Listener {
         ParkourItems.plugin = plugin;
     }
 
-//    @EventHandler
-//    public void onPlayerMoveCheckpoint(InventoryPickupItemEvent event) {
-//        ItemStack item = event.getItem().getItemStack();
-//        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-//        if (pdc.has(Services.key, PersistentDataType.STRING)) {
-//            event.setCancelled(true);
-//        }
-//    }
-
     @EventHandler
     public void onPlayerInventoryInteract(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
@@ -36,7 +28,6 @@ public class ParkourItems implements Listener {
             PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
             if (pdc.has(Services.key, PersistentDataType.STRING)) {
                 event.setCancelled(true);
-//                event.getWhoClicked().closeInventory();
                 return;
             }
         }
@@ -45,7 +36,6 @@ public class ParkourItems implements Listener {
             PersistentDataContainer pdc2 = cursor.getItemMeta().getPersistentDataContainer();
             if (pdc2.has(Services.key, PersistentDataType.STRING)) {
                 event.setCancelled(true);
-//                event.getWhoClicked().closeInventory();
             }
         }
     }
@@ -66,10 +56,17 @@ public class ParkourItems implements Listener {
             ItemStack item = event.getItem();
             if (item == null) return;
             if (!item.getType().equals(Material.ARROW)) return;
+
             PersistentDataContainer PDC = item.getItemMeta().getPersistentDataContainer();
-            //        player.sendMessage("booboo");
+
             if (PDC.has(Services.key, PersistentDataType.STRING)) {
-                Services.sendToLastCheckpoint(player);
+                if (!player.isOnline()) return;
+                if (player.hasMetadata("inParkour") && player.hasMetadata("checkpointNumber") && player.hasMetadata("checkpointLocation")) {
+                    Location location = Utilities.deserializeLocation(player.getMetadata("checkpointLocation").getFirst().asString());
+                    location.setX(location.getX() + 0.5);
+                    location.setZ(location.getZ() + 0.5);
+                    player.teleport(location);
+                }
             }
         }
     }

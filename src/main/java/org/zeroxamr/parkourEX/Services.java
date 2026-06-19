@@ -1,17 +1,14 @@
 package org.zeroxamr.parkourEX;
 
-import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -32,19 +29,18 @@ public class Services implements Listener {
 
     public static void initialize(Main plugin) {
         Services.plugin = plugin;
-        Services.key = new NamespacedKey(plugin, "checkpoint");
+        Services.key = new NamespacedKey(plugin, "checkpointNumber");
     }
 
-    public static void giveLastCheckpoint(Player player) {
+    public static void addLastCheckpoint(Player player) {
         ItemStack item = new ItemStack(Material.ARROW);
         ItemMeta arr = item.getItemMeta();
 
-        arr.setDisplayName("" + ChatColor.GREEN + "Teleport to Last Checkpoint");
-        arr.getPersistentDataContainer().set(Services.key, PersistentDataType.STRING, "checkpoint");
+        arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Teleport to Last Checkpoint");
+        arr.getPersistentDataContainer().set(Services.key, PersistentDataType.STRING, "checkpointNumber");
 
         item.setItemMeta(arr);
 
-//        player.getInventory().addItem(item);
         player.getInventory().setItem(plugin.getConfig().getInt("checkpointSlot"), item);
     }
 
@@ -58,18 +54,8 @@ public class Services implements Listener {
         if (arr == null) return;
 
         PersistentDataContainer pdc = arr.getPersistentDataContainer();
-        if (Objects.equals(pdc.get(Services.key, PersistentDataType.STRING), "checkpoint")) {
+        if (Objects.equals(pdc.get(Services.key, PersistentDataType.STRING), "checkpointNumber")) {
             player.getInventory().remove(item);
-        }
-    }
-
-    public static void sendToLastCheckpoint(Player player) {
-        if (!player.isOnline()) return;
-        if (player.hasMetadata("inParkour") && player.hasMetadata("checkpoint") && player.hasMetadata("lastCheckpoint")) {
-            Location location = Utilities.deserializeLocation(player.getMetadata("lastCheckpoint").getFirst().asString());
-            location.setX(location.getX() + 0.5);
-            location.setZ(location.getZ() + 0.5);
-            player.teleport(location);
         }
     }
 
@@ -98,7 +84,7 @@ public class Services implements Listener {
     }
 
     @EventHandler
-    public static void createParkour(BlockPlaceEvent event) {
+    public void createParkour(BlockPlaceEvent event) {
         ItemStack item = event.getItemInHand();
         String status = Utilities.getAttachedID(item, "cp-state");
         if (status.equals("none")) return;
@@ -169,24 +155,11 @@ public class Services implements Listener {
                     plugin.getLogger().info("Successfully registered parkour game: " + uuid.toString());
 
                     event.getPlayer().sendMessage("" + ChatColor.GREEN + "New parkour created!");
-                    event.getPlayer().sendMessage("" + ChatColor.GRAY + " - ID: " + ChatColor.DARK_GRAY + id);
                 } else {
                     event.getPlayer().sendMessage("" + ChatColor.RED + "The parkour was not saved! Check console for more details.");
                 }
         }
     }
-
-//    Outdated
-//    public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations) {
-//        if (Utilities.doCloneExist(locations)) return false;
-//
-//        UUID uuid = Utilities.generateRandomID();
-//        ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations);
-//        getServer().getPluginManager().registerEvents(parkourGame, plugin);
-//        Main.getParkourGames().put(uuid, parkourGame);
-//
-//        return true;
-//    }
 
     public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations, UUID uuid) {
         if (Utilities.doCloneExist(locations)) return false;
@@ -194,7 +167,7 @@ public class Services implements Listener {
         ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations);
         getServer().getPluginManager().registerEvents(parkourGame, plugin);
         Main.getParkourGames().put(uuid, parkourGame);
-        Main.getDBM().saveGame(parkourGame);
+        Main.getDBM().saveGame(parkourGame, locations);
 
         return true;
     }
