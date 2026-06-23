@@ -158,7 +158,8 @@ public class Utilities {
             LinkedHashMap<Location, Integer> existingLocations = pg.getValue().getCheckpointMap();
             for (Location newLoc : newLocations.keySet()) {
                 for (Location existingLoc : existingLocations.keySet()) {
-                    if (newLoc.getBlockX() == existingLoc.getBlockX() &&
+                    if (newLoc.getWorld().getName().equals(existingLoc.getWorld().getName()) &&
+                        newLoc.getBlockX() == existingLoc.getBlockX() &&
                         newLoc.getBlockY() == existingLoc.getBlockY() &&
                         newLoc.getBlockZ() == existingLoc.getBlockZ()) {
                         plugin.getLogger().info("Existing parkour found! Failed to save parkour locations.");
