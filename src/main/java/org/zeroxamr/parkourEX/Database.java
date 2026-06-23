@@ -83,68 +83,6 @@ public class Database {
         }
     }
 
-    public void fakeInsert() {
-        if (!isOnline()) {
-            plugin.getLogger().info("Database is offline! Failed to insert fake data.");
-            return;
-        }
-
-        String fakeSQL =
-        "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator)" +
-        "VALUES (?, ?, ?, ?)";
-
-        World world = Bukkit.getWorld("test");
-        Location start = new Location(world, -3, -60, 3, 45, 0);
-        Location one = new Location(world, -6, -60, 6, 90, 0);
-        Location two = new Location(world, -10, -60, 6, 135, 0);
-        Location end = new Location(world, -12, -60, 3, 0, 0);
-        List<Location> locations = new ArrayList<>(List.of(start, one, two, end));
-
-        String serializedCheckpoints = Utilities.serializeLocations(locations);
-
-        try (Connection con = this.getConnection();
-             PreparedStatement qst = con.prepareStatement(fakeSQL)) {
-            qst.setString(1, start.getWorld().getName());
-            qst.setString(2, serializedCheckpoints);
-            qst.setInt(3, locations.size());
-            qst.setString(4, "0x3mr");
-            qst.executeUpdate();
-        } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to insert fake data: " + e.getMessage());
-        }
-    }
-
-    public void fakeInsert2() {
-        if (!isOnline()) {
-            plugin.getLogger().info("Database is offline! Failed to insert fake data.");
-            return;
-        }
-
-        String fakeSQL =
-        "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator)" +
-        "VALUES (?, ?, ?, ?)";
-
-        World world = Bukkit.getWorld("test");
-        Location start = new Location(world, -19, -60, -8, 45, 0);
-        Location one = new Location(world, -24, -60, -8, 90, 0);
-        Location two = new Location(world, -25, -60, -4, 135, 0);
-        Location end = new Location(world, -21, -60, -1, 0, 0);
-        List<Location> locations = new ArrayList<>(List.of(start, one, two, end));
-
-        String serializedCheckpoints = Utilities.serializeLocations(locations);
-
-        try (Connection con = this.getConnection();
-             PreparedStatement qst = con.prepareStatement(fakeSQL)) {
-            qst.setString(1, start.getWorld().getName());
-            qst.setString(2, serializedCheckpoints);
-            qst.setInt(3, locations.size());
-            qst.setString(4, "0x3mr");
-            qst.executeUpdate();
-        } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to insert fake data: " + e.getMessage());
-        }
-    }
-
     public void saveGame(ParkourGame game) {
         if (!isOnline()) {
             plugin.getLogger().info("Database is offline! Failed to save new game data.");

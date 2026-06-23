@@ -46,16 +46,10 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        // Add saved current parkours logic
-        // Plugin shutdown logic
         ParkourTags.cleanup();
+
         parkourGames.clear();
         DBM.shutdown();
-    }
-
-    public void reload() {
-        getLogger().info("Reloading plugin configs...");
-//        DBM.saveGames(parkourGames);
     }
 
     public static Database getDBM() {
