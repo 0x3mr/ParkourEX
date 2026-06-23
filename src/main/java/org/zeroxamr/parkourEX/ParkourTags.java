@@ -17,8 +17,10 @@ public class ParkourTags implements Listener {
     private record ChunkCoord(World world, int x, int z) {}
     private static HashMap<ChunkCoord, List<LocationID>> checkpointsPerChunk = new HashMap<>();
 
-    private void build(List<LocationID> incomingLocations) {
+    private static void build(List<LocationID> incomingLocations) {
+        Bukkit.getLogger().info("Building " + incomingLocations.size() + " tags");
         int size = incomingLocations.size();
+        if (size <= 0) return;
 
         for (int i = 0; i < size; i++) {
             LocationID locationID = incomingLocations.get(i);
@@ -33,11 +35,24 @@ public class ParkourTags implements Listener {
             loc.setX(loc.getX() + 0.5);
             loc.setZ(loc.getZ() + 0.5);
 
+            // Skip if a hologram already exists at this location (loaded from disk)
+            boolean exists = false;
+            for (ArmorStand existing : world.getEntitiesByClass(ArmorStand.class)) {
+                if (Utilities.hasID(existing.getPersistentDataContainer(), "hologram") &&
+                        existing.getLocation().getBlockX() == loc.getBlockX() &&
+                        existing.getLocation().getBlockY() == loc.getBlockY() &&
+                        existing.getLocation().getBlockZ() == loc.getBlockZ()) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists) continue;
+
             ArmorStand hg = (ArmorStand) world.spawnEntity(loc, EntityType.ARMOR_STAND);
             Utilities.attachID(hg.getPersistentDataContainer(), "hologram", ID);
             hg.setVisible(false);
             hg.setGravity(false);
-            hg.setPersistent(false);
+            hg.setPersistent(true);
             hg.setCustomNameVisible(true);
 
             if (index == 0) {
@@ -52,6 +67,8 @@ public class ParkourTags implements Listener {
 
     public static void register(List<Location> coordinatesLocation, String ID) {
         int i = 0;
+        List<LocationID> loadedChunks = new ArrayList<>();
+
         for (Location location : coordinatesLocation) {
             ChunkCoord chunkCoord = new ChunkCoord(
                     location.getWorld(),
@@ -66,9 +83,16 @@ public class ParkourTags implements Listener {
                     location
             );
 
-            checkpointsPerChunk.computeIfAbsent(chunkCoord, chunk -> new ArrayList<>()).add(locationID);
+            if (location.getChunk().isLoaded()) {
+                loadedChunks.add(locationID);
+            } else {
+                checkpointsPerChunk.computeIfAbsent(chunkCoord, chunk -> new ArrayList<>()).add(locationID);
+            }
+
             i++;
         }
+
+        build(loadedChunks);
     }
 
     @EventHandler
@@ -76,7 +100,7 @@ public class ParkourTags implements Listener {
         ChunkCoord chunk = new ChunkCoord(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
         List<LocationID> locations = checkpointsPerChunk.get(chunk);
         if (locations == null) return;
-        this.build(locations);
+        build(locations);
     }
 
     public static void cleanup() {

@@ -27,7 +27,6 @@ public final class Main extends JavaPlugin implements Listener {
         ParkourTags.cleanup();
 
         DBM = new Database();
-        DBM.loadGames(parkourGames);
 
         Utilities.resetPlayersInfo();
 
@@ -35,6 +34,8 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new ParkourTags(), this);
         getServer().getPluginManager().registerEvents(new ParkourItems(), this);
         getServer().getPluginManager().registerEvents(new Services(), this);
+
+        DBM.loadGames(parkourGames);
     }
 
     public ParkourGame getParkourGame(UUID uuid) {
