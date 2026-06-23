@@ -17,6 +17,8 @@ public final class Main extends JavaPlugin implements Listener {
         if (!new File(getDataFolder(), "config.yml").exists()) {
             saveResource("config.yml", false);
         }
+        getConfig().options().copyDefaults(true);
+        saveConfig();
 
         Services.initialize(this);
         Database.initialize(this);

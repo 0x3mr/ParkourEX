@@ -88,7 +88,22 @@ public class ParkourGame implements Listener {
                 else if (playerCheckpoint.equals(parkourCheckpoint)) {
                     // If entered the same checkpoint multiple times, do nothing
                 }
-                else if (playerCheckpoint + 1 == parkourCheckpoint) {
+                else if (playerCheckpoint < parkourCheckpoint) {
+                    // If reached next checkpoint OR skipped a checkpoint
+
+                    if (Objects.equals(plugin.getConfig().get("skipCheckpoints"), false)
+                        && playerCheckpoint + 1 < parkourCheckpoint) {
+                        // skipped a checkpoint!
+
+                        Utilities.resetPlayerInfo(player);
+                        player.sendMessage("" + ChatColor.RED + "You skipped a checkpoint! Parkour failed!");
+                        player.removeMetadata("parkourID", plugin);
+                        Services.removeLastCheckpoint(player);
+                        Services.removeResetParkour(player);
+
+                        return;
+                    }
+
                     // advance to this new parkour checkpoint
 
                     player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, parkourCheckpoint));
@@ -116,14 +131,6 @@ public class ParkourGame implements Listener {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "You reached " + ChatColor.YELLOW + ChatColor.BOLD + "Checkpoint #" + parkourCheckpoint + ChatColor.GREEN + ChatColor.BOLD + " after " + ChatColor.YELLOW + ChatColor.BOLD + time + ChatColor.GREEN + ChatColor.BOLD + ".");
                     player.sendMessage("" + ChatColor.GRAY + "You finished this part of the parkour in " + diffTime + ".");
 //                    player.sendMessage("" + ChatColor.GRAY + "You finished this part of the parkour in " + diffTime + " (personal best: " + bestTime + ").");
-                }
-                else if (playerCheckpoint < parkourCheckpoint) {
-                    // skipped a checkpoint!
-                    Utilities.resetPlayerInfo(player);
-                    player.sendMessage("" + ChatColor.RED + "You skipped a checkpoint! Parkour failed!");
-                    player.removeMetadata("parkourID", plugin);
-                    Services.removeLastCheckpoint(player);
-                    Services.removeResetParkour(player);
                 }
                 else if (playerCheckpoint > parkourCheckpoint) {
                     // If went back to an older checkpoint, do nothing

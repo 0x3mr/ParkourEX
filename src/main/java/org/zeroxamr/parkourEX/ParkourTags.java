@@ -18,7 +18,6 @@ public class ParkourTags implements Listener {
     private static HashMap<ChunkCoord, List<LocationID>> checkpointsPerChunk = new HashMap<>();
 
     private static void build(List<LocationID> incomingLocations) {
-        Bukkit.getLogger().info("Building " + incomingLocations.size() + " tags");
         int size = incomingLocations.size();
         if (size <= 0) return;
 

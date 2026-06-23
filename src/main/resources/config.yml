@@ -1,3 +1,8 @@
-# Set to 4 for middle slot
+# Set to 4 to place the checkpoint item in the center slot of the hotbar
 checkpointSlot: 4
+
+# Set the reset item position in the hotbar
 resetSlot: 5
+
+# Allow players to skip a checkpoint during a parkour game
+skipCheckpoints: false
