@@ -35,7 +35,7 @@ public class ParkourGame implements Listener {
             i++;
         }
 
-        ParkourTags.build(new ArrayList<Location>(checkpointMap.keySet()), id.toString());
+        ParkourTags.register(new ArrayList<Location>(checkpointMap.keySet()), id.toString());
     }
 
     @EventHandler

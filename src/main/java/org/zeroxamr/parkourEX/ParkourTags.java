@@ -1,43 +1,82 @@
 package org.zeroxamr.parkourEX;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkLoadEvent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-public class ParkourTags {
-    public static void build(List<Location> coordinatesLocation, String ID) {
-        World world = coordinatesLocation.getFirst().getWorld();
-        int size = coordinatesLocation.size();
+public class ParkourTags implements Listener {
+    private record LocationID(String ID, int size, int index, Location location) {}
+    private record ChunkCoord(World world, int x, int z) {}
+    private static HashMap<ChunkCoord, List<LocationID>> checkpointsPerChunk = new HashMap<>();
+
+    private void build(List<LocationID> incomingLocations) {
+        int size = incomingLocations.size();
+
         for (int i = 0; i < size; i++) {
-            Location loc = coordinatesLocation.get(i).clone();
+            LocationID locationID = incomingLocations.get(i);
+
+            Location location = locationID.location;
+            World world = location.getWorld();
+            String ID = locationID.ID;
+            int index = locationID.index;
+            int parkourSize = locationID.size;
+
+            Location loc = location.clone();
             loc.setX(loc.getX() + 0.5);
             loc.setZ(loc.getZ() + 0.5);
-            ArmorStand hg = (ArmorStand) world.spawnEntity(loc, EntityType.ARMOR_STAND);
-            Utilities.attachID(hg.getPersistentDataContainer(), "hologram", i + "." + ID);
-            hg.setVisible(false);
-            hg.setCustomNameVisible(true);
-            hg.setGravity(false);
 
-            if (i == 0) {
+            ArmorStand hg = (ArmorStand) world.spawnEntity(loc, EntityType.ARMOR_STAND);
+            Utilities.attachID(hg.getPersistentDataContainer(), "hologram", ID);
+            hg.setVisible(false);
+            hg.setGravity(false);
+            hg.setPersistent(false);
+            hg.setCustomNameVisible(true);
+
+            if (index == 0) {
                 hg.setCustomName("" + ChatColor.GREEN + ChatColor.BOLD + "Start");
-            } else if (i == size - 1) {
+            } else if (index == parkourSize - 1) {
                 hg.setCustomName("" + ChatColor.RED + ChatColor.BOLD + "End");
             } else {
-                hg.setCustomName("" + ChatColor.YELLOW + ChatColor.BOLD + "Checkpoint" + ChatColor.AQUA + ChatColor.BOLD + " #" + i);
+                hg.setCustomName("" + ChatColor.YELLOW + ChatColor.BOLD + "Checkpoint" + ChatColor.AQUA + ChatColor.BOLD + " #" + index);
             }
         }
+    }
+
+    public static void register(List<Location> coordinatesLocation, String ID) {
+        int i = 0;
+        for (Location location : coordinatesLocation) {
+            ChunkCoord chunkCoord = new ChunkCoord(
+                    location.getWorld(),
+                    location.getChunk().getX(),
+                    location.getChunk().getZ()
+            );
+
+            LocationID locationID = new LocationID(
+                    ID,
+                    coordinatesLocation.size(),
+                    i,
+                    location
+            );
+
+            checkpointsPerChunk.computeIfAbsent(chunkCoord, chunk -> new ArrayList<>()).add(locationID);
+            i++;
+        }
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        ChunkCoord chunk = new ChunkCoord(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
+        List<LocationID> locations = checkpointsPerChunk.get(chunk);
+        if (locations == null) return;
+        this.build(locations);
     }
 
     public static void cleanup() {
