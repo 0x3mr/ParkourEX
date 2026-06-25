@@ -1,9 +1,7 @@
 package org.zeroxamr.parkourEX;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import jdk.jshell.execution.Util;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +15,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import org.checkerframework.checker.units.qual.N;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class ParkourItems implements Listener {
@@ -33,7 +32,8 @@ public class ParkourItems implements Listener {
 
         if (item != null && item.getItemMeta() != null) {
             if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "checkpointNumber")
-                || Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "resetParkour")) {
+                || Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "resetParkour")
+                || Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
                 event.setCancelled(true);
                 return;
             }
@@ -41,7 +41,8 @@ public class ParkourItems implements Listener {
 
         if (cursor != null && cursor.getItemMeta() != null) {
             if (Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "checkpointNumber")
-                || Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "resetParkour")) {
+                || Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "resetParkour")
+                || Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
                 event.setCancelled(true);
             }
         }
@@ -50,7 +51,8 @@ public class ParkourItems implements Listener {
     @EventHandler
     public void onPlayerDropCheckpoint(PlayerDropItemEvent event) {
         if (Utilities.hasID(event.getItemDrop().getItemStack(), "checkpointNumber")
-            || Utilities.hasID(event.getItemDrop().getItemStack(), "resetParkour")) {
+            || Utilities.hasID(event.getItemDrop().getItemStack(), "resetParkour")
+            || Utilities.hasID(event.getItemDrop().getItemStack(), "leaveParkour")) {
             event.setCancelled(true);
         }
     }
@@ -58,8 +60,10 @@ public class ParkourItems implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         ItemStack item = event.getItemInHand();
-        if (item != null && item.getType().equals(Material.RED_BED)) {
-            if (Utilities.hasID(item, "resetParkour")) {
+        if (item != null && (item.getType().equals(Material.RED_BED)
+            || item.getType().equals(Material.BARRIER))) {
+            if (Utilities.hasID(item, "resetParkour")
+                || Utilities.hasID(item, "leaveParkour")) {
                 event.setCancelled(true);
             }
         }
@@ -73,7 +77,8 @@ public class ParkourItems implements Listener {
 
             if (item == null) return;
             if (!item.getType().equals(Material.ARROW)
-                && !item.getType().equals(Material.RED_BED)) return;
+                && !item.getType().equals(Material.RED_BED)
+                && !item.getType().equals(Material.BARRIER)) return;
 
             if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "checkpointNumber")) {
                 if (!player.isOnline()) return;
@@ -102,6 +107,28 @@ public class ParkourItems implements Listener {
                     location.add(direction);
 
                     player.teleport(location);
+                }
+            }
+            else if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
+                if (!player.isOnline()) return;
+                if (player.hasMetadata("inParkour")
+                        && player.hasMetadata("checkpointNumber")
+                        && player.hasMetadata("checkpointLocation")) {
+                    if (Objects.equals(plugin.getConfig().get("returnToStart"), true)) {
+                        Location location = Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).getCheckpointMapWithYaw().firstEntry().getKey();
+                        location.setX(location.getX() + 0.5);
+                        location.setZ(location.getZ() + 0.5);
+
+                        Vector direction = location.getDirection();
+                        direction.setY(0).normalize().multiply(-1.5);
+                        location.add(direction);
+
+                        player.teleport(location);
+                    }
+
+                    player.sendMessage("" + ChatColor.RED + "You have left the parkour.");
+
+                    Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).unsetPlayerState(player);
                 }
             }
         }

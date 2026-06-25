@@ -4,5 +4,11 @@ checkpointSlot: 4
 # Set the reset item position in the hotbar
 resetSlot: 5
 
+# Set the leave item position in the hotbar
+leaveSlot: 0
+
 # Allow players to skip a checkpoint during a parkour game
 skipCheckpoints: false
+
+# Send player to the beginning of the parkour on leave
+returnToStart: false

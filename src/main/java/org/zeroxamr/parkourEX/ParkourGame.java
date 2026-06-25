@@ -80,7 +80,6 @@ public class ParkourGame implements Listener {
                     return;
                 }
 
-
                 if (playerLocation.equals(checkpointMap.firstEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Reset your timer to 00:00! Get to the finish line!");
                     setPlayerState(player);
@@ -97,9 +96,7 @@ public class ParkourGame implements Listener {
 
                         Utilities.resetPlayerInfo(player);
                         player.sendMessage("" + ChatColor.RED + "You skipped a checkpoint! Parkour failed!");
-                        player.removeMetadata("parkourID", plugin);
-                        Services.removeLastCheckpoint(player);
-                        Services.removeResetParkour(player);
+                        unsetPlayerState(player);
 
                         return;
                     }
@@ -120,9 +117,8 @@ public class ParkourGame implements Listener {
                     if (parkourCheckpoint + 1 == checkpointMap.size()) {
                         Utilities.resetPlayerInfo(player);
                         player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "That's a new record of " + ChatColor.YELLOW + ChatColor.BOLD + time + ChatColor.GREEN + ChatColor.BOLD + "! Try again to get an even better record!");
-                        player.removeMetadata("parkourID", plugin);
-                        Services.removeLastCheckpoint(player);
-                        Services.removeResetParkour(player);
+                        unsetPlayerState(player);
+
                         return;
                     }
 
@@ -135,7 +131,8 @@ public class ParkourGame implements Listener {
                 else if (playerCheckpoint > parkourCheckpoint) {
                     // If went back to an older checkpoint, do nothing
                 }
-            } else {
+            }
+            else {
                 if (playerLocation.equals(checkpointMap.firstEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Parkour challenge started!");
                     player.setMetadata("parkourID", new FixedMetadataValue(plugin, id));
@@ -145,7 +142,8 @@ public class ParkourGame implements Listener {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "This is the finish line for the parkour! Get to the start line and climb back up here!");
                 }
             }
-        } else {
+        }
+        else {
             Utilities.resetPlayerInfo(player);
         }
     }
@@ -165,6 +163,11 @@ public class ParkourGame implements Listener {
 
         Services.addLastCheckpoint(player);
         Services.addResetParkour(player);
+        Services.addLeaveParkour(player);
+    }
+
+    public void unsetPlayerState(Player player) {
+        Utilities.resetPlayerInfo(player);
     }
 
     public LinkedHashMap<Location, Integer> getCheckpointMap() {

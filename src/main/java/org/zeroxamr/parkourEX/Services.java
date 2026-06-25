@@ -59,6 +59,33 @@ public class Services implements Listener {
         }
     }
 
+    public static void addLeaveParkour(Player player) {
+        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemMeta arr = item.getItemMeta();
+
+        arr.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "Exit");
+        item.setItemMeta(arr);
+
+        Utilities.attachID(item, "leaveParkour", "leaveParkour");
+
+        player.getInventory().setItem(plugin.getConfig().getInt("leaveSlot"), item);
+    }
+
+    public static void removeLeaveParkour(Player player) {
+        if (!player.getInventory().contains(Material.BARRIER)) return;
+
+        ItemStack item = player.getInventory().getItem(player.getInventory().first(Material.BARRIER));
+        if (item == null) return;
+
+        ItemMeta arr = item.getItemMeta();
+        if (arr == null) return;
+
+        PersistentDataContainer pdc = arr.getPersistentDataContainer();
+        if (Objects.equals(pdc.get(new NamespacedKey(plugin, "leaveParkour"), PersistentDataType.STRING), "leaveParkour")) {
+            player.getInventory().remove(item);
+        }
+    }
+
     public static void addLastCheckpoint(Player player) {
         ItemStack item = new ItemStack(Material.ARROW);
         ItemMeta arr = item.getItemMeta();
