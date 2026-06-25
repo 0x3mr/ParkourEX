@@ -1,6 +1,7 @@
 package org.zeroxamr.parkourEX;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -43,6 +44,19 @@ public class Commands implements CommandExecutor {
                 player.sendMessage(" " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "ParkourEx" + ChatColor.RESET + ChatColor.GRAY + " - List of commands:");
                 player.sendMessage("   " + ChatColor.GRAY + "- " + ChatColor.WHITE + "/parkourex create");
                 player.sendMessage("   " + ChatColor.GRAY + "- " + ChatColor.WHITE + "/parkourex help");
+                break;
+            case "checkpoint":
+                if (player.hasMetadata("inParkour")
+                    && player.hasMetadata("checkpointNumber")
+                    && player.hasMetadata("checkpointLocation")) {
+                    Location location = Utilities.deserializeLocation(player.getMetadata("checkpointLocation").getFirst().asString());
+                    location.setX(location.getX() + 0.5);
+                    location.setZ(location.getZ() + 0.5);
+                    player.teleport(location);
+                }
+                else {
+                    player.sendMessage("" + ChatColor.RED + "You are not in a parkour!");
+                }
                 break;
             default:
                 player.sendMessage("" + ChatColor.RED + "Use /parkourex help for a list of commands.");
