@@ -157,6 +157,15 @@ public class Utilities {
         return "none";
     }
 
+    public static String getAttachedID(PersistentDataContainer PDC, String id) {
+        NamespacedKey key = new NamespacedKey(plugin, id);
+        if (PDC.has(key, PersistentDataType.STRING)) {
+            return PDC.get(key, PersistentDataType.STRING);
+        }
+
+        return "none";
+    }
+
     public static Boolean doCloneExist(LinkedHashMap<Location, Integer> newLocations) {
         for (Map.Entry<UUID, ParkourGame> pg : Main.getParkourGames().entrySet()) {
             LinkedHashMap<Location, Integer> existingLocations = pg.getValue().getCheckpointMap();

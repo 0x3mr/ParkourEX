@@ -58,14 +58,17 @@ public class ParkourItems implements Listener {
     }
 
     @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) {
-        ItemStack item = event.getItemInHand();
-        if (item != null && (item.getType().equals(Material.RED_BED)
-            || item.getType().equals(Material.BARRIER))) {
-            if (Utilities.hasID(item, "resetParkour")
-                || Utilities.hasID(item, "leaveParkour")) {
+    public void onBlockPlace(PlayerInteractEvent event) {
+        if (!event.getAction().isRightClick()) return;
+
+        ItemStack item = event.getItem();
+        if (item == null) return;
+
+        Material type = item.getType();
+
+        if ((type.equals(Material.RED_BED) || type.equals(Material.BARRIER))
+            && (Utilities.hasID(item, "resetParkour") || Utilities.hasID(item, "leaveParkour"))) {
                 event.setCancelled(true);
-            }
         }
     }
 
