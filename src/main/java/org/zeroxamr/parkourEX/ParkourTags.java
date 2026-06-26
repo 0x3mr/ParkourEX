@@ -32,6 +32,7 @@ public class ParkourTags implements Listener {
 
             Location loc = location.clone();
             loc.setX(loc.getX() + 0.5);
+            loc.setY(loc.getY() + 2);
             loc.setZ(loc.getZ() + 0.5);
 
             // Skip if a hologram already exists at this location (loaded from disk)
@@ -49,6 +50,7 @@ public class ParkourTags implements Listener {
 
             ArmorStand hg = (ArmorStand) world.spawnEntity(loc, EntityType.ARMOR_STAND);
             Utilities.attachID(hg.getPersistentDataContainer(), "hologram", ID);
+            hg.setMarker(true);
             hg.setVisible(false);
             hg.setGravity(false);
             hg.setPersistent(true);
