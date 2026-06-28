@@ -21,7 +21,7 @@ public class ParkourGame implements Listener {
     private final LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
     private final List<Float> checkpointYaws = new ArrayList<>();
 
-    ParkourGame(Main plugin, UUID id, LinkedHashMap<Location, Integer> incomingCheckpointMap) {
+    ParkourGame(Main plugin, UUID id, LinkedHashMap<Location, Integer> incomingCheckpointMap, boolean buildState) {
         this.plugin = plugin;
         this.id = id;
 
@@ -35,7 +35,7 @@ public class ParkourGame implements Listener {
             i++;
         }
 
-        ParkourTags.register(new ArrayList<Location>(checkpointMap.keySet()), id.toString());
+        ParkourTags.register(new ArrayList<Location>(checkpointMap.keySet()), id.toString(), buildState);
     }
 
     @EventHandler

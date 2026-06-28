@@ -127,7 +127,7 @@ public class Database {
 //                String parkourCreator = res.getString("parkourCreator");
 
                 UUID uuid = Utilities.generateRandomID();
-                ParkourGame parkourGame = new ParkourGame(plugin, uuid, parkourLocations);
+                ParkourGame parkourGame = new ParkourGame(plugin, uuid, parkourLocations, false);
                 getServer().getPluginManager().registerEvents(parkourGame, plugin);
                 parkourGames.put(uuid, parkourGame);
             }

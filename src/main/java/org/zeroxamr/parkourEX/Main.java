@@ -26,18 +26,20 @@ public final class Main extends JavaPlugin implements Listener {
         ParkourItems.initialize(this);
         Commands.initialize(this);
 
-        ParkourTags.cleanup();
-
         DBM = new Database();
 
+        ParkourTags.cleanup();
         Utilities.resetPlayersInfo();
 
         this.getCommand("parkourex").setExecutor(new Commands());
+
         getServer().getPluginManager().registerEvents(new ParkourTags(), this);
         getServer().getPluginManager().registerEvents(new ParkourItems(), this);
         getServer().getPluginManager().registerEvents(new Services(), this);
 
         DBM.loadGames(parkourGames);
+
+        ParkourTags.loadTags();
     }
 
     public ParkourGame getParkourGame(UUID uuid) {
@@ -47,7 +49,6 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         ParkourTags.cleanup();
-
         parkourGames.clear();
         DBM.shutdown();
     }

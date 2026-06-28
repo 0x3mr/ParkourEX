@@ -220,7 +220,7 @@ public class Services implements Listener {
     public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations, UUID uuid) {
         if (Utilities.doCloneExist(locations)) return false;
 
-        ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations);
+        ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations, true);
         getServer().getPluginManager().registerEvents(parkourGame, plugin);
         Main.getParkourGames().put(uuid, parkourGame);
         Main.getDBM().saveGame(parkourGame);
