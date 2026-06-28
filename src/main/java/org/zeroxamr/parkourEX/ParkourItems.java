@@ -32,8 +32,8 @@ public class ParkourItems implements Listener {
 
         if (item != null && item.getItemMeta() != null) {
             if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "checkpointNumber")
-                || Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "resetParkour")
-                || Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
+                    || Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "resetParkour")
+                    || Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
                 event.setCancelled(true);
                 return;
             }
@@ -41,8 +41,8 @@ public class ParkourItems implements Listener {
 
         if (cursor != null && cursor.getItemMeta() != null) {
             if (Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "checkpointNumber")
-                || Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "resetParkour")
-                || Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
+                    || Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "resetParkour")
+                    || Utilities.hasID(cursor.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
                 event.setCancelled(true);
             }
         }
@@ -51,8 +51,8 @@ public class ParkourItems implements Listener {
     @EventHandler
     public void onPlayerDropCheckpoint(PlayerDropItemEvent event) {
         if (Utilities.hasID(event.getItemDrop().getItemStack(), "checkpointNumber")
-            || Utilities.hasID(event.getItemDrop().getItemStack(), "resetParkour")
-            || Utilities.hasID(event.getItemDrop().getItemStack(), "leaveParkour")) {
+                || Utilities.hasID(event.getItemDrop().getItemStack(), "resetParkour")
+                || Utilities.hasID(event.getItemDrop().getItemStack(), "leaveParkour")) {
             event.setCancelled(true);
         }
     }
@@ -67,8 +67,8 @@ public class ParkourItems implements Listener {
         Material type = item.getType();
 
         if ((type.equals(Material.RED_BED) || type.equals(Material.BARRIER))
-            && (Utilities.hasID(item, "resetParkour") || Utilities.hasID(item, "leaveParkour"))) {
-                event.setCancelled(true);
+                && (Utilities.hasID(item, "resetParkour") || Utilities.hasID(item, "leaveParkour"))) {
+            event.setCancelled(true);
         }
     }
 
@@ -80,8 +80,8 @@ public class ParkourItems implements Listener {
 
             if (item == null) return;
             if (!item.getType().equals(Material.ARROW)
-                && !item.getType().equals(Material.RED_BED)
-                && !item.getType().equals(Material.BARRIER)) return;
+                    && !item.getType().equals(Material.RED_BED)
+                    && !item.getType().equals(Material.BARRIER)) return;
 
             if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "checkpointNumber")) {
                 if (!player.isOnline()) return;
@@ -93,8 +93,7 @@ public class ParkourItems implements Listener {
                     location.setZ(location.getZ() + 0.5);
                     player.teleport(location);
                 }
-            }
-            else if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "resetParkour")) {
+            } else if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "resetParkour")) {
                 if (!player.isOnline()) return;
                 if (player.hasMetadata("inParkour")
                         && player.hasMetadata("checkpointNumber")
@@ -111,8 +110,7 @@ public class ParkourItems implements Listener {
 
                     player.teleport(location);
                 }
-            }
-            else if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
+            } else if (Utilities.hasID(item.getItemMeta().getPersistentDataContainer(), "leaveParkour")) {
                 if (!player.isOnline()) return;
                 if (player.hasMetadata("inParkour")
                         && player.hasMetadata("checkpointNumber")

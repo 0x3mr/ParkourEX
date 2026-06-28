@@ -94,7 +94,9 @@ public class Utilities {
         return parkourGame;
     }
 
-    public static UUID generateRandomID() { return UUID.randomUUID(); }
+    public static UUID generateRandomID() {
+        return UUID.randomUUID();
+    }
 
     public static String serializeLocation(Location loc) {
         return loc.getWorld().getName() + "," +
@@ -172,9 +174,9 @@ public class Utilities {
             for (Location newLoc : newLocations.keySet()) {
                 for (Location existingLoc : existingLocations.keySet()) {
                     if (newLoc.getWorld().getName().equals(existingLoc.getWorld().getName()) &&
-                        newLoc.getBlockX() == existingLoc.getBlockX() &&
-                        newLoc.getBlockY() == existingLoc.getBlockY() &&
-                        newLoc.getBlockZ() == existingLoc.getBlockZ()) {
+                            newLoc.getBlockX() == existingLoc.getBlockX() &&
+                            newLoc.getBlockY() == existingLoc.getBlockY() &&
+                            newLoc.getBlockZ() == existingLoc.getBlockZ()) {
                         plugin.getLogger().info("Existing parkour found! Failed to save parkour locations.");
                         return true;
                     }

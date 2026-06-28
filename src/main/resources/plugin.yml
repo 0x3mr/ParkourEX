@@ -4,5 +4,5 @@ main: org.zeroxamr.parkourEX.Main
 api-version: '1.21'
 commands:
   parkourex:
-    aliases: [pk, px]
+    aliases: [ pk, px ]
     description: Plugin description & instructions

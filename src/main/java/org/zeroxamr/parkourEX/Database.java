@@ -17,6 +17,7 @@ import static org.bukkit.Bukkit.getServer;
 
 public class Database {
     private static Main plugin = null;
+
     public static void initialize(Main plugin) {
         Database.plugin = plugin;
     }
@@ -66,13 +67,13 @@ public class Database {
         }
 
         String ParkourTablesQuery =
-        "CREATE TABLE IF NOT EXISTS Parkour (" +
-            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-            "world TEXT NOT NULL," +
-            "checkpoints TEXT NOT NULL," +
-            "checkpointsAmount INTEGER NOT NULL," +
-            "parkourCreator TEXT NOT NULL" +
-        ")";
+                "CREATE TABLE IF NOT EXISTS Parkour (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "world TEXT NOT NULL," +
+                        "checkpoints TEXT NOT NULL," +
+                        "checkpointsAmount INTEGER NOT NULL," +
+                        "parkourCreator TEXT NOT NULL" +
+                        ")";
 
         try (Connection con = this.getConnection();
              PreparedStatement qst = con.prepareStatement(ParkourTablesQuery)) {
@@ -90,8 +91,8 @@ public class Database {
         }
 
         String newGameSQL =
-            "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator) " +
-            "VALUES (?, ?, ?, ?)";
+                "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator) " +
+                        "VALUES (?, ?, ?, ?)";
 
         List<Location> locations = new ArrayList<>(game.getCheckpointMapWithYaw().keySet());
 

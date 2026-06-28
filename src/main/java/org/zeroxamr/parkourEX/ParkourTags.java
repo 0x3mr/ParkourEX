@@ -18,43 +18,93 @@ public class ParkourTags implements Listener {
     private static final HashMap<ChunkCoord, List<LocationID>> checkpointsPerChunk = new HashMap<>();
     private static final HashMap<ChunkCoord, List<ArmorStand>> checkpointsBuilt = new HashMap<>();
 
+    private static ArmorStand createHologram(String customName, World world,
+                                             double x, double y, double z,
+                                             String id, String idValue,
+                                             boolean marker,boolean visibility, boolean gravity,
+                                             boolean persistence, boolean showName) {
+        Location location = new Location(world, x, y, z);
+        ArmorStand hologram = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND);
+        Utilities.attachID(hologram.getPersistentDataContainer(), id, idValue);
+
+        hologram.setMarker(marker);
+        hologram.setGravity(gravity);
+        hologram.setVisible(visibility);
+        hologram.setCustomName(customName);
+        hologram.setPersistent(persistence);
+        hologram.setCustomNameVisible(showName);
+
+        return hologram;
+    }
+
     private static List<ArmorStand> build(List<LocationID> incomingLocations) {
         int size = incomingLocations.size();
         if (size == 0) return new ArrayList<>();
 
         List<ArmorStand> armorStands = new ArrayList<>();
 
-        for (int i = 0; i < size; i++) {
-            LocationID locationID = incomingLocations.get(i);
-
+        for (LocationID locationID : incomingLocations) {
             Location location = locationID.location;
-            World world = location.getWorld();
             String ID = locationID.ID;
-            int index = locationID.index;
-            int parkourSize = locationID.size;
+            String State = locationID.index == 0 ? "START" : locationID.index == locationID.size - 1 ? "END" : "CHECKPOINT";
 
-            Location loc = location.clone();
-            loc.setX(loc.getX() + 0.5);
-            loc.setY(loc.getY() + 2);
-            loc.setZ(loc.getZ() + 0.5);
+            if (State.equals("START")) {
+                armorStands.add(createHologram(
+                    "§e§lParkour Challenge", location.getWorld(),
+                    location.getX() + 0.5,
+                    location.getY() + 1.5,
+                    location.getZ() + 0.5,
+                    "hologram", ID + ".start.0",
+                    true, false, false, false, true
+                ));
 
-            ArmorStand hg = (ArmorStand) world.spawnEntity(loc, EntityType.ARMOR_STAND);
-            Utilities.attachID(hg.getPersistentDataContainer(), "hologram", ID);
-            hg.setMarker(true);
-            hg.setVisible(false);
-            hg.setGravity(false);
-            hg.setPersistent(false);
-            hg.setCustomNameVisible(true);
-
-            if (index == 0) {
-                hg.setCustomName("" + ChatColor.GREEN + ChatColor.BOLD + "Start");
-            } else if (index == parkourSize - 1) {
-                hg.setCustomName("" + ChatColor.RED + ChatColor.BOLD + "End");
-            } else {
-                hg.setCustomName("" + ChatColor.YELLOW + ChatColor.BOLD + "Checkpoint" + ChatColor.AQUA + ChatColor.BOLD + " #" + index);
+                armorStands.add(createHologram(
+                    "§a§lStart", location.getWorld(),
+                    location.getX() + 0.5,
+                    location.getY() + 1.125,
+                    location.getZ() + 0.5,
+                    "hologram", ID + ".start.1",
+                    true, false, false, false, true
+                ));
             }
+            else if (State.equals("CHECKPOINT")) {
+                armorStands.add(createHologram(
+                        "§e§lCheckpoint", location.getWorld(),
+                        location.getX() + 0.5,
+                        location.getY() + 1.5,
+                        location.getZ() + 0.5,
+                        "hologram", ID + ".checkpoint.0",
+                        true, false, false, false, true
+                ));
 
-            armorStands.add(hg);
+                armorStands.add(createHologram(
+                        "§b§l#" + locationID.index, location.getWorld(),
+                        location.getX() + 0.5,
+                        location.getY() + 1.125,
+                        location.getZ() + 0.5,
+                        "hologram", ID + ".checkpoint.1",
+                        true, false, false, false, true
+                ));
+            }
+            else {
+                armorStands.add(createHologram(
+                        "§e§lParkour Challenge", location.getWorld(),
+                        location.getX() + 0.5,
+                        location.getY() + 1.5,
+                        location.getZ() + 0.5,
+                        "hologram", ID + ".end.0",
+                        true, false, false, false, true
+                ));
+
+                armorStands.add(createHologram(
+                        "§c§lEnd", location.getWorld(),
+                        location.getX() + 0.5,
+                        location.getY() + 1.125,
+                        location.getZ() + 0.5,
+                        "hologram", ID + ".end.1",
+                        true, false, false, false, true
+                ));
+            }
         }
 
         return (armorStands);

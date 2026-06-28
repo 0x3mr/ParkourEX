@@ -27,7 +27,7 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
-        switch(args[0]) {
+        switch (args[0]) {
             case "create":
                 if (!player.isOp()) {
                     player.sendMessage("" + ChatColor.RED + "No permission.");
@@ -47,14 +47,13 @@ public class Commands implements CommandExecutor {
                 break;
             case "checkpoint":
                 if (player.hasMetadata("inParkour")
-                    && player.hasMetadata("checkpointNumber")
-                    && player.hasMetadata("checkpointLocation")) {
+                        && player.hasMetadata("checkpointNumber")
+                        && player.hasMetadata("checkpointLocation")) {
                     Location location = Utilities.deserializeLocation(player.getMetadata("checkpointLocation").getFirst().asString());
                     location.setX(location.getX() + 0.5);
                     location.setZ(location.getZ() + 0.5);
                     player.teleport(location);
-                }
-                else {
+                } else {
                     player.sendMessage("" + ChatColor.RED + "You are not in a parkour!");
                 }
                 break;

@@ -57,5 +57,7 @@ public final class Main extends JavaPlugin implements Listener {
         return DBM;
     }
 
-    public static HashMap<UUID, ParkourGame> getParkourGames() { return parkourGames; }
+    public static HashMap<UUID, ParkourGame> getParkourGames() {
+        return parkourGames;
+    }
 }

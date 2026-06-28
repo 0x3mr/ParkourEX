@@ -51,8 +51,8 @@ public class ParkourGame implements Listener {
         Location currLocation = e.getTo();
 
         if (oldLocation.getBlockX() == currLocation.getBlockX() &&
-            oldLocation.getBlockY() == currLocation.getBlockY() &&
-            oldLocation.getBlockZ() == currLocation.getBlockZ()) {
+                oldLocation.getBlockY() == currLocation.getBlockY() &&
+                oldLocation.getBlockZ() == currLocation.getBlockZ()) {
             return;
         }
 
@@ -83,15 +83,13 @@ public class ParkourGame implements Listener {
                 if (playerLocation.equals(checkpointMap.firstEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Reset your timer to 00:00! Get to the finish line!");
                     setPlayerState(player);
-                }
-                else if (playerCheckpoint.equals(parkourCheckpoint)) {
+                } else if (playerCheckpoint.equals(parkourCheckpoint)) {
                     // If entered the same checkpoint multiple times, do nothing
-                }
-                else if (playerCheckpoint < parkourCheckpoint) {
+                } else if (playerCheckpoint < parkourCheckpoint) {
                     // If reached next checkpoint OR skipped a checkpoint
 
                     if (Objects.equals(plugin.getConfig().get("skipCheckpoints"), false)
-                        && playerCheckpoint + 1 < parkourCheckpoint) {
+                            && playerCheckpoint + 1 < parkourCheckpoint) {
                         // skipped a checkpoint!
 
                         Utilities.resetPlayerInfo(player);
@@ -127,23 +125,19 @@ public class ParkourGame implements Listener {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "You reached " + ChatColor.YELLOW + ChatColor.BOLD + "Checkpoint #" + parkourCheckpoint + ChatColor.GREEN + ChatColor.BOLD + " after " + ChatColor.YELLOW + ChatColor.BOLD + time + ChatColor.GREEN + ChatColor.BOLD + ".");
                     player.sendMessage("" + ChatColor.GRAY + "You finished this part of the parkour in " + diffTime + ".");
 //                    player.sendMessage("" + ChatColor.GRAY + "You finished this part of the parkour in " + diffTime + " (personal best: " + bestTime + ").");
-                }
-                else if (playerCheckpoint > parkourCheckpoint) {
+                } else if (playerCheckpoint > parkourCheckpoint) {
                     // If went back to an older checkpoint, do nothing
                 }
-            }
-            else {
+            } else {
                 if (playerLocation.equals(checkpointMap.firstEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Parkour challenge started!");
                     player.setMetadata("parkourID", new FixedMetadataValue(plugin, id));
                     setPlayerState(player);
-                }
-                else if (playerLocation.equals(checkpointMap.lastEntry().getKey())) {
+                } else if (playerLocation.equals(checkpointMap.lastEntry().getKey())) {
                     player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "This is the finish line for the parkour! Get to the start line and climb back up here!");
                 }
             }
-        }
-        else {
+        } else {
             Utilities.resetPlayerInfo(player);
         }
     }
