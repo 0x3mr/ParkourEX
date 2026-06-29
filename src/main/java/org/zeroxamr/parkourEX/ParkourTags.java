@@ -8,21 +8,28 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
 public class ParkourTags implements Listener {
-    private record LocationID(String ID, int size, int index, Location location) {}
-    private record ChunkCoord(World world, int x, int z) {}
+    private record LocationMeta(String ID, int size, int index, Location location) {}
+    private record ChunkAddress(World world, int x, int z) {}
 
-    private static final HashMap<ChunkCoord, List<LocationID>> checkpointsPerChunk = new HashMap<>();
-    private static final HashMap<ChunkCoord, List<ArmorStand>> checkpointsBuilt = new HashMap<>();
+    private static final HashMap<ChunkAddress, List<LocationMeta>> hologramsPerChunk = new HashMap<>();
+    private static final Set<ArmorStand> hologramsBuilt = new HashSet<>();
+    // Saved holograms are not utilized yet.
+    // hologramsBuilt is out of sync on deletions
+    // however, there is no deletion scenarios atm
+    //
+    // TODO: sync on deletion when delete option is implemented
 
+    @NonNull
     private static ArmorStand createHologram(String customName, World world,
-                                             double x, double y, double z,
-                                             String id, String idValue,
-                                             boolean marker,boolean visibility, boolean gravity,
-                                             boolean persistence, boolean showName) {
+                                                      double x, double y, double z,
+                                                      String id, String idValue,
+                                                      boolean marker, boolean visibility, boolean gravity,
+                                                      boolean persistence, boolean showName) {
         Location location = new Location(world, x, y, z);
         ArmorStand hologram = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND);
         Utilities.attachID(hologram.getPersistentDataContainer(), id, idValue);
@@ -37,16 +44,16 @@ public class ParkourTags implements Listener {
         return hologram;
     }
 
-    private static List<ArmorStand> build(List<LocationID> incomingLocations) {
+    private static List<ArmorStand> build(List<LocationMeta> incomingLocations) {
         int size = incomingLocations.size();
         if (size == 0) return new ArrayList<>();
 
         List<ArmorStand> armorStands = new ArrayList<>();
 
-        for (LocationID locationID : incomingLocations) {
-            Location location = locationID.location;
-            String ID = locationID.ID;
-            String State = locationID.index == 0 ? "START" : locationID.index == locationID.size - 1 ? "END" : "CHECKPOINT";
+        for (LocationMeta locationMeta : incomingLocations) {
+            Location location = locationMeta.location;
+            String ID = locationMeta.ID;
+            String State = locationMeta.index == 0 ? "START" : locationMeta.index == locationMeta.size - 1 ? "END" : "CHECKPOINT";
 
             if (State.equals("START")) {
                 armorStands.add(createHologram(
@@ -78,7 +85,7 @@ public class ParkourTags implements Listener {
                 ));
 
                 armorStands.add(createHologram(
-                        "§b§l#" + locationID.index, location.getWorld(),
+                        "§b§l#" + locationMeta.index, location.getWorld(),
                         location.getX() + 0.5,
                         location.getY() + 1.125,
                         location.getZ() + 0.5,
@@ -107,29 +114,27 @@ public class ParkourTags implements Listener {
             }
         }
 
-        return (armorStands);
+        return armorStands;
     }
 
     public static void register(List<Location> coordinatesLocation, String ID, boolean buildState) {
         int i = 0;
-        Set<ChunkCoord> addedChunks = new HashSet<>();
+
+        Set<ChunkAddress> addedChunks = new HashSet<>();
 
         for (Location location : coordinatesLocation) {
-            ChunkCoord chunkCoord = new ChunkCoord(
+            ChunkAddress chunkAddress = new ChunkAddress(
                     location.getWorld(),
                     location.getChunk().getX(),
                     location.getChunk().getZ()
             );
 
-            LocationID locationID = new LocationID(
-                    ID,
-                    coordinatesLocation.size(),
-                    i,
-                    location
-            );
-
-            checkpointsPerChunk.computeIfAbsent(chunkCoord, chunk -> new ArrayList<>()).add(locationID);
-            if (buildState) addedChunks.add(chunkCoord);
+            hologramsPerChunk.computeIfAbsent(chunkAddress, chunk -> new ArrayList<>()).add(new LocationMeta(
+                    ID, coordinatesLocation.size(), i, location
+            ));
+            
+            if (buildState) addedChunks.add(chunkAddress);
+            
             i++;
         }
 
@@ -138,76 +143,63 @@ public class ParkourTags implements Listener {
         }
     }
 
-    private static void loadChunkTags(Set<ChunkCoord> affectedChunks) {
-        for (ChunkCoord chunk : affectedChunks) {
-            World world = chunk.world;
+    private static void loadChunkTags(Set<ChunkAddress> affectedChunks) {
+        for (ChunkAddress chunk : affectedChunks) {
+            clearChunk(chunk);
 
-            if (!world.isChunkLoaded(chunk.x, chunk.z)) continue;
-            if (checkpointsBuilt.containsKey(chunk)) {
-                for (Entity entity : world.getChunkAt(chunk.x, chunk.z).getEntities()) {
-                    if (!(entity instanceof ArmorStand)) continue;
-                    if (Utilities.hasID(entity.getPersistentDataContainer(), "hologram")) {
-                        entity.remove();
-                    }
-                }
-
-                checkpointsBuilt.remove(chunk);
-            }
-
-            List<LocationID> locations = checkpointsPerChunk.get(chunk);
-            List<ArmorStand> armorStands = build(locations);
-
-            if (armorStands.isEmpty()) continue;
-
-            checkpointsBuilt.put(chunk, armorStands);
+            hologramsBuilt.addAll(build(hologramsPerChunk.get(chunk)));
         }
     }
 
     public static void loadTags() {
-        for (ChunkCoord chunk : checkpointsPerChunk.keySet()) {
-            World world = chunk.world;
-
-            if (!world.isChunkLoaded(chunk.x, chunk.z)) continue;
-            if (checkpointsBuilt.containsKey(chunk)) continue;
-
-            List<LocationID> locations = checkpointsPerChunk.get(chunk);
-            List<ArmorStand> armorStands = build(locations);
-
-            if (armorStands.isEmpty()) continue;
-
-            checkpointsBuilt.put(chunk, armorStands);
+        for (ChunkAddress chunk : hologramsPerChunk.keySet()) {
+            hologramsBuilt.addAll(build(hologramsPerChunk.get(chunk)));
         }
     }
 
     @EventHandler
-    public void onChunkLoad(ChunkLoadEvent event) {
-        ChunkCoord chunk = new ChunkCoord(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
+    private void onChunkLoad(ChunkLoadEvent event) {
+        ChunkAddress chunk = new ChunkAddress(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
 
-        if (checkpointsBuilt.containsKey(chunk)) return;
-        List<LocationID> locations = checkpointsPerChunk.get(chunk);
+        clearChunk(chunk);
 
+        List<LocationMeta> locations = hologramsPerChunk.get(chunk);
         if (locations == null) return;
-        List<ArmorStand> armorStands = build(locations);
 
-        if (!armorStands.isEmpty()) {
-            checkpointsBuilt.put(chunk, armorStands);
-        }
+        hologramsBuilt.addAll(build(locations));
     }
 
     @EventHandler
-    public void onChunkUnload(ChunkUnloadEvent event) {
-        ChunkCoord chunk = new ChunkCoord(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
-        checkpointsBuilt.remove(chunk);
+    private void onChunkUnload(ChunkUnloadEvent event) {
+        ChunkAddress chunk = new ChunkAddress(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
+
+        clearChunk(chunk);
     }
 
     public static void cleanup() {
-        checkpointsBuilt.clear();
         List<World> worlds = Bukkit.getWorlds();
+
+        hologramsBuilt.clear();
+
+        for (ChunkAddress chunk : hologramsPerChunk.keySet()) {
+            clearChunk(chunk);
+        }
+
+        // Extra redundant cleanup
         for (World world : worlds) {
             for (ArmorStand hg : world.getEntitiesByClass(ArmorStand.class)) {
                 if (Utilities.hasID(hg.getPersistentDataContainer(), "hologram")) {
                     hg.remove();
                 }
+            }
+        }
+    }
+
+    private static void clearChunk(ChunkAddress chunk) {
+        for (Entity entity : chunk.world.getChunkAt(chunk.x, chunk.z).getEntities()) {
+            if (!(entity instanceof ArmorStand)) continue;
+            if (Utilities.hasID(entity.getPersistentDataContainer(), "hologram")) {
+                entity.remove();
             }
         }
     }
