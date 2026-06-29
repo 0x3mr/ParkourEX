@@ -15,3 +15,5 @@ TODO:
 - [ ] Add a command to list current available parkour games (perhaps a GUI)
 - [x] Add option to let parkour continuable upon checkpoint skips
 - [x] Improve the existing hologram tags design to become consistent
+- [ ] Bug fix: teleport back to checkpoint when not in a parkour session
+  - unify/centralize teleport back to checkpoint logic & reuse
