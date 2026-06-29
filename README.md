@@ -7,6 +7,10 @@ TODO:
 - [x] Add a reset option during parkour
 - [x] Add a leave option during parkour
 - [ ] Edit display content of parkour messages & add real persistent analytics
+    - Best time
+    - Personal best between each consecutive checkpoints
+    - Parkours completed
+    - Incomplete parkours
 - [ ] Add permissions hierarchy to the plugin
 - [ ] Add a command to list current available parkour games (perhaps a GUI)
 - [x] Add option to let parkour continuable upon checkpoint skips
