@@ -17,3 +17,7 @@ TODO:
 - [x] Improve the existing hologram tags design to become consistent
 - [ ] Bug fix: teleport back to checkpoint when not in a parkour session
   - unify/centralize teleport back to checkpoint logic & reuse
+- [ ] Remove fall damage during parkour session
+  - make sure it does not break external functionalities on parkour exit
+- [ ] Remove player collision while in parkour
+- [ ] Add config-toggleable feature to auto teleport back to checkpoint on reaching certain Y-level (preset in config)
