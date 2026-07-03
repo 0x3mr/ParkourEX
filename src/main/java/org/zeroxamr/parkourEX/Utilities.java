@@ -177,7 +177,6 @@ public class Utilities {
                             newLoc.getBlockX() == existingLoc.getBlockX() &&
                             newLoc.getBlockY() == existingLoc.getBlockY() &&
                             newLoc.getBlockZ() == existingLoc.getBlockZ()) {
-                        plugin.getLogger().info("Existing parkour found! Failed to save parkour locations.");
                         return true;
                     }
                 }

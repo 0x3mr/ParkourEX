@@ -141,22 +141,36 @@ public class Services implements Listener {
 
     @EventHandler
     public void createParkour(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
         ItemStack item = event.getItemInHand();
         String status = Utilities.getAttachedID(item, "cp-state");
         if (status.equals("none")) return;
 
         Location loc = event.getBlockPlaced().getLocation();
-        event.getPlayer().getWorld().getBlockAt(loc).setType(Material.AIR);
+        event.setCancelled(true);
 
         String id = Utilities.getAttachedID(item, "cp-id");
         UUID uuid = UUID.fromString(id);
 
+        boolean isDuplicate = createdGames.containsKey(uuid) &&
+                createdGames.get(uuid).keySet().stream().anyMatch(location ->
+                location.getWorld().getName().equals(loc.getWorld().getName()) &&
+                location.getBlockX() == loc.getBlockX() &&
+                location.getBlockY() == loc.getBlockY() &&
+                location.getBlockZ() == loc.getBlockZ()
+        );
+
+        if (isDuplicate) {
+            player.sendMessage("" + ChatColor.RED + "You have already set this location!");
+            return;
+        }
+
         switch (status) {
             case "start":
-                event.getPlayer().getInventory().clear(event.getPlayer().getInventory().getHeldItemSlot());
+                player.getInventory().clear(player.getInventory().getHeldItemSlot());
 
                 loc.setPitch(0);
-                loc.setYaw(event.getPlayer().getYaw());
+                loc.setYaw(player.getYaw());
 
                 createdGames.put(uuid, new LinkedHashMap<>());
                 createdGames.get(uuid).put(loc, createdGames.get(uuid).size());
@@ -181,43 +195,45 @@ public class Services implements Listener {
                 Utilities.attachID(newItem2, "cp-id", id);
                 Utilities.attachID(newItem2, "cp-state", "finish");
 
-                event.getPlayer().getInventory().setItem(4, newItem);
-                event.getPlayer().getInventory().setItem(5, newItem2);
+                player.getInventory().setItem(4, newItem);
+                player.getInventory().setItem(5, newItem2);
 
-                event.getPlayer().sendMessage("" + ChatColor.GOLD + "Select the location of your next checkpoint.");
+                player.sendMessage("" + ChatColor.GOLD + "Select the location of your next checkpoint.");
+
                 break;
             case "checkpoint":
                 loc.setPitch(0);
-                loc.setYaw(event.getPlayer().getYaw());
+                loc.setYaw(player.getYaw());
 
                 createdGames.get(uuid).put(loc, createdGames.get(uuid).size());
 
-                event.getPlayer().sendMessage("" + ChatColor.GREEN + "Checkpoint #" + (createdGames.get(uuid).size() - 1) + " saved!");
-                event.getPlayer().sendMessage("" + ChatColor.GOLD + "Select the location of your next checkpoint.");
+                player.sendMessage("" + ChatColor.GREEN + "Checkpoint #" + (createdGames.get(uuid).size() - 1) + " saved!");
+                player.sendMessage("" + ChatColor.GOLD + "Select the location of your next checkpoint.");
+
                 break;
             case "finish":
                 loc.setPitch(0);
-                loc.setYaw(event.getPlayer().getYaw());
+                loc.setYaw(player.getYaw());
 
                 createdGames.get(uuid).put(loc, createdGames.get(uuid).size());
 
-                for (ItemStack tempItem : event.getPlayer().getInventory()) {
+                for (ItemStack tempItem : player.getInventory()) {
                     if (tempItem != null && Utilities.hasID(tempItem, "cp-state")) {
-                        event.getPlayer().getInventory().clear(event.getPlayer().getInventory().first(tempItem));
+                        player.getInventory().clear(player.getInventory().first(tempItem));
                     }
                 }
 
-                if (Services.registerParkour(createdGames.get(uuid), event.getPlayer().getName())) {
-                    event.getPlayer().sendMessage("" + ChatColor.GREEN + "New parkour created!");
+                if (Utilities.doCloneExist(createdGames.get(uuid))) {
+                    player.sendMessage("" + ChatColor.RED + "Parkour did not save.\nThis parkour intervenes with another existing parkour!");
+                    return;
+                }
+
+                if (Main.getDBM().saveGame(createdGames.get(uuid), player.getName())) {
+                    player.sendMessage("" + ChatColor.GREEN + "New parkour created!");
                 }
                 else {
-                    event.getPlayer().sendMessage("" + ChatColor.RED + "The parkour was not saved! Check console for more details.");
+                    player.sendMessage("" + ChatColor.RED + "Failed to save new parkour. Check console for more details.");
                 }
         }
-    }
-
-    public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations, String gameCreator) {
-        if (Utilities.doCloneExist(locations)) return false;
-        return Main.getDBM().saveGame(locations, gameCreator);
     }
 }
