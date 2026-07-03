@@ -14,16 +14,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ParkourGame implements Listener {
-    private final UUID id;
+    private final int id;
     private final Main plugin;
-    private final String gameAdmin = "none";
+    private final String gameAdmin;
 
     private final LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
     private final List<Float> checkpointYaws = new ArrayList<>();
 
-    ParkourGame(Main plugin, UUID id, LinkedHashMap<Location, Integer> incomingCheckpointMap, boolean buildState) {
-        this.plugin = plugin;
+    ParkourGame(Main plugin, int id, LinkedHashMap<Location, Integer> incomingCheckpointMap, String parkourCreator, boolean buildState) {
         this.id = id;
+        this.plugin = plugin;
+        gameAdmin = parkourCreator;
 
         int i = 0;
         for (Location loc : incomingCheckpointMap.keySet()) {
@@ -35,7 +36,7 @@ public class ParkourGame implements Listener {
             i++;
         }
 
-        ParkourTags.register(new ArrayList<Location>(checkpointMap.keySet()), id.toString(), buildState);
+        ParkourTags.register(new ArrayList<>(checkpointMap.keySet()), String.valueOf(id), buildState);
     }
 
     @EventHandler
@@ -73,7 +74,7 @@ public class ParkourGame implements Listener {
                     return;
                 }
 
-                UUID gameID = UUID.fromString(player.getMetadata("parkourID").getFirst().asString());
+                int gameID = player.getMetadata("parkourID").getFirst().asInt();
 
                 if (!plugin.getParkourGame(gameID).checkpointMap.containsKey(playerLocation)) {
 //                  // If interfered with another parkour, do nothing

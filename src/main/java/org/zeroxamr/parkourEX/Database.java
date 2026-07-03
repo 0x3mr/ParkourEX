@@ -22,12 +22,13 @@ public class Database {
         Database.plugin = plugin;
     }
 
-    HikariDataSource dataSource;
-    HikariConfig config = new HikariConfig();
-    String databasePath;
+    private HikariDataSource dataSource;
+    private final HikariConfig config = new HikariConfig();
+    private final String databasePath;
 
     Database() {
         File folderPath = plugin.getDataFolder();
+
         if (!folderPath.exists()) {
             if (!folderPath.mkdirs()) {
                 plugin.getLogger().info("Failed to create database files.");
@@ -46,9 +47,10 @@ public class Database {
             return;
         }
 
-        config.setJdbcUrl("JDBC:sqlite:" + databasePath);
+        config.setJdbcUrl("jdbc:sqlite:" + databasePath);
         config.setMaximumPoolSize(10);
         config.setConnectionTimeout(30_000);
+        config.setConnectionInitSql("PRAGMA foreign_keys = ON;");
 
         this.dataSource = new HikariDataSource(config);
 
@@ -69,11 +71,25 @@ public class Database {
         String ParkourTablesQuery =
                 "CREATE TABLE IF NOT EXISTS Parkour (" +
                         "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "world TEXT NOT NULL," +
                         "checkpoints TEXT NOT NULL," +
-                        "checkpointsAmount INTEGER NOT NULL," +
                         "parkourCreator TEXT NOT NULL" +
-                        ")";
+                ");" +
+                "CREATE TABLE IF NOT EXISTS Stats (" +
+                        "id INTEGER NOT NULL," +
+                        "uuid TEXT NOT NULL," +
+                        "bestScore INTEGER DEFAULT 0," +
+                        "gamesCompleted INTEGER DEFAULT 0," +
+                        "PRIMARY KEY (id, uuid)," +
+                        "FOREIGN KEY (id) REFERENCES Parkour(id) ON DELETE CASCADE" +
+                ");" +
+                "CREATE TABLE IF NOT EXISTS Checkpoints (" +
+                        "id INTEGER NOT NULL," +
+                        "uuid TEXT NOT NULL," +
+                        "checkpointID INTEGER NOT NULL," +
+                        "score INTEGER NOT NULL DEFAULT 0," +
+                        "PRIMARY KEY (id, uuid, checkpointID)," +
+                        "FOREIGN KEY (id, uuid) REFERENCES Stats(id, uuid) ON DELETE CASCADE" +
+                ");";
 
         try (Connection con = this.getConnection();
              PreparedStatement qst = con.prepareStatement(ParkourTablesQuery)) {
@@ -84,55 +100,69 @@ public class Database {
         }
     }
 
-    public void saveGame(ParkourGame game) {
+    public boolean saveGame(LinkedHashMap<Location, Integer> newLocations, String gameCreator) {
         if (!isOnline()) {
             plugin.getLogger().info("Database is offline! Failed to save new game data.");
-            return;
+            return false;
         }
 
         String newGameSQL =
-                "INSERT INTO Parkour (world, checkpoints, checkpointsAmount, parkourCreator) " +
-                        "VALUES (?, ?, ?, ?)";
+                "INSERT INTO Parkour (checkpoints, parkourCreator) " +
+                        "VALUES (?, ?)" +
+                        "RETURNING *";
 
-        List<Location> locations = new ArrayList<>(game.getCheckpointMapWithYaw().keySet());
-
-        int checkpointsAmount = locations.size();
-
-        String world = locations.getFirst().getWorld().getName();
-        String checkpoints = Utilities.serializeLocations(locations);
-        String parkourCreator = game.getGameAdmin();
+        String locations = Utilities.serializeLocations(
+            newLocations.keySet().stream().toList()
+        );
 
         try (Connection con = this.getConnection();
-             PreparedStatement qst = con.prepareStatement(newGameSQL)) {
-            qst.setString(1, world);
-            qst.setString(2, checkpoints);
-            qst.setInt(3, checkpointsAmount);
-            qst.setString(4, parkourCreator);
-            qst.executeUpdate();
-        } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to save new game data: " + e.getMessage());
+            PreparedStatement qst = con.prepareStatement(newGameSQL)) {
+            qst.setString(1, locations);
+            qst.setString(2, gameCreator);
+
+            try (ResultSet res = qst.executeQuery()) {
+                if (res.next()) {
+                    int id = res.getInt("id");
+                    LinkedHashMap<Location, Integer> checkpoints = Utilities.deserializeLocations(res.getString("checkpoints"));
+                    String parkourCreator = res.getString("parkourCreator");
+
+                    ParkourGame parkourGame = new ParkourGame(plugin, id, checkpoints, parkourCreator, true);
+                    getServer().getPluginManager().registerEvents(parkourGame, plugin);
+
+                    Main.getParkourGames().put(id, parkourGame);
+                }
+            }
+            catch (SQLException e) {
+                plugin.getLogger().severe("Failed to return newly saved game: " + e.getMessage());
+                return false;
+            }
         }
+        catch (SQLException e) {
+            plugin.getLogger().severe("Failed to save new game data: " + e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
-    public void loadGames(HashMap<UUID, ParkourGame> parkourGames) {
+    public void loadGames() {
         String ParkourGamesQuery = "SELECT * FROM Parkour";
 
         try (Connection con = this.getConnection();
              PreparedStatement qst = con.prepareStatement(ParkourGamesQuery);
              ResultSet res = qst.executeQuery()) {
             while (res.next()) {
-//                int id = res.getInt("id");
-//                String world = res.getString("world");
-                LinkedHashMap<Location, Integer> parkourLocations = Utilities.deserializeLocations(res.getString("checkpoints"));
-//                int checkpointsAmount = res.getInt("checkpointsAmount");
-//                String parkourCreator = res.getString("parkourCreator");
+                int id = res.getInt("id");
+                LinkedHashMap<Location, Integer> checkpoints = Utilities.deserializeLocations(res.getString("checkpoints"));
+                String parkourCreator = res.getString("parkourCreator");
 
-                UUID uuid = Utilities.generateRandomID();
-                ParkourGame parkourGame = new ParkourGame(plugin, uuid, parkourLocations, false);
+                ParkourGame parkourGame = new ParkourGame(plugin, id, checkpoints, parkourCreator, false);
                 getServer().getPluginManager().registerEvents(parkourGame, plugin);
-                parkourGames.put(uuid, parkourGame);
+
+                Main.getParkourGames().put(id, parkourGame);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             plugin.getLogger().severe("Failed to retrieve saved parkour games: " + e.getMessage());
         }
     }

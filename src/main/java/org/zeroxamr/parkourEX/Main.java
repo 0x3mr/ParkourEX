@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
-    private static final HashMap<UUID, ParkourGame> parkourGames = new HashMap<>();
+    private static final HashMap<Integer, ParkourGame> parkourGames = new HashMap<>();
     private static Database DBM = null;
 
     @Override
@@ -37,12 +37,12 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new ParkourItems(), this);
         getServer().getPluginManager().registerEvents(new Services(), this);
 
-        DBM.loadGames(parkourGames);
+        DBM.loadGames();
 
         ParkourTags.loadTags();
     }
 
-    public ParkourGame getParkourGame(UUID uuid) {
+    public ParkourGame getParkourGame(Integer uuid) {
         return parkourGames.get(uuid);
     }
 
@@ -57,7 +57,7 @@ public final class Main extends JavaPlugin implements Listener {
         return DBM;
     }
 
-    public static HashMap<UUID, ParkourGame> getParkourGames() {
+    public static HashMap<Integer, ParkourGame> getParkourGames() {
         return parkourGames;
     }
 }

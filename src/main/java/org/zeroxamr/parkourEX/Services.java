@@ -207,24 +207,17 @@ public class Services implements Listener {
                     }
                 }
 
-                if (Services.registerParkour(createdGames.get(uuid), uuid)) {
-                    plugin.getLogger().info("Successfully registered parkour game: " + uuid.toString());
-
+                if (Services.registerParkour(createdGames.get(uuid), event.getPlayer().getName())) {
                     event.getPlayer().sendMessage("" + ChatColor.GREEN + "New parkour created!");
-                } else {
+                }
+                else {
                     event.getPlayer().sendMessage("" + ChatColor.RED + "The parkour was not saved! Check console for more details.");
                 }
         }
     }
 
-    public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations, UUID uuid) {
+    public static Boolean registerParkour(LinkedHashMap<Location, Integer> locations, String gameCreator) {
         if (Utilities.doCloneExist(locations)) return false;
-
-        ParkourGame parkourGame = new ParkourGame(plugin, uuid, locations, true);
-        getServer().getPluginManager().registerEvents(parkourGame, plugin);
-        Main.getParkourGames().put(uuid, parkourGame);
-        Main.getDBM().saveGame(parkourGame);
-
-        return true;
+        return Main.getDBM().saveGame(locations, gameCreator);
     }
 }

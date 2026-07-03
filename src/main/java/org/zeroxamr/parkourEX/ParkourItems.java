@@ -98,9 +98,9 @@ public class ParkourItems implements Listener {
                 if (player.hasMetadata("inParkour")
                         && player.hasMetadata("checkpointNumber")
                         && player.hasMetadata("checkpointLocation")) {
-                    Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).setPlayerState(player);
+                    Main.getParkourGames().get(player.getMetadata("parkourID").getFirst().asInt()).setPlayerState(player);
 
-                    Location location = Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).getCheckpointMapWithYaw().firstEntry().getKey();
+                    Location location = Main.getParkourGames().get(player.getMetadata("parkourID").getFirst().asInt()).getCheckpointMapWithYaw().firstEntry().getKey();
                     location.setX(location.getX() + 0.5);
                     location.setZ(location.getZ() + 0.5);
 
@@ -116,7 +116,7 @@ public class ParkourItems implements Listener {
                         && player.hasMetadata("checkpointNumber")
                         && player.hasMetadata("checkpointLocation")) {
                     if (Objects.equals(plugin.getConfig().get("returnToStart"), true)) {
-                        Location location = Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).getCheckpointMapWithYaw().firstEntry().getKey();
+                        Location location = Main.getParkourGames().get(player.getMetadata("parkourID").getFirst().asInt()).getCheckpointMapWithYaw().firstEntry().getKey();
                         location.setX(location.getX() + 0.5);
                         location.setZ(location.getZ() + 0.5);
 
@@ -129,7 +129,7 @@ public class ParkourItems implements Listener {
 
                     player.sendMessage("" + ChatColor.RED + "You have left the parkour.");
 
-                    Main.getParkourGames().get(UUID.fromString(player.getMetadata("parkourID").getFirst().asString())).unsetPlayerState(player);
+                    Main.getParkourGames().get(player.getMetadata("parkourID").getFirst().asInt()).unsetPlayerState(player);
                 }
             }
         }

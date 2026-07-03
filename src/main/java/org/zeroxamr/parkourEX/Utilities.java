@@ -169,7 +169,7 @@ public class Utilities {
     }
 
     public static Boolean doCloneExist(LinkedHashMap<Location, Integer> newLocations) {
-        for (Map.Entry<UUID, ParkourGame> pg : Main.getParkourGames().entrySet()) {
+        for (Map.Entry<Integer, ParkourGame> pg : Main.getParkourGames().entrySet()) {
             LinkedHashMap<Location, Integer> existingLocations = pg.getValue().getCheckpointMap();
             for (Location newLoc : newLocations.keySet()) {
                 for (Location existingLoc : existingLocations.keySet()) {
