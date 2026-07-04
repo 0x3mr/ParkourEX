@@ -1,4 +1,5 @@
 name: ParkourEX
+author: 0x3mr
 version: '1.0-SNAPSHOT'
 main: org.zeroxamr.parkourEX.Main
 api-version: '1.21'
