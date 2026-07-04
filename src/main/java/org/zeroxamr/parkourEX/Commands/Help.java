@@ -16,7 +16,7 @@ public class Help implements Base {
 
     @Override
     public String getUsage() {
-        return "/parkourex help";
+        return "/pkx help";
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Help implements Base {
         StringBuilder helpMessage = new StringBuilder(" " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "ParkourEx" + ChatColor.RESET + ChatColor.GRAY + " - List of commands:");
 
         for (Base command : Commands.getCommands().values()) {
-            helpMessage.append("\n   " + ChatColor.GRAY + "- " + ChatColor.WHITE + command.getUsage());
+            helpMessage.append("\n   " + ChatColor.GRAY + "- " + ChatColor.WHITE + command.getUsage() + ChatColor.LIGHT_PURPLE + " - " + command.getInfo());
         }
 
         sender.sendMessage(String.valueOf(helpMessage));

@@ -18,7 +18,7 @@ public class Create implements Base {
 
     @Override
     public String getUsage() {
-        return "/parkourex create";
+        return "/pkx create";
     }
 
     @Override
