@@ -153,18 +153,13 @@ public class ParkourGame implements Listener {
     }
 
     public void playerStateStart(Player player, int ID) {
-        if (ID > Main.getParkourGames().size() || ID <= 0) {
-            player.sendMessage("§cParkour not found.");
-            player.sendMessage("§cEnter a valid parkour id.");
-            return;
-        }
-
         player.setMetadata("parkourID", new FixedMetadataValue(plugin, ID));
         playerStateReset(player);
     }
 
     public static void playerStateCheckpoint(Player player) {
-        Location location = Utilities.deserializeLocation(player.getMetadata("checkpointLocation").getFirst().asString());
+        String unserializedLocation = player.getMetadata("checkpointLocation").getFirst().asString();
+        Location location = Utilities.deserializeLocation(unserializedLocation);
         location.setX(location.getX() + 0.5);
         location.setZ(location.getZ() + 0.5);
         player.teleport(location);

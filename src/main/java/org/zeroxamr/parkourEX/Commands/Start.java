@@ -46,7 +46,7 @@ public class Start implements Base {
 
         Player player = (Player) sender;
 
-        if (id > Main.getParkourGames().size() || id <= 0) {
+        if (!Main.getParkourGames().containsKey(id)) {
             player.sendMessage("§cParkour not found.");
             player.sendMessage("§cEnter a valid parkour id.");
             return true;
