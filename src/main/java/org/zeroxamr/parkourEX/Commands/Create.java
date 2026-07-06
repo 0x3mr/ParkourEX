@@ -23,19 +23,14 @@ public class Create implements Base {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("" + ChatColor.RED + "Command restricted to in-game players only.");
-            return true;
-        }
-
         if (!sender.isOp()) {
             sender.sendMessage("" + ChatColor.RED + "No permission.");
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage("" + ChatColor.RED + "Incorrect command usage.");
-            sender.sendMessage("" + ChatColor.RED + "Use " + ChatColor.YELLOW + getUsage() + ChatColor.RED + ".");
+            sender.sendMessage("§cIncorrect command usage.");
+            sender.sendMessage("§cUse §e" + getUsage() + "§c.");
             return true;
         }
 

@@ -22,8 +22,8 @@ public class Help implements Base {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         if (args.length != 1) {
-            sender.sendMessage("" + ChatColor.RED + "Incorrect command usage.");
-            sender.sendMessage("" + ChatColor.RED + "Use " + ChatColor.YELLOW + getUsage() + ChatColor.RED + ".");
+            sender.sendMessage("§cIncorrect command usage.");
+            sender.sendMessage("§cUse §e" + getUsage() + "§c.");
             return true;
         }
 

@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.zeroxamr.parkourEX.ParkourGame;
 import org.zeroxamr.parkourEX.Utilities;
 
 public class Checkpoint implements Base {
@@ -29,13 +30,10 @@ public class Checkpoint implements Base {
         if (player.hasMetadata("inParkour")
                 && player.hasMetadata("checkpointNumber")
                 && player.hasMetadata("checkpointLocation")) {
-            Location location = Utilities.deserializeLocation(player.getMetadata("checkpointLocation").getFirst().asString());
-            location.setX(location.getX() + 0.5);
-            location.setZ(location.getZ() + 0.5);
-            player.teleport(location);
+            ParkourGame.playerStateCheckpoint(player);
         }
         else {
-            player.sendMessage("" + ChatColor.RED + "You are not in a parkour!");
+            player.sendMessage("§cYou are currently not in a parkour race. Use " + Commands.getCommands().get("Start".toLowerCase()).getUsage());
         }
 
         return true;
