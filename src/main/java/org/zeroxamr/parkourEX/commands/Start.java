@@ -1,14 +1,11 @@
-package org.zeroxamr.parkourEX.Commands;
+package org.zeroxamr.parkourEX.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.zeroxamr.parkourEX.Main;
-import org.zeroxamr.parkourEX.ParkourGame;
-
-import java.util.Objects;
+import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Start implements Base {
     @Override
@@ -52,8 +49,7 @@ public class Start implements Base {
             return true;
         }
 
-        if (player.hasMetadata("inParkour")
-                && player.getMetadata("inParkour").getFirst().asBoolean()) {
+        if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
             player.sendMessage("§cYou are currently in a parkour race. Use " + Commands.getCommands().get("Reset".toLowerCase()).getUsage());
             return true;
         }
@@ -69,6 +65,9 @@ public class Start implements Base {
         player.teleport(location);
 
         Main.getParkourGames().get(id).playerStateStart((Player) sender, id);
+
+        player.sendMessage("§a§lParkour challenge started!");
+        player.sendMessage("§aUse §e" + Commands.getCommands().get("Checkpoint".toLowerCase()).getUsage() + " §ato teleport to the last checkpoint or §e" + Commands.getCommands().get("Cancel".toLowerCase()).getUsage() + " §ato cancel!");
 
         return true;
     }

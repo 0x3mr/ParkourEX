@@ -2,9 +2,8 @@ package org.zeroxamr.parkourEX;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.zeroxamr.parkourEX.util.Shared;
 
 import java.io.File;
 import java.sql.Connection;
@@ -78,7 +77,7 @@ public class Database {
                         "id INTEGER NOT NULL," +
                         "uuid TEXT NOT NULL," +
                         "bestScore INTEGER DEFAULT 0," +
-                        "gamesCompleted INTEGER DEFAULT 0," +
+                        "gamesCompleted TEXT DEFAULT ';'," +
                         "PRIMARY KEY (id, uuid)," +
                         "FOREIGN KEY (id) REFERENCES Parkour(id) ON DELETE CASCADE" +
                 ");" +
@@ -111,7 +110,7 @@ public class Database {
                         "VALUES (?, ?)" +
                         "RETURNING *";
 
-        String locations = Utilities.serializeLocations(
+        String locations = Shared.serializeLocations(
             newLocations.keySet().stream().toList()
         );
 
@@ -123,7 +122,7 @@ public class Database {
             try (ResultSet res = qst.executeQuery()) {
                 if (res.next()) {
                     int id = res.getInt("id");
-                    LinkedHashMap<Location, Integer> checkpoints = Utilities.deserializeLocations(res.getString("checkpoints"));
+                    LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                     String parkourCreator = res.getString("parkourCreator");
 
                     ParkourGame parkourGame = new ParkourGame(plugin, id, checkpoints, parkourCreator, true);
@@ -153,7 +152,7 @@ public class Database {
              ResultSet res = qst.executeQuery()) {
             while (res.next()) {
                 int id = res.getInt("id");
-                LinkedHashMap<Location, Integer> checkpoints = Utilities.deserializeLocations(res.getString("checkpoints"));
+                LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                 String parkourCreator = res.getString("parkourCreator");
 
                 ParkourGame parkourGame = new ParkourGame(plugin, id, checkpoints, parkourCreator, false);

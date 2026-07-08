@@ -2,7 +2,9 @@ package org.zeroxamr.parkourEX;
 
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.zeroxamr.parkourEX.Commands.Commands;
+import org.zeroxamr.parkourEX.commands.Commands;
+import org.zeroxamr.parkourEX.util.Pdc;
+import org.zeroxamr.parkourEX.util.Shared;
 
 import java.io.File;
 import java.util.*;
@@ -21,13 +23,14 @@ public final class Main extends JavaPlugin implements Listener {
 
         Services.initialize(this);
         Database.initialize(this);
-        Utilities.initialize(this);
+        Shared.initialize(this);
+        Pdc.initialize(this);
         ParkourItems.initialize(this);
 
         DBM = new Database();
 
         ParkourTags.cleanup();
-        Utilities.resetPlayersInfo();
+        Shared.resetPlayersInfo();
 
         this.getCommand("parkourex").setExecutor(new Commands(this));
 
@@ -58,4 +61,6 @@ public final class Main extends JavaPlugin implements Listener {
     public static HashMap<Integer, ParkourGame> getParkourGames() {
         return parkourGames;
     }
+
+    public JavaPlugin plugin() { return this; }
 }

@@ -1,10 +1,11 @@
-package org.zeroxamr.parkourEX.Commands;
+package org.zeroxamr.parkourEX.commands;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Reset implements Base {
     @Override
@@ -26,10 +27,9 @@ public class Reset implements Base {
     public boolean execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
 
-        int id = 0;
-        if (player.hasMetadata("inParkour")
-                && player.hasMetadata("parkourID")) {
-            id = player.getMetadata("parkourID").getFirst().asInt();
+        int id;
+        if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
+            id = Pdc.getInt(player, "parkourID");
         }
         else {
             if (args.length != 2) {
@@ -48,7 +48,7 @@ public class Reset implements Base {
             }
         }
 
-        if (id > Main.getParkourGames().size() || id <= 0) {
+        if (!Main.getParkourGames().containsKey(id)) {
             player.sendMessage("§cParkour not found.");
             player.sendMessage("§cEnter a valid parkour id.");
             return true;
@@ -64,9 +64,8 @@ public class Reset implements Base {
 
         player.teleport(location);
 
-        if (!player.hasMetadata("inParkour") ||
-                (player.hasMetadata("inParkour")
-                && !player.getMetadata("inParkour").getFirst().asBoolean())) {
+        if (!Pdc.has(player, "inParkour")
+                || Boolean.FALSE.equals(Pdc.getBoolean(player, "inParkour"))) {
             player.sendMessage("§a§lTeleported you to the start of the parkour!");
         }
 

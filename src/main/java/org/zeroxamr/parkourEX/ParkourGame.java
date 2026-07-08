@@ -7,9 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
-import org.zeroxamr.parkourEX.Commands.Commands;
+import org.zeroxamr.parkourEX.commands.Commands;
+import org.zeroxamr.parkourEX.util.Pdc;
+import org.zeroxamr.parkourEX.util.Shared;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +44,7 @@ public class ParkourGame implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        Utilities.resetPlayerInfo(e.getPlayer());
+        Shared.resetPlayerInfo(e.getPlayer());
     }
 
     @EventHandler
@@ -59,24 +60,25 @@ public class ParkourGame implements Listener {
             return;
         }
 
-        if (player.hasMetadata("inParkour") && player.hasMetadata("checkpointNumber")) {
+        if (Pdc.has(player, "inParkour")) {
             Location playerLocation = currLocation.getBlock().getLocation();
 
             if (!checkpointMap.containsKey(playerLocation)) return;
 
-            Integer playerCheckpoint = player.getMetadata("checkpointNumber").getFirst().asInt();
+            Integer playerCheckpoint = Pdc.getInt(player, "checkpointNumber");
             Integer parkourCheckpoint = checkpointMap.get(playerLocation);
 
             Location respawnLocation = playerLocation.clone();
             respawnLocation.setYaw(checkpointYaws.get(parkourCheckpoint));
 
-            if (player.getMetadata("inParkour").getFirst().asBoolean()) {
-                if (!player.hasMetadata("parkourID")) {
-                    // This edge case scenario *should* never happen, but just as a safeguard
+            if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
+                int gameID = Pdc.getInt(player, "parkourID");
+
+                if (!Main.getParkourGames().containsKey(gameID)) {
+                    player.sendMessage("§cYou're playing an invalid parkour session.");
+                    playerStateCancel(player);
                     return;
                 }
-
-                int gameID = player.getMetadata("parkourID").getFirst().asInt();
 
                 if (!plugin.getParkourGame(gameID).checkpointMap.containsKey(playerLocation)) {
 //                  // If interfered with another parkour, do nothing
@@ -97,7 +99,7 @@ public class ParkourGame implements Listener {
                             && playerCheckpoint + 1 < parkourCheckpoint) {
                         // skipped a checkpoint!
 
-                        player.sendMessage("" + ChatColor.RED + "You skipped a checkpoint! Parkour failed!");
+                        player.sendMessage("§c§lParkour challenge failed! You skipped a checkpoint!!");
                         playerStateCancel(player);
 
                         return;
@@ -105,15 +107,15 @@ public class ParkourGame implements Listener {
 
                     // advance to this new parkour checkpoint
 
-                    player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, parkourCheckpoint));
-                    player.setMetadata("checkpointLocation", new FixedMetadataValue(plugin, Utilities.serializeLocation(respawnLocation)));
+                    Pdc.set(player, "checkpointNumber", parkourCheckpoint);
+                    Pdc.set(player, "checkpointLocation", Shared.serializeLocation(respawnLocation));
 
                     LocalTime nowTime = LocalTime.now();
-                    LocalTime startTime = LocalTime.parse(player.getMetadata("startTime").getFirst().asString());
-                    LocalTime oldTime = LocalTime.parse(player.getMetadata("latestCheckpointTime").getFirst().asString());
+                    LocalTime startTime = LocalTime.parse(Pdc.getString(player, "startTime"));
+                    LocalTime oldTime = LocalTime.parse(Pdc.getString(player, "latestCheckpointTime"));
 
-                    String time = Utilities.getDurationBetween(startTime, nowTime);
-                    String diffTime = Utilities.getDurationBetween(oldTime, nowTime);
+                    String time = Shared.getDurationBetween(startTime, nowTime);
+                    String diffTime = Shared.getDurationBetween(oldTime, nowTime);
                     String bestTime = "UNKNOWN";
 
                     if (parkourCheckpoint + 1 == checkpointMap.size()) {
@@ -125,7 +127,7 @@ public class ParkourGame implements Listener {
                         return;
                     }
 
-                    player.setMetadata("latestCheckpointTime", new FixedMetadataValue(plugin, nowTime.format(DateTimeFormatter.ISO_LOCAL_TIME)));
+                    Pdc.set(player, "latestCheckpointTime", nowTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
                     player.sendMessage("§a§lYou reached §e§lCheckpoint #" + parkourCheckpoint + "§a§l after §e§l" + time + "§a§l.");
                     player.sendMessage("§7You finished this part of the parkour in §6" + diffTime + "§7.");
@@ -148,18 +150,18 @@ public class ParkourGame implements Listener {
             }
         }
         else {
-            Utilities.resetPlayerInfo(player);
+            Shared.resetPlayerInfo(player);
         }
     }
 
     public void playerStateStart(Player player, int ID) {
-        player.setMetadata("parkourID", new FixedMetadataValue(plugin, ID));
+        Pdc.set(player, "parkourID", ID);
         playerStateReset(player);
     }
 
     public static void playerStateCheckpoint(Player player) {
-        String unserializedLocation = player.getMetadata("checkpointLocation").getFirst().asString();
-        Location location = Utilities.deserializeLocation(unserializedLocation);
+        String unserializedLocation = Pdc.getString(player, "checkpointLocation");
+        Location location = Shared.deserializeLocation(unserializedLocation);
         location.setX(location.getX() + 0.5);
         location.setZ(location.getZ() + 0.5);
         player.teleport(location);
@@ -169,14 +171,14 @@ public class ParkourGame implements Listener {
         Location respawnLocation = checkpointMap.firstEntry().getKey().clone();
         respawnLocation.setYaw(checkpointYaws.getFirst());
 
-        player.setMetadata("inParkour", new FixedMetadataValue(plugin, true));
-        player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, 0));
-        player.setMetadata("checkpointLocation", new FixedMetadataValue(plugin, Utilities.serializeLocation(respawnLocation)));
+        Pdc.set(player, "inParkour", true);
+        Pdc.set(player, "checkpointNumber", 0);
+        Pdc.set(player, "checkpointLocation", Shared.serializeLocation(respawnLocation));
 
         String playerTime = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
 
-        player.setMetadata("startTime", new FixedMetadataValue(plugin, playerTime));
-        player.setMetadata("latestCheckpointTime", new FixedMetadataValue(plugin, playerTime));
+        Pdc.set(player, "startTime", playerTime);
+        Pdc.set(player, "latestCheckpointTime", playerTime);
 
         Services.addLastCheckpoint(player);
         Services.addResetParkour(player);
@@ -185,7 +187,9 @@ public class ParkourGame implements Listener {
 
     public void playerStateCancel(Player player) {
         if (Objects.equals(plugin.getConfig().get("returnToStart"), true)) {
-            Location location = Main.getParkourGames().get(player.getMetadata("parkourID").getFirst().asInt()).getCheckpointMapWithYaw().firstEntry().getKey();
+            Integer gameID = Pdc.getInt(player, "parkourID");
+            Location location = Main.getParkourGames().get(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
+
             location.setX(location.getX() + 0.5);
             location.setZ(location.getZ() + 0.5);
 
@@ -196,7 +200,7 @@ public class ParkourGame implements Listener {
             player.teleport(location);
         }
 
-        Utilities.resetPlayerInfo(player);
+        Shared.resetPlayerInfo(player);
     }
 
     public LinkedHashMap<Location, Integer> getCheckpointMap() {

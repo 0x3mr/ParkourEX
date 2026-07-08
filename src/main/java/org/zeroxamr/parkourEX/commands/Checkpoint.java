@@ -1,11 +1,9 @@
-package org.zeroxamr.parkourEX.Commands;
+package org.zeroxamr.parkourEX.commands;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.zeroxamr.parkourEX.ParkourGame;
-import org.zeroxamr.parkourEX.Utilities;
+import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Checkpoint implements Base {
     @Override
@@ -27,9 +25,7 @@ public class Checkpoint implements Base {
     public boolean execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
 
-        if (player.hasMetadata("inParkour")
-                && player.hasMetadata("checkpointNumber")
-                && player.hasMetadata("checkpointLocation")) {
+        if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
             ParkourGame.playerStateCheckpoint(player);
         }
         else {

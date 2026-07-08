@@ -1,4 +1,4 @@
-package org.zeroxamr.parkourEX.Commands;
+package org.zeroxamr.parkourEX.commands;
 
 import org.bukkit.command.CommandSender;
 

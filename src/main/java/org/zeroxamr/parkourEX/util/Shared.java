@@ -1,42 +1,45 @@
-package org.zeroxamr.parkourEX;
+package org.zeroxamr.parkourEX.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
+import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.ParkourGame;
+import org.zeroxamr.parkourEX.Services;
 
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
 
-public class Utilities {
+public class Shared {
     private static Main plugin = null;
 
     public static void initialize(Main plugin) {
-        Utilities.plugin = plugin;
+        Shared.plugin = plugin;
     }
 
-    public static void resetPlayerInfo(Player e) {
-        e.setMetadata("inParkour", new FixedMetadataValue(plugin, false));
-        e.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, -1));
-        e.removeMetadata("parkourID", plugin);
+    public static void resetPlayerInfo(Player player) {
+        Pdc.set(player, "parkourID", -1);
+        Pdc.set(player, "inParkour", false);
+        Pdc.set(player, "checkpointNumber", -1);
+        Pdc.set(player, "checkpointLocation", "none");
+        Pdc.set(player, "startTime", "none");
+        Pdc.set(player, "latestCheckpointTime", "none");
 
-        Services.removeLastCheckpoint(e);
-        Services.removeResetParkour(e);
-        Services.removeLeaveParkour(e);
+        Services.removeLastCheckpoint(player);
+        Services.removeResetParkour(player);
+        Services.removeLeaveParkour(player);
     }
 
     public static void resetPlayersInfo() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.setMetadata("inParkour", new FixedMetadataValue(plugin, false));
-            player.setMetadata("checkpointNumber", new FixedMetadataValue(plugin, -1));
-            player.removeMetadata("parkourID", plugin);
+            Pdc.set(player, "parkourID", -1);
+            Pdc.set(player, "inParkour", false);
+            Pdc.set(player, "checkpointNumber", -1);
+            Pdc.set(player, "checkpointLocation", "none");
+            Pdc.set(player, "startTime", "none");
+            Pdc.set(player, "latestCheckpointTime", "none");
 
             Services.removeLastCheckpoint(player);
             Services.removeResetParkour(player);
@@ -117,55 +120,6 @@ public class Utilities {
                 Float.parseFloat(parts[4]),
                 Float.parseFloat(parts[5])
         );
-    }
-
-    public static void attachID(ItemStack item, String id, String value) {
-        ItemMeta meta = item.getItemMeta();
-        NamespacedKey NSK = new NamespacedKey(plugin, id);
-        meta.getPersistentDataContainer().set(NSK, PersistentDataType.STRING, value);
-        item.setItemMeta(meta);
-    }
-
-    public static void attachID(PersistentDataContainer PDC, String id, String value) {
-        NamespacedKey NSK = new NamespacedKey(plugin, id);
-        PDC.set(NSK, PersistentDataType.STRING, value);
-    }
-
-    public static Boolean hasID(ItemStack item, String id) {
-        if (item == null || item.getType() == Material.AIR) return false;
-        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(plugin, id);
-        return pdc.has(key, PersistentDataType.STRING);
-    }
-
-    public static Boolean hasID(PersistentDataContainer PDC, String id) {
-        NamespacedKey key = new NamespacedKey(plugin, id);
-        return PDC.has(key, PersistentDataType.STRING);
-    }
-
-    public static String getAttachedID(ItemStack item, String id) {
-        if (item == null) return "none";
-
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return "none";
-
-        PersistentDataContainer pdc = meta.getPersistentDataContainer();
-        NamespacedKey key = new NamespacedKey(plugin, id);
-
-        if (pdc.has(key, PersistentDataType.STRING)) {
-            return pdc.get(key, PersistentDataType.STRING);
-        }
-
-        return "none";
-    }
-
-    public static String getAttachedID(PersistentDataContainer PDC, String id) {
-        NamespacedKey key = new NamespacedKey(plugin, id);
-        if (PDC.has(key, PersistentDataType.STRING)) {
-            return PDC.get(key, PersistentDataType.STRING);
-        }
-
-        return "none";
     }
 
     public static Boolean doCloneExist(LinkedHashMap<Location, Integer> newLocations) {

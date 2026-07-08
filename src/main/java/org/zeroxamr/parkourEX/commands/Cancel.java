@@ -1,8 +1,9 @@
-package org.zeroxamr.parkourEX.Commands;
+package org.zeroxamr.parkourEX.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Cancel implements Base {
     @Override
@@ -24,13 +25,14 @@ public class Cancel implements Base {
     public boolean execute(CommandSender sender, String[] args) {
         Player player = (Player) sender;
 
-        if (player.hasMetadata("inParkour")
-                && player.getMetadata("inParkour").getFirst().asBoolean()
-                    && player.hasMetadata("parkourID")) {
-            Main.getParkourGames().get(player.getMetadata("parkourID").getFirst().asInt()).playerStateCancel(player);
+        if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
+            int gameID = Pdc.getInt(player, "parkourID");
+            Main.getParkourGames().get(gameID).playerStateCancel(player);
+            player.sendMessage("§c§lParkour challenge cancelled!");
         }
-
-        player.sendMessage("§c§lParkour challenge cancelled!");
+        else {
+            player.sendMessage("§cYou are currently not in a parkour race. Use " + Commands.getCommands().get("Start".toLowerCase()).getUsage());
+        }
 
         return true;
     }

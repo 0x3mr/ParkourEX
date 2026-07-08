@@ -1,4 +1,4 @@
-package org.zeroxamr.parkourEX.Commands;
+package org.zeroxamr.parkourEX.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -34,7 +34,7 @@ public class Create implements Base {
             return true;
         }
 
-        Services.setupParkour((Player) sender);
+        Services.giveCreateParkour((Player) sender);
 
         return true;
     }

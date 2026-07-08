@@ -21,3 +21,7 @@ TODO:
   - make sure it does not break external functionalities on parkour exit
 - [ ] Remove player collision while in parkour
 - [ ] Add config-toggleable feature to auto teleport back to checkpoint on reaching certain Y-level (preset in config)
+- [ ] Let parkour items configurable
+  - let items management be centralized in one place
+- [ ] Remove any effects the player has during a parkour
+- [ ] Add customizable config-set player & console to-run commands on parkour session exit

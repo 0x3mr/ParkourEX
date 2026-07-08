@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jspecify.annotations.NonNull;
+import org.zeroxamr.parkourEX.util.Pdc;
 
 import java.util.*;
 
@@ -32,7 +33,7 @@ public class ParkourTags implements Listener {
                                                       boolean persistence, boolean showName) {
         Location location = new Location(world, x, y, z);
         ArmorStand hologram = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND);
-        Utilities.attachID(hologram.getPersistentDataContainer(), id, idValue);
+        Pdc.set(hologram, id, idValue);
 
         hologram.setMarker(marker);
         hologram.setGravity(gravity);
@@ -188,7 +189,7 @@ public class ParkourTags implements Listener {
         // Extra redundant cleanup
         for (World world : worlds) {
             for (ArmorStand hg : world.getEntitiesByClass(ArmorStand.class)) {
-                if (Utilities.hasID(hg.getPersistentDataContainer(), "hologram")) {
+                if (Pdc.has(hg, "hologram")) {
                     hg.remove();
                 }
             }
@@ -198,7 +199,7 @@ public class ParkourTags implements Listener {
     private static void clearChunk(ChunkAddress chunk) {
         for (Entity entity : chunk.world.getChunkAt(chunk.x, chunk.z).getEntities()) {
             if (!(entity instanceof ArmorStand)) continue;
-            if (Utilities.hasID(entity.getPersistentDataContainer(), "hologram")) {
+            if (Pdc.has(entity, "hologram")) {
                 entity.remove();
             }
         }

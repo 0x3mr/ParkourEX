@@ -3,7 +3,6 @@ package org.zeroxamr.parkourEX;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,24 +11,19 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
+import org.zeroxamr.parkourEX.util.Pdc;
+import org.zeroxamr.parkourEX.util.Shared;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 import java.util.UUID;
-
-import static org.bukkit.Bukkit.getServer;
 
 public class Services implements Listener {
     private static Main plugin = null;
-    static NamespacedKey key = null;
-    private static final HashMap<UUID, LinkedHashMap<Location, Integer>> createdGames = new HashMap<UUID, LinkedHashMap<Location, Integer>>();
+    private static final HashMap<UUID, LinkedHashMap<Location, Integer>> createdGames = new HashMap<>();
 
     public static void initialize(Main plugin) {
         Services.plugin = plugin;
-        Services.key = new NamespacedKey(plugin, "checkpointNumber");
     }
 
     public static void addResetParkour(Player player) {
@@ -39,7 +33,7 @@ public class Services implements Listener {
         arr.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset");
         item.setItemMeta(arr);
 
-        Utilities.attachID(item, "resetParkour", "resetParkour");
+        Pdc.set(item, "parkourItem", "reset");
 
         player.getInventory().setItem(plugin.getConfig().getInt("resetSlot"), item);
     }
@@ -53,8 +47,7 @@ public class Services implements Listener {
         ItemMeta arr = item.getItemMeta();
         if (arr == null) return;
 
-        PersistentDataContainer pdc = arr.getPersistentDataContainer();
-        if (Objects.equals(pdc.get(new NamespacedKey(plugin, "resetParkour"), PersistentDataType.STRING), "resetParkour")) {
+        if (Pdc.has(arr, "parkourItem")) {
             player.getInventory().remove(item);
         }
     }
@@ -63,10 +56,10 @@ public class Services implements Listener {
         ItemStack item = new ItemStack(Material.BARRIER);
         ItemMeta arr = item.getItemMeta();
 
-        arr.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "Exit");
+        arr.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "Cancel");
         item.setItemMeta(arr);
 
-        Utilities.attachID(item, "leaveParkour", "leaveParkour");
+        Pdc.set(item, "parkourItem", "cancel");
 
         player.getInventory().setItem(plugin.getConfig().getInt("leaveSlot"), item);
     }
@@ -80,8 +73,7 @@ public class Services implements Listener {
         ItemMeta arr = item.getItemMeta();
         if (arr == null) return;
 
-        PersistentDataContainer pdc = arr.getPersistentDataContainer();
-        if (Objects.equals(pdc.get(new NamespacedKey(plugin, "leaveParkour"), PersistentDataType.STRING), "leaveParkour")) {
+        if (Pdc.has(arr, "parkourItem")) {
             player.getInventory().remove(item);
         }
     }
@@ -93,7 +85,7 @@ public class Services implements Listener {
         arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Teleport to Last Checkpoint");
         item.setItemMeta(arr);
 
-        Utilities.attachID(item, "checkpointNumber", "checkpointNumber");
+        Pdc.set(item, "parkourItem", "checkpoint");
 
         player.getInventory().setItem(plugin.getConfig().getInt("checkpointSlot"), item);
     }
@@ -107,49 +99,49 @@ public class Services implements Listener {
         ItemMeta arr = item.getItemMeta();
         if (arr == null) return;
 
-        PersistentDataContainer pdc = arr.getPersistentDataContainer();
-        if (Objects.equals(pdc.get(new NamespacedKey(plugin, "checkpointNumber"), PersistentDataType.STRING), "checkpointNumber")) {
+        if (Pdc.has(arr, "parkourItem")) {
             player.getInventory().remove(item);
         }
     }
 
-    public static void setupParkour(Player player) {
+    public static void giveCreateParkour(Player player) {
         for (ItemStack item : player.getInventory()) {
-            if (item != null && Utilities.hasID(item, "cp-state")) {
-                player.sendMessage("" + ChatColor.RED + "You're already setting up a parkour!");
+            if (item != null && Pdc.has(item, "cp-state")) {
+                player.sendMessage("§cYou're already setting up a parkour!");
                 return;
             }
         }
 
-        String uuid = Utilities.generateRandomID().toString();
+        String uuid = Shared.generateRandomID().toString();
         ItemStack item = new ItemStack(Material.LIME_WOOL);
         ItemMeta arr = item.getItemMeta();
 
         arr.addEnchant(Enchantment.UNBREAKING, 1, true);
         arr.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Set [Start]");
+        arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "[Start]");
 
         item.setItemMeta(arr);
 
-        Utilities.attachID(item, "cp-id", uuid);
-        Utilities.attachID(item, "cp-state", "start");
+        Pdc.set(item, "cp-id", uuid);
+        Pdc.set(item, "cp-state", "start");
 
         player.getInventory().setItem(4, item);
-        player.sendMessage("" + ChatColor.LIGHT_PURPLE + "Place the [Start] block to set the parkour's first checkpoint");
-        player.sendMessage("" + ChatColor.LIGHT_PURPLE + "TIP: The direction you face while placing a checkpoint will be used as the respawn orientation for that checkpoint");
+        player.sendMessage("§dPlace the [Start] block to set the parkour's first checkpoint");
+        player.sendMessage("§dTIP: The direction you face while placing a checkpoint will be used as the respawn orientation for that checkpoint");
     }
 
     @EventHandler
-    public void createParkour(BlockPlaceEvent event) {
+    public void onParkourSetup(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItemInHand();
-        String status = Utilities.getAttachedID(item, "cp-state");
-        if (status.equals("none")) return;
+
+        String status = Pdc.getString(item, "cp-state");
+        if (status == null) return;
 
         Location loc = event.getBlockPlaced().getLocation();
         event.setCancelled(true);
 
-        String id = Utilities.getAttachedID(item, "cp-id");
+        String id = Pdc.getString(item, "cp-id");
         UUID uuid = UUID.fromString(id);
 
         boolean isDuplicate = createdGames.containsKey(uuid) &&
@@ -161,7 +153,7 @@ public class Services implements Listener {
         );
 
         if (isDuplicate) {
-            player.sendMessage("" + ChatColor.RED + "You have already set this location!");
+            player.sendMessage("§cYou have already set this location!");
             return;
         }
 
@@ -177,28 +169,32 @@ public class Services implements Listener {
 
                 ItemStack newItem = new ItemStack(Material.ORANGE_WOOL);
                 ItemMeta arr = newItem.getItemMeta();
+
                 arr.addEnchant(Enchantment.UNBREAKING, 1, true);
                 arr.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                arr.setDisplayName("" + ChatColor.GOLD + ChatColor.BOLD + "Set [Checkpoint]");
+                arr.setDisplayName("" + ChatColor.GOLD + ChatColor.BOLD + "[Checkpoint]");
+
                 newItem.setItemMeta(arr);
 
-                Utilities.attachID(newItem, "cp-id", id);
-                Utilities.attachID(newItem, "cp-state", "checkpoint");
+                Pdc.set(newItem, "cp-id", id);
+                Pdc.set(newItem, "cp-state", "checkpoint");
 
                 ItemStack newItem2 = new ItemStack(Material.RED_WOOL);
                 ItemMeta arr2 = newItem2.getItemMeta();
+
                 arr2.addEnchant(Enchantment.UNBREAKING, 1, true);
                 arr2.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                arr2.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Set [Finish]");
+                arr2.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "[End]");
+
                 newItem2.setItemMeta(arr2);
 
-                Utilities.attachID(newItem2, "cp-id", id);
-                Utilities.attachID(newItem2, "cp-state", "finish");
+                Pdc.set(newItem2, "cp-id", id);
+                Pdc.set(newItem2, "cp-state", "end");
 
                 player.getInventory().setItem(4, newItem);
                 player.getInventory().setItem(5, newItem2);
 
-                player.sendMessage("" + ChatColor.GOLD + "Select the location of your next checkpoint.");
+                player.sendMessage("§6Select the location of your next checkpoint.");
 
                 break;
             case "checkpoint":
@@ -207,32 +203,34 @@ public class Services implements Listener {
 
                 createdGames.get(uuid).put(loc, createdGames.get(uuid).size());
 
-                player.sendMessage("" + ChatColor.GREEN + "Checkpoint #" + (createdGames.get(uuid).size() - 1) + " saved!");
-                player.sendMessage("" + ChatColor.GOLD + "Select the location of your next checkpoint.");
+                player.sendMessage("§aCheckpoint #" + (createdGames.get(uuid).size() - 1) + " saved!");
+                player.sendMessage("§6Select the location of your next checkpoint.");
 
                 break;
-            case "finish":
+            case "end":
                 loc.setPitch(0);
                 loc.setYaw(player.getYaw());
 
                 createdGames.get(uuid).put(loc, createdGames.get(uuid).size());
 
                 for (ItemStack tempItem : player.getInventory()) {
-                    if (tempItem != null && Utilities.hasID(tempItem, "cp-state")) {
+                    if (tempItem != null && Pdc.has(tempItem, "cp-state")) {
                         player.getInventory().clear(player.getInventory().first(tempItem));
                     }
                 }
 
-                if (Utilities.doCloneExist(createdGames.get(uuid))) {
-                    player.sendMessage("" + ChatColor.RED + "Parkour did not save.\nThis parkour intervenes with another existing parkour!");
+                if (Shared.doCloneExist(createdGames.get(uuid))) {
+                    player.sendMessage("§cParkour did not save.\nThis parkour intervenes with another existing parkour!");
                     return;
                 }
 
+                player.sendMessage("§7Saving parkour...");
+
                 if (Main.getDBM().saveGame(createdGames.get(uuid), player.getName())) {
-                    player.sendMessage("" + ChatColor.GREEN + "New parkour created!");
+                    player.sendMessage("§aNew parkour created!");
                 }
                 else {
-                    player.sendMessage("" + ChatColor.RED + "Failed to save new parkour. Check console for more details.");
+                    player.sendMessage("§cFailed to save new parkour. Check console for more details.");
                 }
         }
     }
