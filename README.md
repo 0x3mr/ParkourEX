@@ -15,8 +15,8 @@ TODO:
 - [ ] Add a command to list current available parkour games (perhaps a GUI)
 - [x] Add option to let parkour continuable upon checkpoint skips
 - [x] Improve the existing hologram tags design to become consistent
-- [ ] Bug fix: teleport back to checkpoint when not in a parkour session
-  - unify/centralize teleport back to checkpoint logic & reuse
+- [x] Bug fix: teleport back to checkpoint when not in a parkour session
+- [ ] unify/centralize teleport back to checkpoint logic & reuse
 - [ ] Remove fall damage during parkour session
   - make sure it does not break external functionalities on parkour exit
 - [ ] Remove player collision while in parkour
@@ -24,4 +24,14 @@ TODO:
 - [ ] Let parkour items configurable
   - let items management be centralized in one place
 - [ ] Remove any effects the player has during a parkour
-- [ ] Add customizable config-set player & console to-run commands on parkour session exit
+- [ ] Add config-defined commands to run (as player or console) when a parkour session ends
+
+### Identified Issues
+
+- `loadTables()` runs 3 `CREATE TABLE` statements in one execute call: fragile, driver-dependent
+- Player disconnect during `/pkx create` leaves a stale entry in `createdGames` (never cleaned up)
+- Teleport-to-start logic duplicated across `ParkourGame`, `ParkourItems`, `Reset.java`, `Start.java`
+- `ParkourGame` mixes domain model, event listener, and session state machine in one class
+- Each parkour registers its own `PlayerMoveEvent` listener instead of a central dispatcher
+- `Main.getParkourGames()` exposes the live mutable map directly, no encapsulation
+- Parkour creation/save runs synchronously on the main thread, blocking on SQLite I/O
