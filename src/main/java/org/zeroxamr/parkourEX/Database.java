@@ -6,24 +6,20 @@ import org.bukkit.Location;
 import org.zeroxamr.parkourEX.util.Shared;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 import static org.bukkit.Bukkit.getServer;
 
 public class Database {
     private static Main plugin = null;
+    private final String databasePath;
+    private HikariDataSource dataSource;
+    private final HikariConfig config = new HikariConfig();
 
     public static void initialize(Main plugin) {
         Database.plugin = plugin;
     }
-
-    private HikariDataSource dataSource;
-    private final HikariConfig config = new HikariConfig();
-    private final String databasePath;
 
     Database() {
         File folderPath = plugin.getDataFolder();
@@ -36,8 +32,8 @@ public class Database {
 
         databasePath = new File(folderPath, "database.db").getAbsolutePath();
 
-        this.connect();
-        this.loadTables();
+        connect();
+        setupTables();
     }
 
     public void connect() {
@@ -53,7 +49,7 @@ public class Database {
 
         this.dataSource = new HikariDataSource(config);
 
-        if (this.isOnline()) {
+        if (isOnline()) {
             plugin.getLogger().info("Connected to SQLite successfully.");
             return;
         }
@@ -61,18 +57,20 @@ public class Database {
         plugin.getLogger().info("Failed to connect to SQLite.");
     }
 
-    public void loadTables() {
+    public void setupTables() {
         if (!isOnline()) {
             plugin.getLogger().info("Database is offline! Failed to load saved data.");
             return;
         }
 
-        String ParkourTablesQuery =
+        String parkourGamesTable =
                 "CREATE TABLE IF NOT EXISTS Parkour (" +
                         "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "checkpoints TEXT NOT NULL," +
                         "parkourCreator TEXT NOT NULL" +
-                ");" +
+                ");";
+
+        String playerStatisticsTable =
                 "CREATE TABLE IF NOT EXISTS Stats (" +
                         "id INTEGER NOT NULL," +
                         "uuid TEXT NOT NULL," +
@@ -80,7 +78,9 @@ public class Database {
                         "gamesCompleted TEXT DEFAULT ';'," +
                         "PRIMARY KEY (id, uuid)," +
                         "FOREIGN KEY (id) REFERENCES Parkour(id) ON DELETE CASCADE" +
-                ");" +
+                ");";
+
+        String perGameCheckpointsTable =
                 "CREATE TABLE IF NOT EXISTS Checkpoints (" +
                         "id INTEGER NOT NULL," +
                         "uuid TEXT NOT NULL," +
@@ -91,8 +91,11 @@ public class Database {
                 ");";
 
         try (Connection con = this.getConnection();
-             PreparedStatement qst = con.prepareStatement(ParkourTablesQuery)) {
-            qst.executeUpdate();
+             Statement statement = con.createStatement()) {
+            statement.executeUpdate(parkourGamesTable);
+            statement.executeUpdate(playerStatisticsTable);
+            statement.executeUpdate(perGameCheckpointsTable);
+
             plugin.getLogger().info("Loaded tables successfully.");
         } catch (SQLException e) {
             plugin.getLogger().severe("Failed to load tables: " + e.getMessage());
