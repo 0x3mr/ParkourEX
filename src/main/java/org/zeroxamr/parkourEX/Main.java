@@ -4,6 +4,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.zeroxamr.parkourEX.commands.Commands;
 import org.zeroxamr.parkourEX.game.GameRegistry;
+import org.zeroxamr.parkourEX.game.GameHolograms;
+import org.zeroxamr.parkourEX.listeners.CreateTool;
 import org.zeroxamr.parkourEX.listeners.GameListener;
 import org.zeroxamr.parkourEX.listeners.GameItems;
 import org.zeroxamr.parkourEX.util.Pdc;
@@ -29,26 +31,27 @@ public final class Main extends JavaPlugin implements Listener {
         Database.initialize(this);
         GameItems.initialize(this);
 
-        ParkourTags.cleanup();
+        GameHolograms.cleanup();
         Shared.resetPlayersInfo();
 
         DBM = new Database();
 
         Objects.requireNonNull(this.getCommand("ParkourEX".toLowerCase())).setExecutor(new Commands(this));
 
+        getServer().getPluginManager().registerEvents(new GameHolograms(), this);
         getServer().getPluginManager().registerEvents(new GameListener(), this);
-        getServer().getPluginManager().registerEvents(new ParkourTags(), this);
+        getServer().getPluginManager().registerEvents(new CreateTool(), this);
         getServer().getPluginManager().registerEvents(new GameItems(), this);
         getServer().getPluginManager().registerEvents(new Services(), this);
 
         DBM.loadGames();
 
-        ParkourTags.loadTags();
+        GameHolograms.loadTags();
     }
 
     @Override
     public void onDisable() {
-        ParkourTags.cleanup();
+        GameHolograms.cleanup();
         GameRegistry.cleanup();
         DBM.shutdown();
     }

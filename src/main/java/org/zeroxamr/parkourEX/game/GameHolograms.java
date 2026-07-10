@@ -1,4 +1,4 @@
-package org.zeroxamr.parkourEX;
+package org.zeroxamr.parkourEX.game;
 
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -13,7 +13,7 @@ import org.zeroxamr.parkourEX.util.Pdc;
 
 import java.util.*;
 
-public class ParkourTags implements Listener {
+public class GameHolograms implements Listener {
     private record LocationMeta(String ID, int size, int index, Location location) {}
     private record ChunkAddress(World world, int x, int z) {}
 

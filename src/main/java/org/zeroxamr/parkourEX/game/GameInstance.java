@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.zeroxamr.parkourEX.Main;
-import org.zeroxamr.parkourEX.ParkourTags;
 import org.zeroxamr.parkourEX.Services;
 import org.zeroxamr.parkourEX.commands.Commands;
 import org.zeroxamr.parkourEX.util.Pdc;
@@ -38,7 +37,7 @@ public class GameInstance {
             i++;
         }
 
-        ParkourTags.register(new ArrayList<>(checkpointMap.keySet()), String.valueOf(id), buildState);
+        GameHolograms.register(new ArrayList<>(checkpointMap.keySet()), String.valueOf(id), buildState);
     }
 
     public void handleParkour(Player player, Location playerLocation) {
