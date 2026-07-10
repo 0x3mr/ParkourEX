@@ -118,37 +118,41 @@ public class GameHolograms implements Listener {
         return armorStands;
     }
 
-    public static void register(List<Location> coordinatesLocation, String ID, boolean buildState) {
-        int i = 0;
+    public static void register(int id, LinkedHashMap<Location, Integer> checkpoints) {
+        for (Location loc : checkpoints.keySet()) {
+            Location location = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
 
-        Set<ChunkAddress> addedChunks = new HashSet<>();
-
-        for (Location location : coordinatesLocation) {
             ChunkAddress chunkAddress = new ChunkAddress(
-                    location.getWorld(),
-                    location.getChunk().getX(),
-                    location.getChunk().getZ()
+                    location.getWorld(), location.getChunk().getX(), location.getChunk().getZ()
             );
 
-            hologramsPerChunk.computeIfAbsent(chunkAddress, chunk -> new ArrayList<>()).add(new LocationMeta(
-                    ID, coordinatesLocation.size(), i, location
+            hologramsPerChunk.computeIfAbsent(chunkAddress, chunk -> new ArrayList<>()).add(
+                    new LocationMeta(
+                            String.valueOf(id), checkpoints.size(), checkpoints.get(loc), location
             ));
-            
-            if (buildState) addedChunks.add(chunkAddress);
-            
-            i++;
-        }
-
-        if (buildState) {
-            loadChunkTags(addedChunks);
         }
     }
 
-    private static void loadChunkTags(Set<ChunkAddress> affectedChunks) {
-        for (ChunkAddress chunk : affectedChunks) {
-            clearChunk(chunk);
+    public static void resync() {
+        for (ChunkAddress chunk : hologramsPerChunk.keySet()) {
+            int expected = hologramsPerChunk.get(chunk).size() * 2;
+            int actual = 0;
 
-            hologramsBuilt.addAll(build(hologramsPerChunk.get(chunk)));
+            for (Entity entity : chunk.world.getChunkAt(chunk.x, chunk.z).getEntities()) {
+                if (!(entity instanceof ArmorStand)) continue;
+                if (!Pdc.has(entity, "hologram")) continue;
+                actual++;
+            }
+
+            if (expected != actual) {
+                clearChunk(chunk);
+                hologramsBuilt.removeIf(hg ->
+                        hg.getWorld().equals(chunk.world) &&
+                        hg.getChunk().getX() == chunk.x &&
+                        hg.getChunk().getZ() == chunk.z
+                );
+                hologramsBuilt.addAll(build(hologramsPerChunk.get(chunk)));
+            }
         }
     }
 

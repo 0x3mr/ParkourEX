@@ -22,7 +22,7 @@ public class GameInstance {
     private final LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
     private final List<Float> checkpointYaws = new ArrayList<>();
 
-    public GameInstance(Main plugin, int id, LinkedHashMap<Location, Integer> incomingCheckpointMap, String parkourCreator, boolean buildState) {
+    public GameInstance(Main plugin, int id, LinkedHashMap<Location, Integer> incomingCheckpointMap, String parkourCreator) {
         this.id = id;
         this.plugin = plugin;
         gameAdmin = parkourCreator;
@@ -36,8 +36,6 @@ public class GameInstance {
 
             i++;
         }
-
-        GameHolograms.register(new ArrayList<>(checkpointMap.keySet()), String.valueOf(id), buildState);
     }
 
     public void handleParkour(Player player, Location playerLocation) {

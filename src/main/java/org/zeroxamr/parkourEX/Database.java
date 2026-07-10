@@ -3,6 +3,7 @@ package org.zeroxamr.parkourEX;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Location;
+import org.zeroxamr.parkourEX.game.GameHolograms;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Shared;
@@ -128,11 +129,14 @@ public class Database {
                     LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                     String parkourCreator = res.getString("parkourCreator");
 
-                    GameInstance parkourGame = new GameInstance(plugin, id, checkpoints, parkourCreator, true);
+                    GameRegistry.registerGame(
+                            id,
+                            new GameInstance(plugin, id, checkpoints, parkourCreator),
+                            checkpoints
+                    );
 
-                    GameRegistry.addGame(id, parkourGame);
-
-                    for (Location checkpoint : checkpoints.keySet()) GameRegistry.addGameByLocation(checkpoint, id);
+                    GameHolograms.register(id, checkpoints);
+                    GameHolograms.resync();
                 }
             }
             catch (SQLException e) {
@@ -159,11 +163,13 @@ public class Database {
                 LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                 String parkourCreator = res.getString("parkourCreator");
 
-                GameInstance parkourGame = new GameInstance(plugin, id, checkpoints, parkourCreator, false);
+                GameRegistry.registerGame(
+                        id,
+                        new GameInstance(plugin, id, checkpoints, parkourCreator),
+                        checkpoints
+                );
 
-                GameRegistry.addGame(id, parkourGame);
-
-                for (Location checkpoint : checkpoints.keySet()) GameRegistry.addGameByLocation(checkpoint, id);
+                GameHolograms.register(id, checkpoints);
             }
         }
         catch (SQLException e) {

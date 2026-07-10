@@ -3,6 +3,7 @@ package org.zeroxamr.parkourEX.game;
 import org.bukkit.Location;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class GameRegistry {
     private static final HashMap<Integer, GameInstance> parkourGames = new HashMap<>();
@@ -20,13 +21,13 @@ public class GameRegistry {
         return parkourGames.containsKey(gameID);
     }
 
-    public static void addGame(int id, GameInstance game) {
+    public static void registerGame(int id, GameInstance game, LinkedHashMap<Location, Integer> checkpoints) {
         parkourGames.put(id, game);
-    }
 
-    public static void addGameByLocation(Location loc, int id) {
-        Location strippedLocation = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
-        parkourGamesByLocation.put(strippedLocation, id);
+        for (Location loc : checkpoints.keySet()) {
+            Location strippedLocation = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
+            parkourGamesByLocation.put(strippedLocation, id);
+        }
     }
 
     public static GameInstance getGameByLocation(Location location) {
