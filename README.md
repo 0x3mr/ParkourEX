@@ -25,6 +25,8 @@ TODO:
   - let items management be centralized in one place
 - [ ] Remove any effects the player has during a parkour
 - [ ] Add config-defined commands to run (as player or console) when a parkour session ends
+- [ ] Isolate parkour holograms setup/creation from parkour games
+  - extract the event handler in the holograms class as well
 
 ### Identified Issues
 
