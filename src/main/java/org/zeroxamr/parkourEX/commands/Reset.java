@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Reset implements Base {
@@ -48,13 +48,13 @@ public class Reset implements Base {
             }
         }
 
-        if (!Main.getParkourGames().containsKey(id)) {
+        if (!GameRegistry.hasGame(id)) {
             player.sendMessage("§cParkour not found.");
             player.sendMessage("§cEnter a valid parkour id.");
             return true;
         }
 
-        Location location = Main.getParkourGames().get(id).getCheckpointMapWithYaw().firstEntry().getKey();
+        Location location = GameRegistry.getParkourGames().get(id).getCheckpointMapWithYaw().firstEntry().getKey();
         location.setX(location.getX() + 0.5);
         location.setZ(location.getZ() + 0.5);
 

@@ -2,7 +2,7 @@ package org.zeroxamr.parkourEX.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.zeroxamr.parkourEX.ParkourGame;
+import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Checkpoint implements Base {
@@ -26,7 +26,7 @@ public class Checkpoint implements Base {
         Player player = (Player) sender;
 
         if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
-            ParkourGame.playerStateCheckpoint(player);
+            GameInstance.playerStateCheckpoint(player);
         }
         else {
             player.sendMessage("§cYou are currently not in a parkour race. Use " + Commands.getCommands().get("Start".toLowerCase()).getUsage());

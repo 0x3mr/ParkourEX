@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Start implements Base {
@@ -43,7 +43,7 @@ public class Start implements Base {
 
         Player player = (Player) sender;
 
-        if (!Main.getParkourGames().containsKey(id)) {
+        if (!GameRegistry.hasGame(id)) {
             player.sendMessage("§cParkour not found.");
             player.sendMessage("§cEnter a valid parkour id.");
             return true;
@@ -54,7 +54,7 @@ public class Start implements Base {
             return true;
         }
 
-        Location location = Main.getParkourGames().get(id).getCheckpointMapWithYaw().firstEntry().getKey();
+        Location location = GameRegistry.getParkourGames().get(id).getCheckpointMapWithYaw().firstEntry().getKey();
         location.setX(location.getX() + 0.5);
         location.setZ(location.getZ() + 0.5);
 
@@ -64,7 +64,7 @@ public class Start implements Base {
 
         player.teleport(location);
 
-        Main.getParkourGames().get(id).playerStateStart((Player) sender, id);
+        GameRegistry.getParkourGames().get(id).playerStateStart((Player) sender, id);
 
         player.sendMessage("§a§lParkour challenge started!");
         player.sendMessage("§aUse §e" + Commands.getCommands().get("Checkpoint".toLowerCase()).getUsage() + " §ato teleport to the last checkpoint or §e" + Commands.getCommands().get("Cancel".toLowerCase()).getUsage() + " §ato cancel!");

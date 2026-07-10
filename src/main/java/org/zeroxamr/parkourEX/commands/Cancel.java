@@ -2,7 +2,7 @@ package org.zeroxamr.parkourEX.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
 
 public class Cancel implements Base {
@@ -27,7 +27,7 @@ public class Cancel implements Base {
 
         if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
             int gameID = Pdc.getInt(player, "parkourID");
-            Main.getParkourGames().get(gameID).playerStateCancel(player);
+            GameRegistry.getParkourGames().get(gameID).playerStateCancel(player);
             player.sendMessage("§c§lParkour challenge cancelled!");
         }
         else {

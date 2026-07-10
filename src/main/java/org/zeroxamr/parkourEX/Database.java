@@ -3,13 +3,13 @@ package org.zeroxamr.parkourEX;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Location;
+import org.zeroxamr.parkourEX.game.GameInstance;
+import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Shared;
 
 import java.io.File;
 import java.sql.*;
 import java.util.*;
-
-import static org.bukkit.Bukkit.getServer;
 
 public class Database {
     private static Main plugin = null;
@@ -128,10 +128,11 @@ public class Database {
                     LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                     String parkourCreator = res.getString("parkourCreator");
 
-                    ParkourGame parkourGame = new ParkourGame(plugin, id, checkpoints, parkourCreator, true);
-                    getServer().getPluginManager().registerEvents(parkourGame, plugin);
+                    GameInstance parkourGame = new GameInstance(plugin, id, checkpoints, parkourCreator, true);
 
-                    Main.getParkourGames().put(id, parkourGame);
+                    GameRegistry.addGame(id, parkourGame);
+
+                    for (Location checkpoint : checkpoints.keySet()) GameRegistry.addGameByLocation(checkpoint, id);
                 }
             }
             catch (SQLException e) {
@@ -158,10 +159,11 @@ public class Database {
                 LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                 String parkourCreator = res.getString("parkourCreator");
 
-                ParkourGame parkourGame = new ParkourGame(plugin, id, checkpoints, parkourCreator, false);
-                getServer().getPluginManager().registerEvents(parkourGame, plugin);
+                GameInstance parkourGame = new GameInstance(plugin, id, checkpoints, parkourCreator, false);
 
-                Main.getParkourGames().put(id, parkourGame);
+                GameRegistry.addGame(id, parkourGame);
+
+                for (Location checkpoint : checkpoints.keySet()) GameRegistry.addGameByLocation(checkpoint, id);
             }
         }
         catch (SQLException e) {

@@ -3,6 +3,9 @@ package org.zeroxamr.parkourEX;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.zeroxamr.parkourEX.commands.Commands;
+import org.zeroxamr.parkourEX.game.GameRegistry;
+import org.zeroxamr.parkourEX.listeners.GameListener;
+import org.zeroxamr.parkourEX.listeners.GameItems;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
@@ -10,7 +13,6 @@ import java.io.File;
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
-    private static final HashMap<Integer, ParkourGame> parkourGames = new HashMap<>();
     private static Database DBM = null;
 
     @Override
@@ -21,21 +23,22 @@ public final class Main extends JavaPlugin implements Listener {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
+        Pdc.initialize(this);
+        Shared.initialize(this);
         Services.initialize(this);
         Database.initialize(this);
-        Shared.initialize(this);
-        Pdc.initialize(this);
-        ParkourItems.initialize(this);
-
-        DBM = new Database();
+        GameItems.initialize(this);
 
         ParkourTags.cleanup();
         Shared.resetPlayersInfo();
 
-        this.getCommand("parkourex").setExecutor(new Commands(this));
+        DBM = new Database();
 
+        Objects.requireNonNull(this.getCommand("ParkourEX".toLowerCase())).setExecutor(new Commands(this));
+
+        getServer().getPluginManager().registerEvents(new GameListener(), this);
         getServer().getPluginManager().registerEvents(new ParkourTags(), this);
-        getServer().getPluginManager().registerEvents(new ParkourItems(), this);
+        getServer().getPluginManager().registerEvents(new GameItems(), this);
         getServer().getPluginManager().registerEvents(new Services(), this);
 
         DBM.loadGames();
@@ -43,24 +46,14 @@ public final class Main extends JavaPlugin implements Listener {
         ParkourTags.loadTags();
     }
 
-    public ParkourGame getParkourGame(Integer uuid) {
-        return parkourGames.get(uuid);
-    }
-
     @Override
     public void onDisable() {
         ParkourTags.cleanup();
-        parkourGames.clear();
+        GameRegistry.cleanup();
         DBM.shutdown();
     }
 
     public static Database getDBM() {
         return DBM;
     }
-
-    public static HashMap<Integer, ParkourGame> getParkourGames() {
-        return parkourGames;
-    }
-
-    public JavaPlugin plugin() { return this; }
 }

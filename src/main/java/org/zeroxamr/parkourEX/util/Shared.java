@@ -3,10 +3,10 @@ package org.zeroxamr.parkourEX.util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.zeroxamr.parkourEX.Main;
-import org.zeroxamr.parkourEX.ParkourGame;
+import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.Services;
+import org.zeroxamr.parkourEX.game.GameRegistry;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -123,7 +123,7 @@ public class Shared {
     }
 
     public static Boolean doCloneExist(LinkedHashMap<Location, Integer> newLocations) {
-        for (Map.Entry<Integer, ParkourGame> pg : Main.getParkourGames().entrySet()) {
+        for (Map.Entry<Integer, GameInstance> pg : GameRegistry.getParkourGames().entrySet()) {
             LinkedHashMap<Location, Integer> existingLocations = pg.getValue().getCheckpointMap();
             for (Location newLoc : newLocations.keySet()) {
                 for (Location existingLoc : existingLocations.keySet()) {
