@@ -9,14 +9,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.jspecify.annotations.NonNull;
+import org.zeroxamr.parkourEX.game.models.ChunkAddress;
+import org.zeroxamr.parkourEX.game.models.LocationMeta;
 import org.zeroxamr.parkourEX.util.Pdc;
 
 import java.util.*;
 
-public class GameHolograms implements Listener {
-    private record LocationMeta(String ID, int size, int index, Location location) {}
-    private record ChunkAddress(World world, int x, int z) {}
-
+public class GameHolograms {
     private static final HashMap<ChunkAddress, List<LocationMeta>> hologramsPerChunk = new HashMap<>();
     private static final Set<ArmorStand> hologramsBuilt = new HashSet<>();
     // Saved holograms are not utilized yet.
@@ -52,9 +51,9 @@ public class GameHolograms implements Listener {
         List<ArmorStand> armorStands = new ArrayList<>();
 
         for (LocationMeta locationMeta : incomingLocations) {
-            Location location = locationMeta.location;
-            String ID = locationMeta.ID;
-            String State = locationMeta.index == 0 ? "START" : locationMeta.index == locationMeta.size - 1 ? "END" : "CHECKPOINT";
+            Location location = locationMeta.location();
+            String ID = locationMeta.ID();
+            String State = locationMeta.index() == 0 ? "START" : locationMeta.index() == locationMeta.size() - 1 ? "END" : "CHECKPOINT";
 
             if (State.equals("START")) {
                 armorStands.add(createHologram(
@@ -86,7 +85,7 @@ public class GameHolograms implements Listener {
                 ));
 
                 armorStands.add(createHologram(
-                        "§b§l#" + locationMeta.index, location.getWorld(),
+                        "§b§l#" + locationMeta.index(), location.getWorld(),
                         location.getX() + 0.5,
                         location.getY() + 1.125,
                         location.getZ() + 0.5,
@@ -138,7 +137,7 @@ public class GameHolograms implements Listener {
             int expected = hologramsPerChunk.get(chunk).size() * 2;
             int actual = 0;
 
-            for (Entity entity : chunk.world.getChunkAt(chunk.x, chunk.z).getEntities()) {
+            for (Entity entity : chunk.world().getChunkAt(chunk.x(), chunk.z()).getEntities()) {
                 if (!(entity instanceof ArmorStand)) continue;
                 if (!Pdc.has(entity, "hologram")) continue;
                 actual++;
@@ -147,9 +146,9 @@ public class GameHolograms implements Listener {
             if (expected != actual) {
                 clearChunk(chunk);
                 hologramsBuilt.removeIf(hg ->
-                        hg.getWorld().equals(chunk.world) &&
-                        hg.getChunk().getX() == chunk.x &&
-                        hg.getChunk().getZ() == chunk.z
+                        hg.getWorld().equals(chunk.world()) &&
+                        hg.getChunk().getX() == chunk.x() &&
+                        hg.getChunk().getZ() == chunk.z()
                 );
                 hologramsBuilt.addAll(build(hologramsPerChunk.get(chunk)));
             }
@@ -160,25 +159,6 @@ public class GameHolograms implements Listener {
         for (ChunkAddress chunk : hologramsPerChunk.keySet()) {
             hologramsBuilt.addAll(build(hologramsPerChunk.get(chunk)));
         }
-    }
-
-    @EventHandler
-    private void onChunkLoad(ChunkLoadEvent event) {
-        ChunkAddress chunk = new ChunkAddress(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
-
-        clearChunk(chunk);
-
-        List<LocationMeta> locations = hologramsPerChunk.get(chunk);
-        if (locations == null) return;
-
-        hologramsBuilt.addAll(build(locations));
-    }
-
-    @EventHandler
-    private void onChunkUnload(ChunkUnloadEvent event) {
-        ChunkAddress chunk = new ChunkAddress(event.getWorld(), event.getChunk().getX(), event.getChunk().getZ());
-
-        clearChunk(chunk);
     }
 
     public static void cleanup() {
@@ -200,12 +180,20 @@ public class GameHolograms implements Listener {
         }
     }
 
-    private static void clearChunk(ChunkAddress chunk) {
-        for (Entity entity : chunk.world.getChunkAt(chunk.x, chunk.z).getEntities()) {
+    public static void clearChunk(ChunkAddress chunk) {
+        for (Entity entity : chunk.world().getChunkAt(chunk.x(), chunk.z()).getEntities()) {
             if (!(entity instanceof ArmorStand)) continue;
             if (Pdc.has(entity, "hologram")) {
                 entity.remove();
             }
         }
+    }
+
+    public static List<LocationMeta> getChunk(ChunkAddress chunk) {
+        return hologramsPerChunk.get(chunk);
+    }
+
+    public static void buildLocations(List<LocationMeta> locations) {
+        hologramsBuilt.addAll(build(locations));
     }
 }

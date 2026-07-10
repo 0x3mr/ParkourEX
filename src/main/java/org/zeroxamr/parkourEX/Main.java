@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.zeroxamr.parkourEX.commands.Commands;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.game.GameHolograms;
+import org.zeroxamr.parkourEX.listeners.ChunkHandler;
 import org.zeroxamr.parkourEX.listeners.CreateTool;
 import org.zeroxamr.parkourEX.listeners.GameListener;
 import org.zeroxamr.parkourEX.listeners.GameItems;
@@ -38,7 +39,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         Objects.requireNonNull(this.getCommand("ParkourEX".toLowerCase())).setExecutor(new Commands(this));
 
-        getServer().getPluginManager().registerEvents(new GameHolograms(), this);
+        getServer().getPluginManager().registerEvents(new ChunkHandler(), this);
         getServer().getPluginManager().registerEvents(new GameListener(), this);
         getServer().getPluginManager().registerEvents(new CreateTool(), this);
         getServer().getPluginManager().registerEvents(new GameItems(), this);
