@@ -121,6 +121,7 @@ public class Services implements Listener {
 
         item.setItemMeta(arr);
 
+        Pdc.set(player, "cp-id", uuid);
         Pdc.set(item, "cp-id", uuid);
         Pdc.set(item, "cp-state", "start");
 

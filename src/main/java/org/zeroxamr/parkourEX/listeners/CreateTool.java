@@ -22,6 +22,10 @@ import java.util.UUID;
 public class CreateTool implements Listener {
     private static final HashMap<UUID, LinkedHashMap<Location, Integer>> createdGames = new HashMap<>();
 
+    public static void removeGame(UUID uuid) {
+        createdGames.remove(uuid);
+    }
+
     @EventHandler
     public void onParkourSetup(BlockPlaceEvent event) {
         Player player = event.getPlayer();
@@ -34,6 +38,8 @@ public class CreateTool implements Listener {
         event.setCancelled(true);
 
         String id = Pdc.getString(item, "cp-id");
+        if (id == null) return;
+
         UUID uuid = UUID.fromString(id);
 
         boolean isDuplicate = createdGames.containsKey(uuid) &&
@@ -124,6 +130,8 @@ public class CreateTool implements Listener {
                 else {
                     player.sendMessage("§cFailed to save new parkour. Check console for more details.");
                 }
+
+                removeGame(uuid);
         }
     }
 }

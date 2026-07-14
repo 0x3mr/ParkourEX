@@ -4,6 +4,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.zeroxamr.parkourEX.Services;
+import org.zeroxamr.parkourEX.listeners.CreateTool;
+import org.zeroxamr.parkourEX.util.Pdc;
+
+import java.util.UUID;
 
 public class Create implements Base {
     @Override
@@ -23,18 +27,23 @@ public class Create implements Base {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+
         if (!sender.isOp()) {
-            sender.sendMessage("" + ChatColor.RED + "No permission.");
+            player.sendMessage("" + ChatColor.RED + "No permission.");
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage("§cIncorrect command usage.");
-            sender.sendMessage("§cUse §e" + getUsage() + "§c.");
+            player.sendMessage("§cIncorrect command usage.");
+            player.sendMessage("§cUse §e" + getUsage() + "§c.");
             return true;
         }
 
-        Services.giveCreateParkour((Player) sender);
+        String id = Pdc.getString(player, "cp-id");
+        if (id != null) CreateTool.removeGame(UUID.fromString(id));
+
+        Services.giveCreateParkour(player);
 
         return true;
     }
