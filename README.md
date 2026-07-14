@@ -30,10 +30,10 @@ TODO:
 
 ### Identified Issues
 
-- `loadTables()` runs 3 `CREATE TABLE` statements in one execute call: fragile, driver-dependent
-- Player disconnect during `/pkx create` leaves a stale entry in `createdGames` (never cleaned up)
+- [x] `loadTables()` runs 3 `CREATE TABLE` statements in one execute call: fragile, driver-dependent
+- [x] Player disconnect during `/pkx create` leaves a stale entry in `createdGames` (never cleaned up)
 - Teleport-to-start logic duplicated across `ParkourGame`, `ParkourItems`, `Reset.java`, `Start.java`
-- `ParkourGame` mixes domain model, event listener, and session state machine in one class
-- Each parkour registers its own `PlayerMoveEvent` listener instead of a central dispatcher
+- [x] `ParkourGame` mixes domain model, event listener, and session state machine in one class
+- [x] Each parkour registers its own `PlayerMoveEvent` listener instead of a central dispatcher
 - `Main.getParkourGames()` exposes the live mutable map directly, no encapsulation
 - Parkour creation/save runs synchronously on the main thread, blocking on SQLite I/O
