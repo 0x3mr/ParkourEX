@@ -27,13 +27,10 @@ TODO:
 - [ ] Add config-defined commands to run (as player or console) when a parkour session ends
 - [x] Isolate parkour holograms setup/creation from parkour games
 - [x] extract the event handler in the holograms class as well
-
-### Identified Issues
-
 - [x] `loadTables()` runs 3 `CREATE TABLE` statements in one execute call: fragile, driver-dependent
 - [x] Player disconnect during `/pkx create` leaves a stale entry in `createdGames` (never cleaned up)
-- Teleport-to-start logic duplicated across `ParkourGame`, `ParkourItems`, `Reset.java`, `Start.java`
+- [ ] Teleport-to-start logic duplicated across `ParkourGame`, `ParkourItems`, `Reset.java`, `Start.java`
 - [x] `ParkourGame` mixes domain model, event listener, and session state machine in one class
 - [x] Each parkour registers its own `PlayerMoveEvent` listener instead of a central dispatcher
-- `Main.getParkourGames()` exposes the live mutable map directly, no encapsulation
-- Parkour creation/save runs synchronously on the main thread, blocking on SQLite I/O
+- [ ] `Main.getParkourGames()` exposes the live mutable map directly, no encapsulation
+- [ ] Parkour creation/save runs synchronously on the main thread, blocking on SQLite I/O

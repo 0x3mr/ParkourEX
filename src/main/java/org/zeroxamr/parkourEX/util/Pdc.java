@@ -97,4 +97,18 @@ public class Pdc {
                 pdc.has(nsk, PersistentDataType.INTEGER) ||
                 pdc.has(nsk, PersistentDataType.BOOLEAN);
     }
+
+    public static void remove(ItemStack item, String key) {
+        if (item == null || item.getType() == Material.AIR) return;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
+
+        remove(meta, key);
+        item.setItemMeta(meta);
+    }
+
+    public static void remove(@NonNull PersistentDataHolder pdh, String key) {
+        pdh.getPersistentDataContainer().remove(key(key));
+    }
 }
