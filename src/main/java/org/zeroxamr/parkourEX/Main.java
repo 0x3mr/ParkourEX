@@ -3,6 +3,7 @@ package org.zeroxamr.parkourEX;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.zeroxamr.parkourEX.commands.Commands;
+import org.zeroxamr.parkourEX.commands.Create;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.game.GameHolograms;
 import org.zeroxamr.parkourEX.listeners.ChunkHandler;
@@ -31,6 +32,7 @@ public final class Main extends JavaPlugin implements Listener {
         Services.initialize(this);
         Database.initialize(this);
         GameItems.initialize(this);
+        CreateTool.initialize(this);
 
         GameHolograms.cleanup();
         Shared.resetPlayersInfo();

@@ -29,8 +29,8 @@ TODO:
 - [x] extract the event handler in the holograms class as well
 - [x] `loadTables()` runs 3 `CREATE TABLE` statements in one execute call: fragile, driver-dependent
 - [x] Player disconnect during `/pkx create` leaves a stale entry in `createdGames` (never cleaned up)
-- [ ] Teleport-to-start logic duplicated across `ParkourGame`, `ParkourItems`, `Reset.java`, `Start.java`
+- [x] (POSTPONED) Teleport-to-start logic duplicated across `ParkourGame`, `ParkourItems`, `Reset.java`, `Start.java`
 - [x] `ParkourGame` mixes domain model, event listener, and session state machine in one class
 - [x] Each parkour registers its own `PlayerMoveEvent` listener instead of a central dispatcher
-- [ ] `Main.getParkourGames()` exposes the live mutable map directly, no encapsulation
-- [ ] Parkour creation/save runs synchronously on the main thread, blocking on SQLite I/O
+- [x] `Main.getParkourGames()` exposes the live mutable map directly, no encapsulation
+- [x] Parkour creation/save runs synchronously on the main thread, blocking on SQLite I/O

@@ -1,5 +1,6 @@
 package org.zeroxamr.parkourEX.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,7 +21,13 @@ import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class CreateTool implements Listener {
+    private static Main plugin;
+
     private static final HashMap<UUID, LinkedHashMap<Location, Integer>> createdGames = new HashMap<>();
+
+    public static void initialize(Main plugin) {
+        CreateTool.plugin = plugin;
+    }
 
     public static void removeGame(UUID uuid) {
         createdGames.remove(uuid);
@@ -124,14 +131,21 @@ public class CreateTool implements Listener {
 
                 player.sendMessage("§7Saving parkour...");
 
-                if (Main.getDBM().saveGame(createdGames.get(uuid), player.getName())) {
-                    player.sendMessage("§aNew parkour created!");
-                }
-                else {
-                    player.sendMessage("§cFailed to save new parkour. Check console for more details.");
-                }
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    boolean result = Main.getDBM().saveGame(createdGames.get(uuid), player.getName());
 
-                removeGame(uuid);
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (result) {
+                            player.sendMessage("§aNew parkour created!");
+                        }
+                        else {
+                            player.sendMessage("§cFailed to save new parkour. Check console for more details.");
+                        }
+
+                        removeGame(uuid);
+                    });
+                });
+
         }
     }
 }
