@@ -4,11 +4,13 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.zeroxamr.parkourEX.Main;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
+import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
 public class GameListener implements Listener {
@@ -41,5 +43,14 @@ public class GameListener implements Listener {
         Player player = event.getPlayer();
 
         game.handleParkour(player, playerLocation);
+    }
+
+    @EventHandler
+    public void onPlayerFallDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player player
+                && event.getCause() == EntityDamageEvent.DamageCause.FALL
+                && Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
+            event.setCancelled(true);
+        }
     }
 }
