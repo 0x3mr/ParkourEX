@@ -54,7 +54,7 @@ public class Reset implements Base {
             return true;
         }
 
-        Location location = GameRegistry.getParkourGames().get(id).getCheckpointMapWithYaw().firstEntry().getKey();
+        Location location = GameRegistry.getParkourGame(id).getCheckpointMapWithYaw().firstEntry().getKey();
         location.setX(location.getX() + 0.5);
         location.setZ(location.getZ() + 0.5);
 

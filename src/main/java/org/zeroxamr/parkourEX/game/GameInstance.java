@@ -134,8 +134,7 @@ public class GameInstance {
     }
 
     public static void playerStateCheckpoint(Player player) {
-        String unserializedLocation = Pdc.getString(player, "checkpointLocation");
-        Location location = Shared.deserializeLocation(unserializedLocation);
+        Location location = Shared.deserializeLocation(Pdc.getString(player, "checkpointLocation"));
         location.setX(location.getX() + 0.5);
         location.setZ(location.getZ() + 0.5);
         player.teleport(location);
@@ -162,8 +161,8 @@ public class GameInstance {
     public void playerStateCancel(Player player) {
         if (Objects.equals(plugin.getConfig().get("returnToStart"), true)) {
             Integer gameID = Pdc.getInt(player, "parkourID");
-            Location location = GameRegistry.getParkourGames().get(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
 
+            Location location = GameRegistry.getParkourGame(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
             location.setX(location.getX() + 0.5);
             location.setZ(location.getZ() + 0.5);
 

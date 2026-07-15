@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
 
@@ -54,7 +55,9 @@ public class Start implements Base {
             return true;
         }
 
-        Location location = GameRegistry.getParkourGames().get(id).getCheckpointMapWithYaw().firstEntry().getKey();
+        GameInstance game = GameRegistry.getParkourGame(id);
+
+        Location location = game.getCheckpointMapWithYaw().firstEntry().getKey();
         location.setX(location.getX() + 0.5);
         location.setZ(location.getZ() + 0.5);
 
@@ -64,7 +67,7 @@ public class Start implements Base {
 
         player.teleport(location);
 
-        GameRegistry.getParkourGames().get(id).playerStateStart((Player) sender, id);
+        game.playerStateStart(player, id);
 
         player.sendMessage("§a§lParkour challenge started!");
         player.sendMessage("§aUse §e" + Commands.getCommands().get("Checkpoint".toLowerCase()).getUsage() + " §ato teleport to the last checkpoint or §e" + Commands.getCommands().get("Cancel".toLowerCase()).getUsage() + " §ato cancel!");

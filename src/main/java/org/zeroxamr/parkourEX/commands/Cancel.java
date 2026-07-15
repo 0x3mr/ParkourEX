@@ -27,7 +27,7 @@ public class Cancel implements Base {
 
         if (Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
             int gameID = Pdc.getInt(player, "parkourID");
-            GameRegistry.getParkourGames().get(gameID).playerStateCancel(player);
+            GameRegistry.getParkourGame(gameID).playerStateCancel(player);
             player.sendMessage("§c§lParkour challenge cancelled!");
         }
         else {

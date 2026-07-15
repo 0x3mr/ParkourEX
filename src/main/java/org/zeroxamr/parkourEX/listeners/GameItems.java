@@ -89,7 +89,7 @@ public class GameItems implements Listener {
             GameInstance.playerStateCheckpoint(player);
         }
         else if ("reset".equals(Pdc.getString(item, "parkourItem"))) {
-            Location location = GameRegistry.getParkourGames().get(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
+            Location location = GameRegistry.getParkourGame(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
             location.setX(location.getX() + 0.5);
             location.setZ(location.getZ() + 0.5);
 
@@ -100,7 +100,7 @@ public class GameItems implements Listener {
             player.teleport(location);
         }
         else if ("cancel".equals(Pdc.getString(item, "parkourItem"))) {
-            GameRegistry.getParkourGames().get(gameID).playerStateCancel(player);
+            GameRegistry.getParkourGame(gameID).playerStateCancel(player);
             player.sendMessage("§c§lParkour challenge cancelled!");
         }
     }
