@@ -31,7 +31,7 @@ public class Shared {
         Services.removeResetParkour(player);
         Services.removeLeaveParkour(player);
 
-        GameRegistry.resetCollisionToDefault(player);
+        Services.resetCollisionToDefault(player);
     }
 
     public static void resetPlayersInfo() {
@@ -47,7 +47,7 @@ public class Shared {
             Services.removeResetParkour(player);
             Services.removeLeaveParkour(player);
 
-            GameRegistry.resetCollisionToDefault(player);
+            Services.resetCollisionToDefault(player);
         }
     }
 

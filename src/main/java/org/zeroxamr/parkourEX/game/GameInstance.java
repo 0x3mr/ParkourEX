@@ -1,11 +1,8 @@
 package org.zeroxamr.parkourEX.game;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 import org.zeroxamr.parkourEX.Main;
 import org.zeroxamr.parkourEX.Services;
@@ -139,7 +136,7 @@ public class GameInstance {
         }
 
         if (Objects.equals(plugin.getConfig().get("disableCollisions"), true)) {
-            GameRegistry.disableCollision(player);
+            Services.disableCollision(player);
         }
 
         playerStateReset(player);

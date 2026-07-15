@@ -1,10 +1,6 @@
 package org.zeroxamr.parkourEX.game;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,25 +8,6 @@ import java.util.LinkedHashMap;
 public class GameRegistry {
     private static final HashMap<Integer, GameInstance> parkourGames = new HashMap<>();
     private static final HashMap<Location, Integer> parkourGamesByLocation = new HashMap<>();
-
-    public static void disableCollision(Player player) {
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        Team team = scoreboard.getTeam("parkourCollisions");
-        if (team == null) {
-            team = scoreboard.registerNewTeam("parkourCollisions");
-            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
-        }
-        team.addEntry(player.getName());
-    }
-
-    public static void resetCollisionToDefault(Player player) {
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        Team team = scoreboard.getTeam("parkourCollisions");
-        if (team == null) {
-            return;
-        }
-        team.removeEntry(player.getName());
-    }
 
     public static HashMap<Integer, GameInstance> getParkourGames() {
         return parkourGames;

@@ -1,5 +1,6 @@
 package org.zeroxamr.parkourEX;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,6 +12,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
@@ -128,5 +131,24 @@ public class Services implements Listener {
         player.getInventory().setItem(4, item);
         player.sendMessage("§dPlace the [Start] block to set the parkour's first checkpoint");
         player.sendMessage("§dTIP: The direction you face while placing a checkpoint will be used as the respawn orientation for that checkpoint");
+    }
+
+    public static void disableCollision(Player player) {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam("parkourCollisions");
+        if (team == null) {
+            team = scoreboard.registerNewTeam("parkourCollisions");
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        }
+        team.addEntry(player.getName());
+    }
+
+    public static void resetCollisionToDefault(Player player) {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam("parkourCollisions");
+        if (team == null) {
+            return;
+        }
+        team.removeEntry(player.getName());
     }
 }
