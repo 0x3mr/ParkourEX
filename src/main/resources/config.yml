@@ -15,3 +15,6 @@ returnToStart: false
 
 # Remove all player effects upon a parkour game start
 clearAllEffects: true
+
+# Disallows players to collide with each other during parkour
+disableCollisions: true

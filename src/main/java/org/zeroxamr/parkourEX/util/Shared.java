@@ -30,6 +30,8 @@ public class Shared {
         Services.removeLastCheckpoint(player);
         Services.removeResetParkour(player);
         Services.removeLeaveParkour(player);
+
+        GameRegistry.resetCollisionToDefault(player);
     }
 
     public static void resetPlayersInfo() {
@@ -44,6 +46,8 @@ public class Shared {
             Services.removeLastCheckpoint(player);
             Services.removeResetParkour(player);
             Services.removeLeaveParkour(player);
+
+            GameRegistry.resetCollisionToDefault(player);
         }
     }
 

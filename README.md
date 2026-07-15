@@ -19,7 +19,7 @@ TODO:
 - [ ] unify/centralize teleport back to checkpoint logic & reuse
 - [ ] Remove fall damage during parkour session
   - make sure it does not break external functionalities on parkour exit
-- [ ] Remove player collision while in parkour
+- [x] Remove player collision while in parkour
 - [ ] Add config-toggleable feature to auto teleport back to checkpoint on reaching certain Y-level (preset in config)
 - [ ] Let parkour items configurable
   - let items management be centralized in one place
