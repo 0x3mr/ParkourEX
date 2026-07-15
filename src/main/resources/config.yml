@@ -12,3 +12,6 @@ skipCheckpoints: false
 
 # Send player to the beginning of the parkour on leave
 returnToStart: false
+
+# Remove all player effects upon a parkour game start
+clearAllEffects: true

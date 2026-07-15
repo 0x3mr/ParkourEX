@@ -130,6 +130,11 @@ public class GameInstance {
 
     public void playerStateStart(Player player, int ID) {
         Pdc.set(player, "parkourID", ID);
+
+        if (Objects.equals(plugin.getConfig().get("clearAllEffects"), true)) {
+            player.clearActivePotionEffects();
+        }
+
         playerStateReset(player);
     }
 

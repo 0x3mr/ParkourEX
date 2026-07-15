@@ -23,7 +23,7 @@ TODO:
 - [ ] Add config-toggleable feature to auto teleport back to checkpoint on reaching certain Y-level (preset in config)
 - [ ] Let parkour items configurable
   - let items management be centralized in one place
-- [ ] Remove any effects the player has during a parkour
+- [x] Remove any effects the player has during a parkour
 - [ ] Add config-defined commands to run (as player or console) when a parkour session ends
 - [x] Isolate parkour holograms setup/creation from parkour games
 - [x] extract the event handler in the holograms class as well
