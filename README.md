@@ -16,12 +16,12 @@ TODO:
 - [x] Add option to let parkour continuable upon checkpoint skips
 - [x] Improve the existing hologram tags design to become consistent
 - [x] Bug fix: teleport back to checkpoint when not in a parkour session
-- [ ] unify/centralize teleport back to checkpoint logic & reuse
+- [x] CANCELLED/POSTPONED: unify/centralize teleport back to checkpoint logic & reuse
 - [ ] Remove fall damage during parkour session
   - make sure it does not break external functionalities on parkour exit
 - [x] Remove player collision while in parkour
 - [ ] Add config-toggleable feature to auto teleport back to checkpoint on reaching certain Y-level (preset in config)
-- [ ] Let parkour items configurable
+- [x] Let parkour items configurable
   - let items management be centralized in one place
 - [x] Remove any effects the player has during a parkour
 - [ ] Add config-defined commands to run (as player or console) when a parkour session ends

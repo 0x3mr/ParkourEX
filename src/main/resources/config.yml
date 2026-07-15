@@ -1,11 +1,20 @@
 # Set to 4 to place the checkpoint item in the center slot of the hotbar
-checkpointSlot: 4
+checkpointSlot: 3
+
+# Set to a custom checkpoint item (i.e. ARROW, HEAVY_WEIGHTED_PRESSURE_PLATE)
+checkpointItem: PRISMARINE_SHARD
 
 # Set the reset item position in the hotbar
-resetSlot: 5
+resetSlot: 4
+
+# Set to a custom reset item (i.e. BLAZE_POWDER, COMPARATOR)
+resetItem: RED_BED
 
 # Set the leave item position in the hotbar
-leaveSlot: 0
+cancelSlot: 5
+
+# Set to a custom cancel item (i.e. BARRIER)
+cancelItem: OAK_DOOR
 
 # Allow players to skip a checkpoint during a parkour game
 skipCheckpoints: false

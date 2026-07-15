@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.zeroxamr.parkourEX.listeners.GameItems;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
@@ -29,7 +30,7 @@ public class Services implements Listener {
     }
 
     public static void addResetParkour(Player player) {
-        ItemStack item = new ItemStack(Material.RED_BED);
+        ItemStack item = new ItemStack(GameItems.reset());
         ItemMeta arr = item.getItemMeta();
 
         arr.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset");
@@ -41,9 +42,9 @@ public class Services implements Listener {
     }
 
     public static void removeResetParkour(Player player) {
-        if (!player.getInventory().contains(Material.RED_BED)) return;
+        if (!player.getInventory().contains(GameItems.reset())) return;
 
-        ItemStack item = player.getInventory().getItem(player.getInventory().first(Material.RED_BED));
+        ItemStack item = player.getInventory().getItem(player.getInventory().first(GameItems.reset()));
         if (item == null) return;
 
         ItemMeta arr = item.getItemMeta();
@@ -55,7 +56,7 @@ public class Services implements Listener {
     }
 
     public static void addLeaveParkour(Player player) {
-        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemStack item = new ItemStack(GameItems.cancel());
         ItemMeta arr = item.getItemMeta();
 
         arr.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "Cancel");
@@ -63,13 +64,13 @@ public class Services implements Listener {
 
         Pdc.set(item, "parkourItem", "cancel");
 
-        player.getInventory().setItem(plugin.getConfig().getInt("leaveSlot"), item);
+        player.getInventory().setItem(plugin.getConfig().getInt("cancelSlot"), item);
     }
 
     public static void removeLeaveParkour(Player player) {
-        if (!player.getInventory().contains(Material.BARRIER)) return;
+        if (!player.getInventory().contains(GameItems.cancel())) return;
 
-        ItemStack item = player.getInventory().getItem(player.getInventory().first(Material.BARRIER));
+        ItemStack item = player.getInventory().getItem(player.getInventory().first(GameItems.cancel()));
         if (item == null) return;
 
         ItemMeta arr = item.getItemMeta();
@@ -81,7 +82,7 @@ public class Services implements Listener {
     }
 
     public static void addLastCheckpoint(Player player) {
-        ItemStack item = new ItemStack(Material.ARROW);
+        ItemStack item = new ItemStack(GameItems.checkpoint());
         ItemMeta arr = item.getItemMeta();
 
         arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Teleport to Last Checkpoint");
@@ -93,9 +94,9 @@ public class Services implements Listener {
     }
 
     public static void removeLastCheckpoint(Player player) {
-        if (!player.getInventory().contains(Material.ARROW)) return;
+        if (!player.getInventory().contains(GameItems.checkpoint())) return;
 
-        ItemStack item = player.getInventory().getItem(player.getInventory().first(Material.ARROW));
+        ItemStack item = player.getInventory().getItem(player.getInventory().first(GameItems.checkpoint()));
         if (item == null) return;
 
         ItemMeta arr = item.getItemMeta();

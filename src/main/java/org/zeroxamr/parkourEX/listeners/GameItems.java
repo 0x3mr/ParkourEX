@@ -14,11 +14,42 @@ import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public class GameItems implements Listener {
     private static Main plugin;
+    private static final HashMap<String, Material> PARKOUR_ITEMS = new HashMap<>(Map.of(
+            "RESET_ITEM", Material.RED_BED,
+            "CANCEL_ITEM", Material.OAK_DOOR,
+            "CHECKPOINT_ITEM", Material.ARROW
+    ));
 
     public static void initialize(Main plugin) {
         GameItems.plugin = plugin;
+
+        PARKOUR_ITEMS.put("RESET_ITEM", Material.matchMaterial(
+                Objects.requireNonNullElse(plugin.getConfig().getString("resetItem"),
+                        "RED_BED")));
+        PARKOUR_ITEMS.put("CANCEL_ITEM", Material.matchMaterial(
+                Objects.requireNonNullElse(plugin.getConfig().getString("cancelItem"),
+                        "OAK_DOOR")));
+        PARKOUR_ITEMS.put("CHECKPOINT_ITEM", Material.matchMaterial(
+                Objects.requireNonNullElse(plugin.getConfig().getString("checkpointItem"),
+                        "ARROW")));
+    }
+
+    public static Material reset() {
+        return PARKOUR_ITEMS.get("RESET_ITEM");
+    }
+
+    public static Material cancel() {
+        return PARKOUR_ITEMS.get("CANCEL_ITEM");
+    }
+
+    public static Material checkpoint() {
+        return PARKOUR_ITEMS.get("CHECKPOINT_ITEM");
     }
 
     @EventHandler
@@ -69,12 +100,7 @@ public class GameItems implements Listener {
         ItemStack item = event.getItem();
         if (item == null) return;
 
-        // TODO: let this dynamically checked, and be configurable
-        if (!item.getType().equals(Material.ARROW)
-                && !item.getType().equals(Material.RED_BED)
-                && !item.getType().equals(Material.BARRIER)) {
-            return;
-        }
+        if (!PARKOUR_ITEMS.containsValue(item.getType())) return;
 
         if (Boolean.FALSE.equals(Pdc.getBoolean(player, "inParkour"))) return;
 
