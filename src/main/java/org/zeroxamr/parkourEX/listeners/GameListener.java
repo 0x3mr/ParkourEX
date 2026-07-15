@@ -3,6 +3,7 @@ package org.zeroxamr.parkourEX.listeners;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -20,7 +21,7 @@ public class GameListener implements Listener {
         GameListener.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent e) {
         Shared.resetPlayerInfo(e.getPlayer());
     }
@@ -45,12 +46,27 @@ public class GameListener implements Listener {
         game.handleParkour(player, playerLocation);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerFallDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player player
-                && event.getCause() == EntityDamageEvent.DamageCause.FALL
-                && Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) {
+                && Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))
+                && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onVoidEntryTeleport(PlayerMoveEvent event) {
+        if (!plugin.getConfig().getBoolean("voidTeleport.enabled")) return;
+
+        Player player = event.getPlayer();;
+
+        if (!Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) return;
+
+        double line = plugin.getConfig().getDouble("voidTeleport.y-axis");
+
+        if (player.getLocation().getBlockY() <= line) {
+            GameInstance.playerStateCheckpoint(player);
         }
     }
 }

@@ -33,6 +33,7 @@ public final class Main extends JavaPlugin implements Listener {
         Database.initialize(this);
         GameItems.initialize(this);
         CreateTool.initialize(this);
+        GameListener.initialize(this);
 
         GameHolograms.cleanup();
         Shared.resetPlayersInfo();

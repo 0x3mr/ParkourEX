@@ -10,7 +10,7 @@ resetSlot: 4
 # Set to a custom reset item (i.e. BLAZE_POWDER, COMPARATOR)
 resetItem: RED_BED
 
-# Set the leave item position in the hotbar
+# Set the leave item position in the hotb ar
 cancelSlot: 5
 
 # Set to a custom cancel item (i.e. BARRIER)
@@ -27,3 +27,9 @@ clearAllEffects: true
 
 # Disallows players to collide with each other during parkour
 disableCollisions: true
+
+# Teleport players back to their latest checkpoint if they fall below the configured Y-level
+# Useful for parkour courses built in or above the void.
+voidTeleport:
+  enabled: false
+  y-axis: 48
