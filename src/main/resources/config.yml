@@ -32,4 +32,4 @@ disableCollisions: true
 # Useful for parkour courses built in or above the void.
 voidTeleport:
   enabled: false
-  y-axis: 48
+  y-axis: -100
