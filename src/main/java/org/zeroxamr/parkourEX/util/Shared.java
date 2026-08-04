@@ -51,6 +51,14 @@ public class Shared {
         }
     }
 
+    public static String parsePlaceholders(String command, Player player, int parkourID) {
+        return command
+                .replace("%p", player.getName())
+                .replace("%nick", player.getDisplayName())
+                .replace("%id", String.valueOf(parkourID))
+                .replace("%name", String.valueOf(GameRegistry.getParkourName(parkourID)));
+    }
+
     public static String getDurationBetween(LocalTime duration1, LocalTime duration2) {
         Duration duration = Duration.between(duration1, duration2);
 

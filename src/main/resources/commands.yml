@@ -1,0 +1,49 @@
+# This configuration file allows you to execute commands on various parkour events.
+# Supported placeholders in commands:
+#   %p is replaced with the player name.
+#   %nick is replaced with the player's nickname.
+#   %id is replaced with the id of the parkour run the player was in.
+#   %name is replaced with the name of the parkour run the player was in.
+#
+# For example, if you want to broadcast when a player finishes a parkour run:
+# onParkourFinish:
+#   broadcast:
+#     command: 'broadcast %p has just finished the parkour %name!'
+#     executor: CONSOLE
+#
+# This will make the console execute the broadcast command mentioning the player.
+# Each command under an event has a name you can choose freely (e.g. 'broadcast' as above),
+# after which a mandatory 'command' field defines the command to run,
+# and 'executor' defines who will run the command (either PLAYER or CONSOLE).
+# You may only define one 'command' and one 'executor' per named entry. Longer example:
+# onParkourExit:
+#   farewell:
+#     command: 'msg %p Come back soon!'
+#     executor: CONSOLE
+#   broadcast:
+#     command: 'broadcast %p left the parkour course.'
+#     executor: CONSOLE
+#
+# You can also add a delay to a command. It will run after the specified ticks (20 ticks = 1 second). Example:
+# onParkourFinish:
+#   congratulate:
+#     command: 'msg %p Nice run!'
+#     executor: PLAYER
+#     delay: 200
+#
+# Supported command events:
+#   onParkourExit   - runs when a player leaves or cancels a parkour run before finishing
+#   onParkourFinish - runs when a player successfully completes a parkour run
+
+onParkourExit:
+  exitBroadcast:
+    command: 'say %p left the parkour course!'
+    executor: CONSOLE
+    delay: 20 # delete this line for no delay
+    id: 1 # specify a parkour id, delete this line to target all parkour runs
+
+# INCOMPLETE:
+#onParkourExit:
+#  finishMessage:
+#    command: 'msg %p I finished the parkour!'
+#    executor: PLAYER

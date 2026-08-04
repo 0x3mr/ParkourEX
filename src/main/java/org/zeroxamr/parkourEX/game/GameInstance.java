@@ -1,5 +1,6 @@
 package org.zeroxamr.parkourEX.game;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ public class GameInstance {
     private final int id;
     private final Main plugin;
     private final String gameAdmin;
+    private String gameName = "";
 
     private final LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
     private final List<Float> checkpointYaws = new ArrayList<>();
@@ -168,9 +170,10 @@ public class GameInstance {
     }
 
     public void playerStateCancel(Player player) {
-        if (Objects.equals(plugin.getConfig().get("returnToStart"), true)) {
-            Integer gameID = Pdc.getInt(player, "parkourID");
+        Integer gameID = Pdc.getInt(player, "parkourID");
+        if (gameID == null) return;
 
+        if (Objects.equals(plugin.getConfig().get("returnToStart"), true)) {
             Location location = GameRegistry.getParkourGame(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
             location.setX(location.getX() + 0.5);
             location.setZ(location.getZ() + 0.5);
@@ -182,6 +185,7 @@ public class GameInstance {
             player.teleport(location);
         }
 
+        GameRegistry.executeExitCommands(gameID, player);
         Shared.resetPlayerInfo(player);
     }
 
@@ -200,5 +204,9 @@ public class GameInstance {
             i++;
         }
         return checkpointMapWithYaw;
+    }
+
+    public String getName() {
+        return gameName;
     }
 }

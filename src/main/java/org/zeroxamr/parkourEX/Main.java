@@ -24,6 +24,7 @@ public final class Main extends JavaPlugin implements Listener {
         if (!new File(getDataFolder(), "config.yml").exists()) {
             saveResource("config.yml", false);
         }
+
         getConfig().options().copyDefaults(true);
         saveConfig();
 
@@ -34,6 +35,8 @@ public final class Main extends JavaPlugin implements Listener {
         GameItems.initialize(this);
         CreateTool.initialize(this);
         GameListener.initialize(this);
+        GameRegistry.initialize(this);
+        ConfigManager.initialize(this);
 
         GameHolograms.cleanup();
         Shared.resetPlayersInfo();
@@ -51,6 +54,7 @@ public final class Main extends JavaPlugin implements Listener {
         DBM.loadGames();
 
         GameHolograms.loadTags();
+        ConfigManager.loadExitCommands();
     }
 
     @Override

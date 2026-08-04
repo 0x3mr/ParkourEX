@@ -24,7 +24,13 @@ TODO:
 - [x] Let parkour items configurable
   - let items management be centralized in one place
 - [x] Remove any effects the player has during a parkour
-- [ ] Add config-defined commands to run (as player or console) when a parkour session ends
+- [x] Add config-defined commands to run (as player or console) when a parkour session ends
+  - currently supports the following events only:
+    - [x] onParkourExit
+    - [ ] onParkourEnd
+    - [ ] onParkourStart
+  - can set a command, executor type with an optional delay
+  - can target specific parkour runs or set to all
 - [x] Isolate parkour holograms setup/creation from parkour games
 - [x] extract the event handler in the holograms class as well
 - [x] `loadTables()` runs 3 `CREATE TABLE` statements in one execute call: fragile, driver-dependent
