@@ -11,45 +11,38 @@
 #     command: 'broadcast %p has just finished the parkour %name!'
 #     executor: CONSOLE
 #
-# This will make the console execute the broadcast command mentioning the player.
 # Each command under an event has a name you can choose freely (e.g. 'broadcast' as above),
-# after which a mandatory 'command' field defines the command to run,
-# and 'executor' defines who will run the command (either PLAYER or CONSOLE).
-# You may only define one 'command' and one 'executor' per named entry. Longer example:
-# onParkourExit:
-#   farewell:
-#     command: 'msg %p Come back soon!'
-#     executor: CONSOLE
-#   broadcast:
-#     command: 'broadcast %p left the parkour course.'
-#     executor: CONSOLE
+# followed by a mandatory 'command' field and an 'executor' field (either PLAYER or CONSOLE).
+# You can define multiple commands under the same event.
 #
-# You can also add a delay to a command.
-# It will run after the specified ticks (20 ticks = 1 second). Example:
+# You can also add a delay to a command. It will run after the specified ticks
+# (20 ticks = 1 second). Example:
 # onParkourEnd:
 #   congratulate:
 #     command: 'msg %p Nice run!'
 #     executor: PLAYER
 #     delay: 200
 #
+# You can also specify a parkour id using the 'id' field.
+# Delete the line to target all parkour runs.
+#
 # Supported command events:
-#   onParkourExit   - runs when a player leaves or cancels a parkour run before finishing
-#   onParkourEnd - runs when a player successfully completes a parkour run
+#   onParkourStart - runs when a player starts a parkour run
+#   onParkourEnd   - runs when a player successfully completes a parkour run
+#   onParkourExit  - runs when a player leaves or cancels a parkour run before finishing
 
-onParkourExit:
-  exitBroadcast:
-    command: 'say %p left the parkour course!'
-    executor: CONSOLE
-    delay: 20 # delete this line for no delay
-    id: 1 # specify a parkour id, delete this line to target all parkour runs
-
-onParkourStart:
-  welcome:
-    command: 'msg %p Good luck on %name!'
-    executor: CONSOLE
-
-onParkourEnd:
-  congratulate:
-    command: 'broadcast %p has just finished %name!'
-    executor: CONSOLE
-    delay: 5
+#onParkourStart:
+#  welcome:
+#    command: 'msg %p Good luck on %name!'
+#    executor: CONSOLE
+#
+#onParkourEnd:
+#  congratulate:
+#    command: 'broadcast %p has just finished %name!'
+#    executor: CONSOLE
+#    delay: 5
+#
+#onParkourExit:
+#  farewell:
+#    command: 'msg %p You left %name.'
+#    executor: CONSOLE
