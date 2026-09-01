@@ -54,8 +54,9 @@ public final class Main extends JavaPlugin implements Listener {
         DBM.loadGames();
 
         GameHolograms.loadTags();
-        ConfigManager.loadExitCommands();
+        ConfigManager.loadStartCommands();
         ConfigManager.loadFinishCommands();
+        ConfigManager.loadExitCommands();
     }
 
     @Override

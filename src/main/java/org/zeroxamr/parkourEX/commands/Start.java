@@ -67,10 +67,11 @@ public class Start implements Base {
 
         player.teleport(location);
 
-        game.playerStateStart(player, id);
-
         player.sendMessage("§a§lParkour challenge started!");
         player.sendMessage("§aUse §e" + Commands.getCommands().get("Checkpoint".toLowerCase()).getUsage() + " §ato teleport to the last checkpoint or §e" + Commands.getCommands().get("Cancel".toLowerCase()).getUsage() + " §ato cancel!");
+
+        game.playerStateStart(player, id);
+        GameRegistry.executeStartCommands(id, player);
 
         return true;
     }

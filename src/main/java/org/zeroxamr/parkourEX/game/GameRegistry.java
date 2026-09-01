@@ -4,10 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.zeroxamr.parkourEX.Main;
-import org.zeroxamr.parkourEX.Services;
-import org.zeroxamr.parkourEX.game.models.CommandExecutor;
 import org.zeroxamr.parkourEX.game.models.CommandMeta;
 import org.zeroxamr.parkourEX.util.Shared;
 
@@ -26,8 +23,9 @@ public class GameRegistry {
     private static final HashMap<Integer, GameInstance> parkourGames = new HashMap<>();
     private static final HashMap<Location, Integer> parkourGamesByLocation = new HashMap<>();
 
+    private static final HashMap<Integer, List<CommandMeta>> startCommands = new HashMap<>();
+    private static final HashMap<Integer, List<CommandMeta>> endCommands = new HashMap<>();
     private static final HashMap<Integer, List<CommandMeta>> exitCommands = new HashMap<>();
-    private static final HashMap<Integer, List<CommandMeta>> finishCommands = new HashMap<>();
 
     public static void addExitCommand(int parkourID, CommandMeta cmd) {
         exitCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
@@ -40,12 +38,45 @@ public class GameRegistry {
     }
 
     public static void addFinishCommand(int parkourID, CommandMeta cmd) {
-        finishCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
+        endCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
     }
 
     public static void addFinishCommandToAll(CommandMeta cmd) {
         for (int id : parkourGames.keySet()) {
-            finishCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
+            endCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
+        }
+    }
+
+    public static void addStartCommand(int parkourID, CommandMeta cmd) {
+        startCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
+    }
+
+    public static void addStartCommandToAll(CommandMeta cmd) {
+        for (int id : parkourGames.keySet()) {
+            startCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
+        }
+    }
+
+    public static void executeStartCommands(int parkourID, Player player) {
+        List<CommandMeta> commands = startCommands.get(parkourID);
+        if (commands == null || commands.isEmpty()) return;
+
+        for (CommandMeta cmd : commands) {
+            String command = Shared.parsePlaceholders(cmd.command(), player, parkourID);
+
+            CommandSender cmdSender = switch (cmd.executor()) {
+                case CONSOLE -> Bukkit.getConsoleSender();
+                case PLAYER -> player;
+            };
+
+            Bukkit.getScheduler().runTaskLater(plugin, () ->
+                            Bukkit.dispatchCommand(cmdSender, command),
+                    cmd.delay()
+            );
+
+            if (cmdSender instanceof Player) {
+                plugin.getLogger().info(player.getName() + " issued server command: /" + command);
+            }
         }
     }
 
@@ -73,7 +104,7 @@ public class GameRegistry {
     }
 
     public static void executeFinishCommands(int parkourID, Player player) {
-        List<CommandMeta> commands = finishCommands.get(parkourID);
+        List<CommandMeta> commands = endCommands.get(parkourID);
         if (commands == null || commands.isEmpty()) return;
 
         for (CommandMeta cmd : commands) {

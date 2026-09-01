@@ -128,6 +128,8 @@ public class GameInstance {
                 player.sendMessage("§aUse §e" + Commands.getCommands().get("Checkpoint".toLowerCase()).getUsage() + " §ato teleport to the last checkpoint or §e" + Commands.getCommands().get("Cancel".toLowerCase()).getUsage() + " §ato cancel!");
 
                 playerStateStart(player, id);
+                GameRegistry.executeStartCommands(id, player);
+
             }
             else if (playerLocation.equals(checkpointMap.lastEntry().getKey())) {
                 player.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "This is the finish line for the parkour! Get to the start line and climb back up here!");
