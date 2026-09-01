@@ -55,6 +55,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         GameHolograms.loadTags();
         ConfigManager.loadExitCommands();
+        ConfigManager.loadFinishCommands();
     }
 
     @Override

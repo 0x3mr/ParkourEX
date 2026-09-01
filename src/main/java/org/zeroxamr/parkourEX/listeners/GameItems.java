@@ -128,6 +128,7 @@ public class GameItems implements Listener {
         else if ("cancel".equals(Pdc.getString(item, "parkourItem"))) {
             GameRegistry.getParkourGame(gameID).playerStateCancel(player);
             player.sendMessage("§c§lParkour challenge cancelled!");
+            GameRegistry.executeExitCommands(gameID, player);
         }
     }
 }

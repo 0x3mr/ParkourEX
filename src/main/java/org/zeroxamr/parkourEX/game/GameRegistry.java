@@ -27,6 +27,7 @@ public class GameRegistry {
     private static final HashMap<Location, Integer> parkourGamesByLocation = new HashMap<>();
 
     private static final HashMap<Integer, List<CommandMeta>> exitCommands = new HashMap<>();
+    private static final HashMap<Integer, List<CommandMeta>> finishCommands = new HashMap<>();
 
     public static void addExitCommand(int parkourID, CommandMeta cmd) {
         exitCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
@@ -35,6 +36,16 @@ public class GameRegistry {
     public static void addExitCommandToAll(CommandMeta cmd) {
         for (int id : parkourGames.keySet()) {
             exitCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
+        }
+    }
+
+    public static void addFinishCommand(int parkourID, CommandMeta cmd) {
+        finishCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
+    }
+
+    public static void addFinishCommandToAll(CommandMeta cmd) {
+        for (int id : parkourGames.keySet()) {
+            finishCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
         }
     }
 
@@ -52,6 +63,29 @@ public class GameRegistry {
 
             Bukkit.getScheduler().runTaskLater(plugin, () ->
                     Bukkit.dispatchCommand(cmdSender, command),
+                    cmd.delay()
+            );
+
+            if (cmdSender instanceof Player) {
+                plugin.getLogger().info(player.getName() + " issued server command: /" + command);
+            }
+        }
+    }
+
+    public static void executeFinishCommands(int parkourID, Player player) {
+        List<CommandMeta> commands = finishCommands.get(parkourID);
+        if (commands == null || commands.isEmpty()) return;
+
+        for (CommandMeta cmd : commands) {
+            String command = Shared.parsePlaceholders(cmd.command(), player, parkourID);
+
+            CommandSender cmdSender = switch (cmd.executor()) {
+                case CONSOLE -> Bukkit.getConsoleSender();
+                case PLAYER -> player;
+            };
+
+            Bukkit.getScheduler().runTaskLater(plugin, () ->
+                            Bukkit.dispatchCommand(cmdSender, command),
                     cmd.delay()
             );
 

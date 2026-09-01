@@ -55,13 +55,16 @@ public class GameInstance {
             int gameID = Pdc.getInt(player, "parkourID");
 
             if (!GameRegistry.hasGame(gameID)) {
-                player.sendMessage("§cYou're playing an invalid parkour session.");
                 playerStateCancel(player);
+                player.sendMessage("§cYou're playing an invalid parkour session.");
+                GameRegistry.executeExitCommands(gameID, player);
                 return;
             }
 
             if (!GameRegistry.getParkourGame(gameID).checkpointMap.containsKey(playerLocation)) {
-//                  // If interfered with another parkour, do nothing
+                // If interfered with another parkour, do nothing
+                // TODO: add a configurable message
+
                 return;
             }
 
@@ -79,8 +82,9 @@ public class GameInstance {
                         && playerCheckpoint + 1 < parkourCheckpoint) {
                     // skipped a checkpoint!
 
-                    player.sendMessage("§c§lParkour challenge failed! You skipped a checkpoint!!");
                     playerStateCancel(player);
+                    player.sendMessage("§c§lParkour challenge failed! You skipped a checkpoint!!");
+                    GameRegistry.executeExitCommands(gameID, player);
 
                     return;
                 }
@@ -103,6 +107,7 @@ public class GameInstance {
 
                     playerStateCancel(player);
                     player.sendMessage("§a§lThat's a new record of §e§l" + time + "§a§l! Try again to get an even better record!");
+                    GameRegistry.executeFinishCommands(gameID, player);
 
                     return;
                 }
@@ -185,7 +190,6 @@ public class GameInstance {
             player.teleport(location);
         }
 
-        GameRegistry.executeExitCommands(gameID, player);
         Shared.resetPlayerInfo(player);
     }
 
