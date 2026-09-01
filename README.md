@@ -26,7 +26,7 @@ TODO:
 - [x] Remove any effects the player has during a parkour
 - [x] Add config-defined commands to run (as player or console) when a parkour session ends
   - currently supports the following events only:
-    - [ ] onParkourStart
+    - [x] onParkourStart
     - [x] onParkourEnd
     - [x] onParkourExit
   - can set a command, executor type with an optional delay
