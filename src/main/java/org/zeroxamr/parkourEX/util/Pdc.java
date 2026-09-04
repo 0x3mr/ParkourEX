@@ -35,6 +35,15 @@ public class Pdc {
         set(meta, key, value);
         item.setItemMeta(meta);
     }
+    public static void set(ItemStack item, String key, long value) {
+        if (item == null) return;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
+
+        set(meta, key, value);
+        item.setItemMeta(meta);
+    }
     public static void set(ItemStack item, String key, boolean value) {
         if (item == null) return;
 
@@ -61,6 +70,14 @@ public class Pdc {
 
         return getInt(meta, key);
     }
+    public static Long getLong(ItemStack item, String key) {
+        if (item == null || item.getType() == Material.AIR) return null;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return null;
+
+        return getLong(meta, key);
+    }
     public static Boolean getBoolean(ItemStack item, String key) {
         if (item == null || item.getType() == Material.AIR) return null;
 
@@ -83,10 +100,12 @@ public class Pdc {
 
     public static void set(@NonNull PersistentDataHolder pdh, String key, String value) { pdh.getPersistentDataContainer().set(key(key), PersistentDataType.STRING, value); }
     public static void set(@NonNull PersistentDataHolder pdh, String key, int value) { pdh.getPersistentDataContainer().set(key(key), PersistentDataType.INTEGER, value); }
+    public static void set(@NonNull PersistentDataHolder pdh, String key, long value) { pdh.getPersistentDataContainer().set(key(key), PersistentDataType.LONG, value); }
     public static void set(@NonNull PersistentDataHolder pdh, String key, boolean value) { pdh.getPersistentDataContainer().set(key(key), PersistentDataType.BOOLEAN, value); }
 
     public static String getString(@NonNull PersistentDataHolder pdh, String key) { return pdh.getPersistentDataContainer().get(key(key), PersistentDataType.STRING); }
     public static Integer getInt(@NonNull PersistentDataHolder pdh, String key) { return pdh.getPersistentDataContainer().get(key(key), PersistentDataType.INTEGER); }
+    public static Long getLong(@NonNull PersistentDataHolder pdh, String key) { return pdh.getPersistentDataContainer().get(key(key), PersistentDataType.LONG); }
     public static Boolean getBoolean(@NonNull PersistentDataHolder pdh, String key) { return pdh.getPersistentDataContainer().get(key(key), PersistentDataType.BOOLEAN); }
 
     public static Boolean has(@NonNull PersistentDataHolder pdh, String key) {
@@ -95,6 +114,7 @@ public class Pdc {
 
         return pdc.has(nsk, PersistentDataType.STRING) ||
                 pdc.has(nsk, PersistentDataType.INTEGER) ||
+                pdc.has(nsk, PersistentDataType.LONG) ||
                 pdc.has(nsk, PersistentDataType.BOOLEAN);
     }
 

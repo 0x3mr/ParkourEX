@@ -76,7 +76,6 @@ public class Database {
                         "id INTEGER NOT NULL," +
                         "uuid TEXT NOT NULL," +
                         "bestScore INTEGER DEFAULT 0," +
-                        "gamesCompleted TEXT DEFAULT ';'," +
                         "PRIMARY KEY (id, uuid)," +
                         "FOREIGN KEY (id) REFERENCES Parkour(id) ON DELETE CASCADE" +
                 ");";
@@ -86,7 +85,7 @@ public class Database {
                         "id INTEGER NOT NULL," +
                         "uuid TEXT NOT NULL," +
                         "checkpointID INTEGER NOT NULL," +
-                        "score INTEGER NOT NULL DEFAULT 0," +
+                        "duration INTEGER NOT NULL DEFAULT 0," +
                         "PRIMARY KEY (id, uuid, checkpointID)," +
                         "FOREIGN KEY (id, uuid) REFERENCES Stats(id, uuid) ON DELETE CASCADE" +
                 ");";

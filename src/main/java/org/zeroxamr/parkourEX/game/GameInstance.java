@@ -1,6 +1,5 @@
 package org.zeroxamr.parkourEX.game;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,7 +10,6 @@ import org.zeroxamr.parkourEX.commands.Commands;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -94,29 +92,71 @@ public class GameInstance {
                 Pdc.set(player, "checkpointNumber", parkourCheckpoint);
                 Pdc.set(player, "checkpointLocation", Shared.serializeLocation(respawnLocation));
 
-                LocalTime nowTime = LocalTime.now();
-                LocalTime startTime = LocalTime.parse(Pdc.getString(player, "startTime"));
-                LocalTime oldTime = LocalTime.parse(Pdc.getString(player, "latestCheckpointTime"));
+                long timeStart = Long.parseLong(Pdc.getString(player, "startTime"));
+                long timeLatestCheckpoint = Long.parseLong(Pdc.getString(player, "latestCheckpointTime"));
+                long timeNow = System.currentTimeMillis();
+                long bestScore = Math.abs(timeNow - timeStart);
 
-                String time = Shared.getDurationBetween(startTime, nowTime);
-                String diffTime = Shared.getDurationBetween(oldTime, nowTime);
-                String bestTime = "UNKNOWN";
+                String playerID = gameID + ";" + player.getUniqueId();
+                String checkpointID = gameID + ";" + player.getUniqueId() + ";" + parkourCheckpoint;
 
-                if (parkourCheckpoint + 1 == checkpointMap.size()) {
-                    // Declare winner
+                Long savedCheckpointTime = StatsRegistry.getCheckpointTime(checkpointID);
+                Long savedBestScore = StatsRegistry.getPlayerBestScore(playerID);
 
-                    playerStateCancel(player);
-                    player.sendMessage("§a§lThat's a new record of §e§l" + time + "§a§l! Try again to get an even better record!");
-                    GameRegistry.executeFinishCommands(gameID, player);
+                boolean diffCheckpoints = false, diffStats = false;
+                boolean finalRound = parkourCheckpoint + 1 == checkpointMap.size();
 
-                    return;
+                if (savedCheckpointTime == null) {
+                    // player has reached this checkpoint for the first time
+                    if (finalRound) {
+                        player.sendMessage("§a§lCongratulations on completing the parkour! You finished in §e§l" + Shared.formatTime(bestScore) + "§a§l! Try again to get an even better record!");
+                        diffStats = true;
+                    }
+                    else {
+                        player.sendMessage("§a§lYou reached §e§lCheckpoint #" + parkourCheckpoint + "§a§l after §e§l" + Shared.formatTime(bestScore) + "§a§l.");
+                    }
+
+                    diffCheckpoints = true;
+
+                    player.sendMessage("§7You finished this part of the parkour in §6" + Shared.formatTime(Math.abs(timeNow - timeLatestCheckpoint)) + "§7.");
+                }
+                else {
+                    if (savedBestScore == null) {
+                        plugin.getLogger().severe("Failed to read saved best score, id: " + checkpointID);
+                        return;
+                    }
+
+                    // player reached this checkpoint at least once before
+                    if (finalRound) {
+                        if (savedBestScore > bestScore) {
+                            // player got a better score
+                            player.sendMessage("§a§lThat's a new record of §e§l" + Shared.formatTime(bestScore) + "§a§l! Try again to get an even better record!");
+                            diffStats = true;
+                        }
+                        else {
+                            player.sendMessage("§a§lYour time of §e§l" + Shared.formatTime(bestScore) + "§a§l did not beat your previous record of §e§l" + Shared.formatTime(savedBestScore) + "§a§l! Try again to get an even better record!");
+                        }
+                    }
+                    else {
+                        player.sendMessage("§a§lYou reached §e§lCheckpoint #" + parkourCheckpoint + "§a§l after §e§l" + Shared.formatTime(bestScore) + "§a§l.");
+                    }
+
+                    if (savedCheckpointTime > Math.abs(timeNow - timeLatestCheckpoint)) {
+                        player.sendMessage("§7You finished this part of the parkour in §6" + Shared.formatTime(Math.abs(timeNow - timeLatestCheckpoint)) + "§7 and beat your personal best of " + Shared.formatTime(savedCheckpointTime) + "!");
+                        diffCheckpoints = true;
+                    }
+                    else {
+                        player.sendMessage("§7You finished this part of the parkour in " + Shared.formatTime(Math.abs(timeNow - timeLatestCheckpoint)) + " (personal best: " + Shared.formatTime(savedCheckpointTime) + ").");
+                    }
                 }
 
-                Pdc.set(player, "latestCheckpointTime", nowTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+                if (diffStats) StatsRegistry.diffPlayerMeta(playerID, bestScore);
+                if (diffCheckpoints) StatsRegistry.diffCheckpointStats(checkpointID, Math.abs(timeNow - timeLatestCheckpoint));
 
-                player.sendMessage("§a§lYou reached §e§lCheckpoint #" + parkourCheckpoint + "§a§l after §e§l" + time + "§a§l.");
-                player.sendMessage("§7You finished this part of the parkour in §6" + diffTime + "§7.");
-//                    player.sendMessage("" + ChatColor.GRAY + "You finished this part of the parkour in " + diffTime + " (personal best: " + bestTime + ").");
+                if (finalRound) {
+                    playerStateCancel(player);
+                    GameRegistry.executeFinishCommands(gameID, player);
+                }
             }
             else if (playerCheckpoint > parkourCheckpoint) {
                 // If went back to an older checkpoint, do nothing
@@ -159,6 +199,7 @@ public class GameInstance {
     }
 
     public void playerStateReset(Player player) {
+        String timeNow = String.valueOf(System.currentTimeMillis());
         Location respawnLocation = checkpointMap.firstEntry().getKey().clone();
         respawnLocation.setYaw(checkpointYaws.getFirst());
 
@@ -166,10 +207,8 @@ public class GameInstance {
         Pdc.set(player, "checkpointNumber", 0);
         Pdc.set(player, "checkpointLocation", Shared.serializeLocation(respawnLocation));
 
-        String playerTime = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
-
-        Pdc.set(player, "startTime", playerTime);
-        Pdc.set(player, "latestCheckpointTime", playerTime);
+        Pdc.set(player, "startTime", timeNow);
+        Pdc.set(player, "latestCheckpointTime", timeNow);
 
         Services.addLastCheckpoint(player);
         Services.addResetParkour(player);

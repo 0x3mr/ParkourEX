@@ -59,11 +59,22 @@ public class Shared {
                 .replace("%name", String.valueOf(GameRegistry.getParkourName(parkourID)));
     }
 
-    public static String getDurationBetween(LocalTime duration1, LocalTime duration2) {
+    public static String getDurationOf(LocalTime duration1, LocalTime duration2) {
         Duration duration = Duration.between(duration1, duration2);
 
         long totalSeconds = duration.getSeconds();
 //        long h = totalSeconds / 3600;
+        long m = (totalSeconds % 3600) / 60;
+        long s = totalSeconds % 60;
+        long ms = duration.toMillis() % 1000;
+
+        return String.format("%02d:%02d.%d", m, s, ms);
+    }
+
+    public static String formatTime(long time) {
+        Duration duration = Duration.ofMillis(time);
+
+        long totalSeconds = duration.getSeconds();
         long m = (totalSeconds % 3600) / 60;
         long s = totalSeconds % 60;
         long ms = duration.toMillis() % 1000;

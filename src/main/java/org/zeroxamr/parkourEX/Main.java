@@ -6,6 +6,7 @@ import org.zeroxamr.parkourEX.commands.Commands;
 import org.zeroxamr.parkourEX.commands.Create;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.game.GameHolograms;
+import org.zeroxamr.parkourEX.game.StatsRegistry;
 import org.zeroxamr.parkourEX.listeners.ChunkHandler;
 import org.zeroxamr.parkourEX.listeners.CreateTool;
 import org.zeroxamr.parkourEX.listeners.GameListener;
@@ -36,6 +37,7 @@ public final class Main extends JavaPlugin implements Listener {
         CreateTool.initialize(this);
         GameListener.initialize(this);
         GameRegistry.initialize(this);
+        StatsRegistry.initialize(this);
         ConfigManager.initialize(this);
 
         GameHolograms.cleanup();
