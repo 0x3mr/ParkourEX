@@ -2,6 +2,7 @@ package org.zeroxamr.parkourEX;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.zeroxamr.parkourEX.game.GameHolograms;
 import org.zeroxamr.parkourEX.game.GameInstance;
@@ -128,14 +129,16 @@ public class Database {
                     LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                     String parkourCreator = res.getString("parkourCreator");
 
-                    GameRegistry.registerGame(
-                            id,
-                            new GameInstance(plugin, id, checkpoints, parkourCreator),
-                            checkpoints
-                    );
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        GameRegistry.registerGame(
+                                id,
+                                new GameInstance(plugin, id, checkpoints, parkourCreator),
+                                checkpoints
+                        );
 
-                    GameHolograms.register(id, checkpoints);
-                    GameHolograms.resync();
+                        GameHolograms.register(id, checkpoints);
+                        GameHolograms.resync();
+                    });
                 }
             }
             catch (SQLException e) {
