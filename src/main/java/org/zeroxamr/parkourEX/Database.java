@@ -1,5 +1,6 @@
 package org.zeroxamr.parkourEX;
 
+import com.google.common.math.Stats;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
@@ -7,6 +8,8 @@ import org.bukkit.Location;
 import org.zeroxamr.parkourEX.game.GameHolograms;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
+import org.zeroxamr.parkourEX.game.StatsRegistry;
+import org.zeroxamr.parkourEX.game.models.PlayerMeta;
 import org.zeroxamr.parkourEX.util.Shared;
 
 import java.io.File;
@@ -152,6 +155,101 @@ public class Database {
         }
 
         return true;
+    }
+
+    public void flushPlayersData() {
+        if (!isOnline()) {
+            plugin.getLogger().info("Database is offline! Failed to save players data.");
+            return;
+        }
+
+        try (Connection con = this.getConnection()) {
+            String playerMetaSQL =
+                    "INSERT INTO Stats (id, uuid, bestScore) VALUES (?, ?, ?) " +
+                            "ON CONFLICT (id, uuid) DO UPDATE " +
+                            "SET bestScore = EXCLUDED.bestScore " +
+                            "WHERE bestScore > EXCLUDED.bestScore";
+
+            try (PreparedStatement qst = con.prepareStatement(playerMetaSQL)) {
+                for (Map.Entry<String, PlayerMeta> player : StatsRegistry.getPlayerStatisticsTable().entrySet()) {
+                    String[] parts = player.getKey().split(";");
+
+                    int id = Integer.parseInt(parts[0]);
+                    String uuid = parts[1];
+                    long bestScore = player.getValue().bestScore();
+
+                    qst.setInt(1, id);
+                    qst.setString(2, uuid);
+                    qst.setLong(3, bestScore);
+
+                    qst.executeUpdate();
+                }
+            }
+
+            String checkpointsSQL =
+                    "INSERT INTO Checkpoints (id, uuid, checkpointID, duration) VALUES (?, ?, ?, ?) " +
+                            "ON CONFLICT (id, uuid, checkpointID) DO UPDATE " +
+                            "SET duration = EXCLUDED.duration " +
+                            "WHERE duration > EXCLUDED.duration";
+
+            try (PreparedStatement qst = con.prepareStatement(checkpointsSQL)) {
+                for (Map.Entry<String, Long> checkpoint : StatsRegistry.getPerGameCheckpointsTable().entrySet()) {
+                    String[] parts = checkpoint.getKey().split(";");
+
+                    int id = Integer.parseInt(parts[0]);
+                    String uuid = parts[1];
+                    int checkpointNumber = Integer.parseInt(parts[2]);
+                    long score = checkpoint.getValue();
+
+                    qst.setInt(1, id);
+                    qst.setString(2, uuid);
+                    qst.setInt(3, checkpointNumber);
+                    qst.setLong(4, score);
+
+                    qst.executeUpdate();
+                }
+            }
+        } catch (SQLException error) {
+            plugin.getLogger().severe("Failed to flush player data to disk: " + error.getMessage());
+        }
+    }
+
+    public void retrieveAndPopulatePlayerData(String uuid) {
+        if (!isOnline()) {
+            plugin.getLogger().info("Database is offline! Failed to retrieve player data.");
+            return;
+        }
+
+        try (Connection con = this.getConnection()) {
+            String playerMetaSQL = "SELECT * FROM Stats WHERE uuid = ?";
+            try (PreparedStatement qst = con.prepareStatement(playerMetaSQL)) {
+                qst.setString(1, uuid);
+                try (ResultSet res = qst.executeQuery()) {
+                    while (res.next()) {
+                        int id = res.getInt("id");
+                        long bestScore = res.getLong("bestScore");
+                        String playerID = id + ";" + uuid;
+                        StatsRegistry.diffPlayerMeta(playerID, bestScore);
+                    }
+                }
+            }
+
+            String checkpointsSQL = "SELECT * FROM Checkpoints WHERE uuid = ?";
+            try (PreparedStatement qst = con.prepareStatement(checkpointsSQL)) {
+                qst.setString(1, uuid);
+                try (ResultSet res = qst.executeQuery()) {
+                    while (res.next()) {
+                        int id = res.getInt("id");
+                        int checkpointNumber = res.getInt("checkpointID");
+                        long duration = res.getLong("duration");
+                        String checkpointID = id + ";" + uuid + ";" + checkpointNumber;
+                        StatsRegistry.diffCheckpointStats(checkpointID, duration);
+                    }
+                }
+            }
+        } catch (SQLException error) {
+            plugin.getLogger().severe("Failed to retrieve player saved data: " + error.getMessage());
+        }
     }
 
     public void loadGames() {

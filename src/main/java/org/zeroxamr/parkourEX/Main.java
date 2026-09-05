@@ -6,6 +6,7 @@ import org.zeroxamr.parkourEX.commands.Commands;
 import org.zeroxamr.parkourEX.commands.Create;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.game.GameHolograms;
+import org.zeroxamr.parkourEX.game.GameSaver;
 import org.zeroxamr.parkourEX.game.StatsRegistry;
 import org.zeroxamr.parkourEX.listeners.ChunkHandler;
 import org.zeroxamr.parkourEX.listeners.CreateTool;
@@ -33,6 +34,7 @@ public final class Main extends JavaPlugin implements Listener {
         Shared.initialize(this);
         Services.initialize(this);
         Database.initialize(this);
+        GameSaver.initialize(this);
         GameItems.initialize(this);
         CreateTool.initialize(this);
         GameListener.initialize(this);
@@ -59,12 +61,18 @@ public final class Main extends JavaPlugin implements Listener {
         ConfigManager.loadStartCommands();
         ConfigManager.loadFinishCommands();
         ConfigManager.loadExitCommands();
+
+        GameSaver.startScheduler();
     }
 
     @Override
     public void onDisable() {
+        GameSaver.stopScheduler();
+
         GameHolograms.cleanup();
         GameRegistry.cleanup();
+
+        Main.getDBM().flushPlayersData();
         DBM.shutdown();
     }
 

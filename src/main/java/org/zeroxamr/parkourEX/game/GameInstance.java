@@ -157,6 +157,8 @@ public class GameInstance {
                     playerStateCancel(player);
                     GameRegistry.executeFinishCommands(gameID, player);
                 }
+
+                Pdc.set(player, "latestCheckpointTime", String.valueOf(timeNow));
             }
             else if (playerCheckpoint > parkourCheckpoint) {
                 // If went back to an older checkpoint, do nothing
@@ -253,5 +255,9 @@ public class GameInstance {
 
     public String getName() {
         return gameName;
+    }
+
+    public int getGameID() {
+        return id;
     }
 }

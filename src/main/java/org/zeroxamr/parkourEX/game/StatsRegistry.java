@@ -53,4 +53,12 @@ public class StatsRegistry {
         if (pm == null) return null;
         return pm.bestScore();
     }
+
+    public static HashMap<String, PlayerMeta> getPlayerStatisticsTable() {
+        return playerStatisticsTable;
+    }
+
+    public static HashMap<String, Long> getPerGameCheckpointsTable() {
+        return perGameCheckpointsTable;
+    }
 }

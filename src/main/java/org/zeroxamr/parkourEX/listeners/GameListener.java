@@ -1,5 +1,6 @@
 package org.zeroxamr.parkourEX.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,16 +15,30 @@ import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameListener implements Listener {
     private static Main plugin;
 
     public static void initialize(Main plugin) {
         GameListener.plugin = plugin;
     }
+    private List<String> fetched = new ArrayList<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent e) {
-        Shared.resetPlayerInfo(e.getPlayer());
+        Player player = e.getPlayer();
+        Shared.resetPlayerInfo(player);
+
+        if (!fetched.contains(player.getName())) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                Main.getDBM().retrieveAndPopulatePlayerData(
+                        String.valueOf(player.getUniqueId()));
+            });
+
+            fetched.add(player.getName());
+        }
     }
 
     @EventHandler

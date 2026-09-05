@@ -6,7 +6,7 @@ TODO:
 - [x] Add a Commands list command
 - [x] Add a reset option during parkour
 - [x] Add a leave option during parkour
-- [ ] Edit display content of parkour messages & add real persistent analytics
+- [x] Edit display content of parkour messages & add real persistent analytics
     - Best time
     - Personal best between each consecutive checkpoints
     - Parkours completed
