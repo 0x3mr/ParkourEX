@@ -18,7 +18,7 @@ public class Cancel implements Base {
 
     @Override
     public String getUsage() {
-        return "/pkx cancel";
+        return "/parkour cancel";
     }
 
     @Override

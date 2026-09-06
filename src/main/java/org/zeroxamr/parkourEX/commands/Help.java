@@ -16,7 +16,7 @@ public class Help implements Base {
 
     @Override
     public String getUsage() {
-        return "/pkx help";
+        return "/parkour help";
     }
 
     @Override

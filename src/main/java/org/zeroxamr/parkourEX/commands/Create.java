@@ -22,7 +22,7 @@ public class Create implements Base {
 
     @Override
     public String getUsage() {
-        return "/pkx create";
+        return "/parkour create";
     }
 
     @Override

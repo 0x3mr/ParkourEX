@@ -36,7 +36,7 @@ public class Commands implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) {
             sender.sendMessage("" + ChatColor.GRAY + "Running version " + ChatColor.GOLD + plugin.getPluginMeta().getVersion());
-            sender.sendMessage("" + ChatColor.GRAY + "Use " + ChatColor.YELLOW + "/parkourex help" + ChatColor.GRAY + " to view available commands.");
+            sender.sendMessage("" + ChatColor.GRAY + "Use " + ChatColor.YELLOW + "/parkour help" + ChatColor.GRAY + " to view available commands.");
 
             return true;
         }
@@ -45,7 +45,7 @@ public class Commands implements CommandExecutor {
 
         if (commandExecuted == null) {
             sender.sendMessage("" + ChatColor.GRAY + "Unknown or incomplete command.");
-            sender.sendMessage("" + ChatColor.GRAY + "Use " + ChatColor.YELLOW + "/parkourex help" + ChatColor.GRAY + " to view available commands.");
+            sender.sendMessage("" + ChatColor.GRAY + "Use " + ChatColor.YELLOW + "/parkour help" + ChatColor.GRAY + " to view available commands.");
 
             return true;
         }

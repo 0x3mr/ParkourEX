@@ -18,7 +18,7 @@ public class Checkpoint implements Base {
 
     @Override
     public String getUsage() {
-        return "/pkx checkpoint";
+        return "/parkour checkpoint";
     }
 
     @Override

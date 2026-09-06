@@ -20,7 +20,7 @@ public class Reset implements Base {
 
     @Override
     public String getUsage() {
-        return "/pkx reset [parkour_id]";
+        return "/parkour reset [parkour_id]";
     }
 
     @Override

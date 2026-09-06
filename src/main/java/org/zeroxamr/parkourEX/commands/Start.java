@@ -21,7 +21,7 @@ public class Start implements Base {
 
     @Override
     public String getUsage() {
-        return "/pkx start <parkour_id>";
+        return "/parkour start <parkour_id>";
     }
 
     @Override
