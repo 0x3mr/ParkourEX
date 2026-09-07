@@ -14,12 +14,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.zeroxamr.parkourEX.game.GameInstance;
+import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.listeners.GameItems;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class Services implements Listener {
@@ -151,5 +154,15 @@ public class Services implements Listener {
             return;
         }
         team.removeEntry(player.getName());
+    }
+
+    public static void sendParkourList(Player player) {
+        StringBuilder helpMessage = new StringBuilder(" §d§lParkour Runs§r§7 - id, name, creator, location§r\n§r");
+        for (Map.Entry<Integer, GameInstance> games : GameRegistry.getParkourGames().entrySet()) {
+            Location loc = games.getValue().getCheckpointMap().sequencedEntrySet().getFirst().getKey();
+            String location = loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ", " + loc.getYaw() + ", " + loc.getPitch();
+            helpMessage.append("\n §d|   §f" + games.getValue().getGameID() + "§7, §f" + games.getValue().getName() + "§7, §f" + games.getValue().getGameAdmin() + "§7, §f§o" + location + "§r");
+        }
+        player.sendMessage(helpMessage.toString());
     }
 }

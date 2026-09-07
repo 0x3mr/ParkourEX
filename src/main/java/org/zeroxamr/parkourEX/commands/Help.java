@@ -27,10 +27,10 @@ public class Help implements Base {
             return true;
         }
 
-        StringBuilder helpMessage = new StringBuilder(" " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "ParkourEx" + ChatColor.RESET + ChatColor.GRAY + " - List of commands:");
+        StringBuilder helpMessage = new StringBuilder(" §d§lParkourEx§r§7 - List of commands:");
 
         for (Base command : Commands.getCommands().values()) {
-            helpMessage.append("\n   " + ChatColor.GRAY + "- " + ChatColor.WHITE + command.getUsage() + ChatColor.LIGHT_PURPLE + " - " + command.getInfo());
+            helpMessage.append("\n   §7- §f" + command.getUsage() + "§d - " + command.getInfo());
         }
 
         sender.sendMessage(String.valueOf(helpMessage));

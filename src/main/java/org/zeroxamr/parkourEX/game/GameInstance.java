@@ -17,7 +17,7 @@ public class GameInstance {
     private final int id;
     private final Main plugin;
     private final String gameAdmin;
-    private String gameName = "";
+    private String gameName = "~~~";
 
     private final LinkedHashMap<Location, Integer> checkpointMap = new LinkedHashMap<>();
     private final List<Float> checkpointYaws = new ArrayList<>();
@@ -253,11 +253,13 @@ public class GameInstance {
         return checkpointMapWithYaw;
     }
 
+    public int getGameID() {
+        return id;
+    }
     public String getName() {
         return gameName;
     }
-
-    public int getGameID() {
-        return id;
+    public String getGameAdmin() {
+        return gameAdmin;
     }
 }
