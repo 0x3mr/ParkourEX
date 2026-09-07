@@ -14,7 +14,10 @@ public class GameSaver {
 
     public static void startScheduler() {
         periodicFlush = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            Main.getDBM().flushPlayersData();
+            if (StatsRegistry.isDirty()) {
+                StatsRegistry.clearDirtyTrack();
+                Main.getDBM().flushPlayersData();
+            }
         }, 0, 20L * 60); // save every minute
     }
 

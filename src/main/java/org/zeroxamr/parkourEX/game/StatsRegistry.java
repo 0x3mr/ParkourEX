@@ -15,6 +15,10 @@ public class StatsRegistry {
 
     private static HashMap<String, PlayerMeta> playerStatisticsTable = new HashMap<>();
     private static HashMap<String, Long> perGameCheckpointsTable = new HashMap<>();
+    private static volatile boolean dirtyMap = false;
+
+    public static boolean isDirty() { return dirtyMap; }
+    public static void clearDirtyTrack() { dirtyMap = false; }
 
     public static Long getCheckpointTime(String checkpointID) {
         return perGameCheckpointsTable.get(checkpointID);
@@ -26,12 +30,14 @@ public class StatsRegistry {
 
         if (oldPlayerMeta == null) {
             playerStatisticsTable.put(playerID, newPlayerMeta);
+            dirtyMap = true;
             return;
         }
 
         Long existingScore = oldPlayerMeta.bestScore();
         if (existingScore > incomingValue) {
             playerStatisticsTable.put(playerID, newPlayerMeta);
+            dirtyMap = true;
         }
     }
 
@@ -40,11 +46,13 @@ public class StatsRegistry {
 
         if (oldCheckpoint == null) {
             perGameCheckpointsTable.put(checkpointID, incomingValue);
+            dirtyMap = true;
             return;
         }
 
         if (oldCheckpoint > incomingValue) {
             perGameCheckpointsTable.put(checkpointID, incomingValue);
+            dirtyMap = true;
         }
     }
 
