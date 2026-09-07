@@ -1,7 +1,8 @@
 A simple parkour plugin in beta stage.
 
 TODO:
-
+- [ ] add configurable plugin msgs in a messages.yml
+- [ ] add a session interrupt if a run exceeds 10 minutes
 - [x] Place an indicating hologram at each checkpoint
 - [x] Add a Commands list command
 - [x] Add a reset option during parkour
@@ -12,7 +13,7 @@ TODO:
     - Parkours completed
     - Incomplete parkours
 - [ ] Add permissions hierarchy to the plugin
-- [ ] Add a command to list current available parkour games (perhaps a GUI)
+- [x] Add a command to list current available parkour games (perhaps a GUI)
 - [x] Add option to let parkour continuable upon checkpoint skips
 - [x] Improve the existing hologram tags design to become consistent
 - [x] Bug fix: teleport back to checkpoint when not in a parkour session
