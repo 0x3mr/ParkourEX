@@ -7,12 +7,6 @@ import org.zeroxamr.parkourEX.game.models.PlayerMeta;
 import java.util.HashMap;
 
 public class StatsRegistry {
-    private static Main plugin;
-
-    public static void initialize(Main plugin) {
-        StatsRegistry.plugin = plugin;
-    }
-
     private static HashMap<String, PlayerMeta> playerStatisticsTable = new HashMap<>();
     private static HashMap<String, Long> perGameCheckpointsTable = new HashMap<>();
     private static volatile boolean dirtyMap = false;

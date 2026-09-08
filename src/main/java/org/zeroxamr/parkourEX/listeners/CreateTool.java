@@ -21,13 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class CreateTool implements Listener {
-    private static Main plugin;
-
     private static final HashMap<UUID, LinkedHashMap<Location, Integer>> createdGames = new HashMap<>();
-
-    public static void initialize(Main plugin) {
-        CreateTool.plugin = plugin;
-    }
 
     public static void removeGame(UUID uuid) {
         createdGames.remove(uuid);
@@ -131,10 +125,10 @@ public class CreateTool implements Listener {
 
                 player.sendMessage("§7Saving parkour...");
 
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
                     boolean result = Main.getDBM().saveGame(createdGames.get(uuid), player.getName());
 
-                    Bukkit.getScheduler().runTask(plugin, () -> {
+                    Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
                         if (result) {
                             player.sendMessage("§aNew parkour created!");
                         }

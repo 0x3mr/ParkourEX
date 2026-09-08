@@ -14,12 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class GameRegistry {
-    private static Main plugin;
-
-    public static void initialize(Main plugin) {
-        GameRegistry.plugin = plugin;
-    }
-
     private static final HashMap<Integer, GameInstance> parkourGames = new HashMap<>();
     private static final HashMap<Location, Integer> parkourGamesByLocation = new HashMap<>();
 
@@ -69,13 +63,13 @@ public class GameRegistry {
                 case PLAYER -> player;
             };
 
-            Bukkit.getScheduler().runTaskLater(plugin, () ->
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
                             Bukkit.dispatchCommand(cmdSender, command),
                     cmd.delay()
             );
 
             if (cmdSender instanceof Player) {
-                plugin.getLogger().info(player.getName() + " issued server command: /" + command);
+                Main.getPlugin().getLogger().info(player.getName() + " issued server command: /" + command);
             }
         }
     }
@@ -92,13 +86,13 @@ public class GameRegistry {
                 case PLAYER -> player;
             };
 
-            Bukkit.getScheduler().runTaskLater(plugin, () ->
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
                     Bukkit.dispatchCommand(cmdSender, command),
                     cmd.delay()
             );
 
             if (cmdSender instanceof Player) {
-                plugin.getLogger().info(player.getName() + " issued server command: /" + command);
+                Main.getPlugin().getLogger().info(player.getName() + " issued server command: /" + command);
             }
         }
     }
@@ -115,13 +109,13 @@ public class GameRegistry {
                 case PLAYER -> player;
             };
 
-            Bukkit.getScheduler().runTaskLater(plugin, () ->
+            Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () ->
                             Bukkit.dispatchCommand(cmdSender, command),
                     cmd.delay()
             );
 
             if (cmdSender instanceof Player) {
-                plugin.getLogger().info(player.getName() + " issued server command: /" + command);
+                Main.getPlugin().getLogger().info(player.getName() + " issued server command: /" + command);
             }
         }
     }

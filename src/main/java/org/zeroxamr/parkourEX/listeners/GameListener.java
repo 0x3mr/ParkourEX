@@ -19,11 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameListener implements Listener {
-    private static Main plugin;
-
-    public static void initialize(Main plugin) {
-        GameListener.plugin = plugin;
-    }
     private List<String> fetched = new ArrayList<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -32,7 +27,7 @@ public class GameListener implements Listener {
         Shared.resetPlayerInfo(player);
 
         if (!fetched.contains(player.getName())) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
                 Main.getDBM().retrieveAndPopulatePlayerData(
                         String.valueOf(player.getUniqueId()));
             });
@@ -72,13 +67,13 @@ public class GameListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onVoidEntryTeleport(PlayerMoveEvent event) {
-        if (!plugin.getConfig().getBoolean("voidTeleport.enabled")) return;
+        if (!Main.getPlugin().getConfig().getBoolean("voidTeleport.enabled")) return;
 
         Player player = event.getPlayer();;
 
         if (!Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) return;
 
-        double line = plugin.getConfig().getDouble("voidTeleport.y-axis");
+        double line = Main.getPlugin().getConfig().getDouble("voidTeleport.y-axis");
 
         if (player.getLocation().getBlockY() <= line) {
             GameInstance.playerStateCheckpoint(player);

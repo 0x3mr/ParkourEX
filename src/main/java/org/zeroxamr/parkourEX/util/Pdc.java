@@ -11,12 +11,6 @@ import org.jspecify.annotations.NonNull;
 import org.zeroxamr.parkourEX.Main;
 
 public class Pdc {
-    private static Main plugin;
-
-    public static void initialize(Main plugin) {
-        Pdc.plugin = plugin;
-    }
-
     public static void set(ItemStack item, String key, String value) {
         if (item == null) return;
 
@@ -96,7 +90,7 @@ public class Pdc {
         return has(meta, key);
     }
 
-    private static NamespacedKey key(String key) { return new NamespacedKey(plugin, key); }
+    private static NamespacedKey key(String key) { return new NamespacedKey(Main.getPlugin(), key); }
 
     public static void set(@NonNull PersistentDataHolder pdh, String key, String value) { pdh.getPersistentDataContainer().set(key(key), PersistentDataType.STRING, value); }
     public static void set(@NonNull PersistentDataHolder pdh, String key, int value) { pdh.getPersistentDataContainer().set(key(key), PersistentDataType.INTEGER, value); }

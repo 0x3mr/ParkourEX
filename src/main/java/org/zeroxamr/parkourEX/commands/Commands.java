@@ -36,7 +36,7 @@ public class Commands implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("" + ChatColor.GRAY + "Running version " + ChatColor.GOLD + plugin.getPluginMeta().getVersion());
+            sender.sendMessage("" + ChatColor.GRAY + "Running version " + ChatColor.GOLD + Main.getPlugin().getPluginMeta().getVersion());
             sender.sendMessage("" + ChatColor.GRAY + "Use " + ChatColor.YELLOW + "/parkour help" + ChatColor.GRAY + " to view available commands.");
 
             return true;
@@ -59,9 +59,6 @@ public class Commands implements CommandExecutor {
         return commandExecuted.execute(sender, args);
     }
 
-    public static Main getPlugin() {
-        return plugin;
-    }
     public static HashMap<String, Base> getCommands() {
         return commands;
     }

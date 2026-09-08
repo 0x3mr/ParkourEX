@@ -76,7 +76,7 @@ public class GameInstance {
             else if (playerCheckpoint < parkourCheckpoint) {
                 // If reached next checkpoint OR skipped a checkpoint
 
-                if (Objects.equals(plugin.getConfig().get("skipCheckpoints"), false)
+                if (Objects.equals(Main.getPlugin().getConfig().get("skipCheckpoints"), false)
                         && playerCheckpoint + 1 < parkourCheckpoint) {
                     // skipped a checkpoint!
 
@@ -122,7 +122,7 @@ public class GameInstance {
                 }
                 else {
                     if (savedBestScore == null) {
-                        plugin.getLogger().severe("Failed to read saved best score, id: " + checkpointID);
+                        Main.getPlugin().getLogger().severe("Failed to read saved best score, id: " + checkpointID);
                         return;
                     }
 
@@ -182,11 +182,11 @@ public class GameInstance {
     public void playerStateStart(Player player, int ID) {
         Pdc.set(player, "parkourID", ID);
 
-        if (Objects.equals(plugin.getConfig().get("clearAllEffects"), true)) {
+        if (Objects.equals(Main.getPlugin().getConfig().get("clearAllEffects"), true)) {
             player.clearActivePotionEffects();
         }
 
-        if (Objects.equals(plugin.getConfig().get("disableCollisions"), true)) {
+        if (Objects.equals(Main.getPlugin().getConfig().get("disableCollisions"), true)) {
             Services.disableCollision(player);
         }
 
@@ -221,7 +221,7 @@ public class GameInstance {
         Integer gameID = Pdc.getInt(player, "parkourID");
         if (gameID == null) return;
 
-        if (Objects.equals(plugin.getConfig().get("returnToStart"), true)) {
+        if (Objects.equals(Main.getPlugin().getConfig().get("returnToStart"), true)) {
             Location location = GameRegistry.getParkourGame(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
             location.setX(location.getX() + 0.5);
             location.setZ(location.getZ() + 0.5);

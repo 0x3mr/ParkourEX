@@ -13,12 +13,6 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class Shared {
-    private static Main plugin = null;
-
-    public static void initialize(Main plugin) {
-        Shared.plugin = plugin;
-    }
-
     public static void resetPlayerInfo(Player player) {
         Pdc.set(player, "parkourID", -1);
         Pdc.set(player, "inParkour", false);

@@ -19,24 +19,21 @@ import java.util.Map;
 import java.util.Objects;
 
 public class GameItems implements Listener {
-    private static Main plugin;
     private static final HashMap<String, Material> PARKOUR_ITEMS = new HashMap<>(Map.of(
             "RESET_ITEM", Material.RED_BED,
             "CANCEL_ITEM", Material.OAK_DOOR,
             "CHECKPOINT_ITEM", Material.ARROW
     ));
 
-    public static void initialize(Main plugin) {
-        GameItems.plugin = plugin;
-
+    public static void createItems() {
         PARKOUR_ITEMS.put("RESET_ITEM", Material.matchMaterial(
-                Objects.requireNonNullElse(plugin.getConfig().getString("resetItem"),
+                Objects.requireNonNullElse(Main.getPlugin().getConfig().getString("resetItem"),
                         "RED_BED")));
         PARKOUR_ITEMS.put("CANCEL_ITEM", Material.matchMaterial(
-                Objects.requireNonNullElse(plugin.getConfig().getString("cancelItem"),
+                Objects.requireNonNullElse(Main.getPlugin().getConfig().getString("cancelItem"),
                         "OAK_DOOR")));
         PARKOUR_ITEMS.put("CHECKPOINT_ITEM", Material.matchMaterial(
-                Objects.requireNonNullElse(plugin.getConfig().getString("checkpointItem"),
+                Objects.requireNonNullElse(Main.getPlugin().getConfig().getString("checkpointItem"),
                         "ARROW")));
     }
 

@@ -5,15 +5,10 @@ import org.bukkit.scheduler.BukkitTask;
 import org.zeroxamr.parkourEX.Main;
 
 public class GameSaver {
-    private static Main plugin;
-
-    public static void initialize(Main plugin) {
-        GameSaver.plugin = plugin;
-    }
     private static BukkitTask periodicFlush;
 
     public static void startScheduler() {
-        periodicFlush = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        periodicFlush = Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), () -> {
             if (StatsRegistry.isDirty()) {
                 StatsRegistry.clearDirtyTrack();
                 Main.getDBM().flushPlayersData();

@@ -26,12 +26,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Services implements Listener {
-    private static Main plugin = null;
-
-    public static void initialize(Main plugin) {
-        Services.plugin = plugin;
-    }
-
     public static void addResetParkour(Player player) {
         ItemStack item = new ItemStack(GameItems.reset());
         ItemMeta arr = item.getItemMeta();
@@ -41,7 +35,7 @@ public class Services implements Listener {
 
         Pdc.set(item, "parkourItem", "reset");
 
-        player.getInventory().setItem(plugin.getConfig().getInt("resetSlot"), item);
+        player.getInventory().setItem(Main.getPlugin().getConfig().getInt("resetSlot"), item);
     }
 
     public static void removeResetParkour(Player player) {
@@ -67,7 +61,7 @@ public class Services implements Listener {
 
         Pdc.set(item, "parkourItem", "cancel");
 
-        player.getInventory().setItem(plugin.getConfig().getInt("cancelSlot"), item);
+        player.getInventory().setItem(Main.getPlugin().getConfig().getInt("cancelSlot"), item);
     }
 
     public static void removeLeaveParkour(Player player) {
@@ -93,7 +87,7 @@ public class Services implements Listener {
 
         Pdc.set(item, "parkourItem", "checkpoint");
 
-        player.getInventory().setItem(plugin.getConfig().getInt("checkpointSlot"), item);
+        player.getInventory().setItem(Main.getPlugin().getConfig().getInt("checkpointSlot"), item);
     }
 
     public static void removeLastCheckpoint(Player player) {

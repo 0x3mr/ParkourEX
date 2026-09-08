@@ -10,16 +10,13 @@ import org.zeroxamr.parkourEX.game.models.CommandMeta;
 import java.io.File;
 
 public class ConfigManager {
-    private static Main plugin;
     private static FileConfiguration commandsConfig;
 
-    public static void initialize(Main plugin) {
-        ConfigManager.plugin = plugin;
-
-        File file = new File(plugin.getDataFolder(), "commands.yml");
+    public static void initialize() {
+        File file = new File(Main.getPlugin().getDataFolder(), "commands.yml");
 
         if (!file.exists()) {
-            plugin.saveResource("commands.yml", false);
+            Main.getPlugin().saveResource("commands.yml", false);
         }
 
         commandsConfig = YamlConfiguration.loadConfiguration(file);
@@ -33,13 +30,13 @@ public class ConfigManager {
         for (String event : config.getKeys(false)) {
             ConfigurationSection section = config.getConfigurationSection(event);
             if (section == null) {
-                plugin.getLogger().info(" - Failed to parse section " + event + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse section " + event + " of " + eventName);
                 continue;
             }
 
             String command = section.getString("command");
             if (command == null) {
-                plugin.getLogger().info(" - Failed to parse command of section " + section.getName() + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse command of section " + section.getName() + " of " + eventName);
                 continue;
             }
 
@@ -49,7 +46,7 @@ public class ConfigManager {
                         section.getString("executor", "").toUpperCase()
                 );
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().info(" - Failed to parse executor of section " + section.getName() + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse executor of section " + section.getName() + " of " + eventName);
                 continue;
             }
 
@@ -76,13 +73,13 @@ public class ConfigManager {
         for (String event : config.getKeys(false)) {
             ConfigurationSection section = config.getConfigurationSection(event);
             if (section == null) {
-                plugin.getLogger().info(" - Failed to parse section " + event + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse section " + event + " of " + eventName);
                 continue;
             }
 
             String command = section.getString("command");
             if (command == null) {
-                plugin.getLogger().info(" - Failed to parse command of section " + section.getName() + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse command of section " + section.getName() + " of " + eventName);
                 continue;
             }
 
@@ -92,7 +89,7 @@ public class ConfigManager {
                         section.getString("executor", "").toUpperCase()
                 );
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().info(" - Failed to parse executor of section " + section.getName() + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse executor of section " + section.getName() + " of " + eventName);
                 continue;
             }
 
@@ -119,13 +116,13 @@ public class ConfigManager {
         for (String event : config.getKeys(false)) {
             ConfigurationSection section = config.getConfigurationSection(event);
             if (section == null) {
-                plugin.getLogger().info(" - Failed to parse section " + event + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse section " + event + " of " + eventName);
                 continue;
             }
 
             String command = section.getString("command");
             if (command == null) {
-                plugin.getLogger().info(" - Failed to parse command of section " + section.getName() + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse command of section " + section.getName() + " of " + eventName);
                 continue;
             }
 
@@ -135,7 +132,7 @@ public class ConfigManager {
                         section.getString("executor", "").toUpperCase()
                 );
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().info(" - Failed to parse executor of section " + section.getName() + " of " + eventName);
+                Main.getPlugin().getLogger().info(" - Failed to parse executor of section " + section.getName() + " of " + eventName);
                 continue;
             }
 

@@ -17,21 +17,16 @@ import java.sql.*;
 import java.util.*;
 
 public class Database {
-    private static Main plugin = null;
     private final String databasePath;
     private HikariDataSource dataSource;
     private final HikariConfig config = new HikariConfig();
 
-    public static void initialize(Main plugin) {
-        Database.plugin = plugin;
-    }
-
     Database() {
-        File folderPath = plugin.getDataFolder();
+        File folderPath = Main.getPlugin().getDataFolder();
 
         if (!folderPath.exists()) {
             if (!folderPath.mkdirs()) {
-                plugin.getLogger().info("Failed to create database files.");
+                Main.getPlugin().getLogger().info("Failed to create database files.");
             }
         }
 
@@ -43,7 +38,7 @@ public class Database {
 
     public void connect() {
         if (this.isOnline()) {
-            plugin.getLogger().info("Already connected to database!");
+            Main.getPlugin().getLogger().info("Already connected to database!");
             return;
         }
 
@@ -55,16 +50,16 @@ public class Database {
         this.dataSource = new HikariDataSource(config);
 
         if (isOnline()) {
-            plugin.getLogger().info("Connected to SQLite successfully.");
+            Main.getPlugin().getLogger().info("Connected to SQLite successfully.");
             return;
         }
 
-        plugin.getLogger().info("Failed to connect to SQLite.");
+        Main.getPlugin().getLogger().info("Failed to connect to SQLite.");
     }
 
     public void setupTables() {
         if (!isOnline()) {
-            plugin.getLogger().info("Database is offline! Failed to load saved data.");
+            Main.getPlugin().getLogger().info("Database is offline! Failed to load saved data.");
             return;
         }
 
@@ -100,15 +95,15 @@ public class Database {
             statement.executeUpdate(playerStatisticsTable);
             statement.executeUpdate(perGameCheckpointsTable);
 
-            plugin.getLogger().info("Loaded tables successfully.");
+            Main.getPlugin().getLogger().info("Loaded tables successfully.");
         } catch (SQLException e) {
-            plugin.getLogger().severe("Failed to load tables: " + e.getMessage());
+            Main.getPlugin().getLogger().severe("Failed to load tables: " + e.getMessage());
         }
     }
 
     public boolean saveGame(LinkedHashMap<Location, Integer> newLocations, String gameCreator) {
         if (!isOnline()) {
-            plugin.getLogger().info("Database is offline! Failed to save new game data.");
+            Main.getPlugin().getLogger().info("Database is offline! Failed to save new game data.");
             return false;
         }
 
@@ -132,10 +127,10 @@ public class Database {
                     LinkedHashMap<Location, Integer> checkpoints = Shared.deserializeLocations(res.getString("checkpoints"));
                     String parkourCreator = res.getString("parkourCreator");
 
-                    Bukkit.getScheduler().runTask(plugin, () -> {
+                    Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
                         GameRegistry.registerGame(
                                 id,
-                                new GameInstance(plugin, id, checkpoints, parkourCreator),
+                                new GameInstance(Main.getPlugin(), id, checkpoints, parkourCreator),
                                 checkpoints
                         );
 
@@ -145,12 +140,12 @@ public class Database {
                 }
             }
             catch (SQLException e) {
-                plugin.getLogger().severe("Failed to return newly saved game: " + e.getMessage());
+                Main.getPlugin().getLogger().severe("Failed to return newly saved game: " + e.getMessage());
                 return false;
             }
         }
         catch (SQLException e) {
-            plugin.getLogger().severe("Failed to save new game data: " + e.getMessage());
+            Main.getPlugin().getLogger().severe("Failed to save new game data: " + e.getMessage());
             return false;
         }
 
@@ -159,7 +154,7 @@ public class Database {
 
     public void flushPlayersData() {
         if (!isOnline()) {
-            plugin.getLogger().info("Database is offline! Failed to save players data.");
+            Main.getPlugin().getLogger().info("Database is offline! Failed to save players data.");
             return;
         }
 
@@ -210,13 +205,13 @@ public class Database {
                 }
             }
         } catch (SQLException error) {
-            plugin.getLogger().severe("Failed to flush player data to disk: " + error.getMessage());
+            Main.getPlugin().getLogger().severe("Failed to flush player data to disk: " + error.getMessage());
         }
     }
 
     public void retrieveAndPopulatePlayerData(String uuid) {
         if (!isOnline()) {
-            plugin.getLogger().info("Database is offline! Failed to retrieve player data.");
+            Main.getPlugin().getLogger().info("Database is offline! Failed to retrieve player data.");
             return;
         }
 
@@ -248,7 +243,7 @@ public class Database {
                 }
             }
         } catch (SQLException error) {
-            plugin.getLogger().severe("Failed to retrieve player saved data: " + error.getMessage());
+            Main.getPlugin().getLogger().severe("Failed to retrieve player saved data: " + error.getMessage());
         }
     }
 
@@ -265,7 +260,7 @@ public class Database {
 
                 GameRegistry.registerGame(
                         id,
-                        new GameInstance(plugin, id, checkpoints, parkourCreator),
+                        new GameInstance(Main.getPlugin(), id, checkpoints, parkourCreator),
                         checkpoints
                 );
 
@@ -273,7 +268,7 @@ public class Database {
             }
         }
         catch (SQLException e) {
-            plugin.getLogger().severe("Failed to retrieve saved parkour games: " + e.getMessage());
+            Main.getPlugin().getLogger().severe("Failed to retrieve saved parkour games: " + e.getMessage());
         }
     }
 
