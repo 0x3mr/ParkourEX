@@ -12,14 +12,20 @@ import java.io.File;
 public class ConfigManager {
     private static FileConfiguration commandsConfig;
 
-    public static void initialize() {
-        File file = new File(Main.getPlugin().getDataFolder(), "commands.yml");
+    public static void loadConfig() {
+        Main.getPlugin().saveResource("config.yml", false);
+        Main.getPlugin().getConfig().options().copyDefaults(true);
+        Main.getPlugin().saveConfig();
 
-        if (!file.exists()) {
-            Main.getPlugin().saveResource("commands.yml", false);
-        }
+        // Load custom config to memory
+        Main.getPlugin().saveResource("commands.yml", false);
+        commandsConfig = YamlConfiguration.loadConfiguration(
+                new File(Main.getPlugin().getDataFolder(), "commands.yml")
+        );
 
-        commandsConfig = YamlConfiguration.loadConfiguration(file);
+        loadStartCommands();
+        loadFinishCommands();
+        loadExitCommands();
     }
 
     public static void loadExitCommands() {
@@ -64,7 +70,6 @@ public class ConfigManager {
             }
         }
     }
-
     public static void loadFinishCommands() {
         String eventName = "onParkourEnd";
         ConfigurationSection config = commandsConfig.getConfigurationSection(eventName);
@@ -107,7 +112,6 @@ public class ConfigManager {
             }
         }
     }
-
     public static void loadStartCommands() {
         String eventName = "onParkourStart";
         ConfigurationSection config = commandsConfig.getConfigurationSection(eventName);

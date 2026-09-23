@@ -17,27 +17,18 @@ import java.io.File;
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {
-    private Main() {}
     private static Main plugin = null;
     private static Database DBM = null;
 
     @Override
     public void onEnable() {
         plugin = this;
+        DBM = new Database();
 
-        if (!new File(getDataFolder(), "config.yml").exists()) {
-            saveResource("config.yml", false);
-        }
-
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-
+        ConfigManager.loadConfig();
         GameItems.createItems();
-        ConfigManager.initialize();
         GameHolograms.cleanup();
         Shared.resetPlayersInfo();
-
-        DBM = new Database();
 
         Objects.requireNonNull(this.getCommand("ParkourEX".toLowerCase())).setExecutor(new Commands(this));
 
@@ -50,10 +41,6 @@ public final class Main extends JavaPlugin implements Listener {
         DBM.loadGames();
 
         GameHolograms.loadTags();
-        ConfigManager.loadStartCommands();
-        ConfigManager.loadFinishCommands();
-        ConfigManager.loadExitCommands();
-
         GameSaver.startScheduler();
     }
 
