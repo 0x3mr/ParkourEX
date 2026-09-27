@@ -1,6 +1,10 @@
 A simple parkour plugin in beta stage.
 
 TODO:
+- [ ] reduce/handle the code redundancy in those classes:
+  - ConfigManager (3 similar functions)
+  - Services (6 different functions of same purpose)
+  - GameItems (item creation)
 - [ ] add configurable plugin msgs in a messages.yml
 - [ ] add a session interrupt if a run exceeds 10 minutes
 - [x] Place an indicating hologram at each checkpoint
