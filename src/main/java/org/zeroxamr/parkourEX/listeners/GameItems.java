@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.config.Config;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
@@ -26,15 +27,9 @@ public class GameItems implements Listener {
     ));
 
     public static void createItems() {
-        PARKOUR_ITEMS.put("RESET_ITEM", Material.matchMaterial(
-                Objects.requireNonNullElse(Main.getPlugin().getConfig().getString("resetItem"),
-                        "RED_BED")));
-        PARKOUR_ITEMS.put("CANCEL_ITEM", Material.matchMaterial(
-                Objects.requireNonNullElse(Main.getPlugin().getConfig().getString("cancelItem"),
-                        "OAK_DOOR")));
-        PARKOUR_ITEMS.put("CHECKPOINT_ITEM", Material.matchMaterial(
-                Objects.requireNonNullElse(Main.getPlugin().getConfig().getString("checkpointItem"),
-                        "ARROW")));
+        PARKOUR_ITEMS.put("RESET_ITEM", Material.matchMaterial(Config.RESET_ITEM.stringValue()));
+        PARKOUR_ITEMS.put("CANCEL_ITEM", Material.matchMaterial(Config.CANCEL_ITEM.stringValue()));
+        PARKOUR_ITEMS.put("CHECKPOINT_ITEM", Material.matchMaterial(Config.CHECKPOINT_ITEM.stringValue()));
     }
 
     public static Material reset() {

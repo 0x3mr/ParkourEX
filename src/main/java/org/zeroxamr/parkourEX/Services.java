@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.zeroxamr.parkourEX.config.Config;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.listeners.GameItems;
@@ -35,7 +36,7 @@ public class Services implements Listener {
 
         Pdc.set(item, "parkourItem", "reset");
 
-        player.getInventory().setItem(Main.getPlugin().getConfig().getInt("resetSlot"), item);
+        player.getInventory().setItem(Config.RESET_SLOT.intValue(), item);
     }
 
     public static void removeResetParkour(Player player) {
@@ -61,7 +62,7 @@ public class Services implements Listener {
 
         Pdc.set(item, "parkourItem", "cancel");
 
-        player.getInventory().setItem(Main.getPlugin().getConfig().getInt("cancelSlot"), item);
+        player.getInventory().setItem(Config.CANCEL_SLOT.intValue(), item);
     }
 
     public static void removeLeaveParkour(Player player) {
@@ -87,7 +88,7 @@ public class Services implements Listener {
 
         Pdc.set(item, "parkourItem", "checkpoint");
 
-        player.getInventory().setItem(Main.getPlugin().getConfig().getInt("checkpointSlot"), item);
+        player.getInventory().setItem(Config.CHECKPOINT_SLOT.intValue(), item);
     }
 
     public static void removeLastCheckpoint(Player player) {

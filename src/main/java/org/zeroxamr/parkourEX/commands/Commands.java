@@ -14,7 +14,7 @@ import java.util.Set;
 public class Commands implements CommandExecutor {
     private static Main plugin = null;
     private static final HashMap<String, Base> commands = new HashMap<>();
-    private static final Set<String> RESTRICT_INGAME = Set.of("Checkpoint", "Create", "Cancel", "Reset", "Start", "List");
+    private static final Set<String> RESTRICT_INGAME = Set.of("Checkpoint", "Create", "Cancel", "Reset", "Start");
 
     public Commands(Main plugin) {
         Commands.plugin = plugin;
@@ -26,6 +26,7 @@ public class Commands implements CommandExecutor {
 
         register(new List());
         register(new Create());
+        register(new Reload());
         register(new Help());
     }
 

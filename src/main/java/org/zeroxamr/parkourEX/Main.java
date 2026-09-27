@@ -3,17 +3,16 @@ package org.zeroxamr.parkourEX;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.zeroxamr.parkourEX.commands.Commands;
+import org.zeroxamr.parkourEX.config.ConfigManager;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.game.GameHolograms;
 import org.zeroxamr.parkourEX.game.GameSaver;
-import org.zeroxamr.parkourEX.game.StatsRegistry;
 import org.zeroxamr.parkourEX.listeners.ChunkHandler;
 import org.zeroxamr.parkourEX.listeners.CreateTool;
 import org.zeroxamr.parkourEX.listeners.GameListener;
 import org.zeroxamr.parkourEX.listeners.GameItems;
 import org.zeroxamr.parkourEX.util.Shared;
 
-import java.io.File;
 import java.util.*;
 
 public final class Main extends JavaPlugin implements Listener {

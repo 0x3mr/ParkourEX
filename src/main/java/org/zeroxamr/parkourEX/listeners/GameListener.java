@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.config.Config;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
@@ -67,13 +68,13 @@ public class GameListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onVoidEntryTeleport(PlayerMoveEvent event) {
-        if (!Main.getPlugin().getConfig().getBoolean("voidTeleport.enabled")) return;
+        if (!Config.VOID_TELEPORT_ENABLED.booleanValue()) return;
 
         Player player = event.getPlayer();;
 
         if (!Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))) return;
 
-        double line = Main.getPlugin().getConfig().getDouble("voidTeleport.y-axis");
+        double line = Config.VOID_TELEPORT_Y_AXIS.doubleValue();
 
         if (player.getLocation().getBlockY() <= line) {
             GameInstance.playerStateCheckpoint(player);

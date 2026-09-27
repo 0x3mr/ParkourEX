@@ -1,24 +1,26 @@
-package org.zeroxamr.parkourEX;
+package org.zeroxamr.parkourEX.config;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.zeroxamr.parkourEX.Main;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.game.models.CommandExecutor;
 import org.zeroxamr.parkourEX.game.models.CommandMeta;
+import org.zeroxamr.parkourEX.listeners.GameItems;
 
 import java.io.File;
 
 public class ConfigManager {
-    private static FileConfiguration commandsConfig;
+    private static YamlConfiguration commandsConfig;
 
     public static void loadConfig() {
-        Main.getPlugin().saveResource("config.yml", false);
+        Main.getPlugin().saveDefaultConfig();
+        Main.getPlugin().saveResource("commands.yml", false);
         Main.getPlugin().getConfig().options().copyDefaults(true);
         Main.getPlugin().saveConfig();
 
-        // Load custom config to memory
-        Main.getPlugin().saveResource("commands.yml", false);
+        Config.load();
+
         commandsConfig = YamlConfiguration.loadConfiguration(
                 new File(Main.getPlugin().getDataFolder(), "commands.yml")
         );
@@ -26,6 +28,11 @@ public class ConfigManager {
         loadStartCommands();
         loadFinishCommands();
         loadExitCommands();
+    }
+
+    public static void reloadPlugin() {
+        Config.load();
+        GameItems.createItems();
     }
 
     public static void loadExitCommands() {

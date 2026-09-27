@@ -7,6 +7,7 @@ import org.bukkit.util.Vector;
 import org.zeroxamr.parkourEX.Main;
 import org.zeroxamr.parkourEX.Services;
 import org.zeroxamr.parkourEX.commands.Commands;
+import org.zeroxamr.parkourEX.config.Config;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
@@ -76,7 +77,7 @@ public class GameInstance {
             else if (playerCheckpoint < parkourCheckpoint) {
                 // If reached next checkpoint OR skipped a checkpoint
 
-                if (Objects.equals(Main.getPlugin().getConfig().get("skipCheckpoints"), false)
+                if (Objects.equals(Config.SKIP_CHECKPOINTS.booleanValue(), false)
                         && playerCheckpoint + 1 < parkourCheckpoint) {
                     // skipped a checkpoint!
 
@@ -182,11 +183,11 @@ public class GameInstance {
     public void playerStateStart(Player player, int ID) {
         Pdc.set(player, "parkourID", ID);
 
-        if (Objects.equals(Main.getPlugin().getConfig().get("clearAllEffects"), true)) {
+        if (Objects.equals(Config.CLEAR_ALL_EFFECTS.booleanValue(), true)) {
             player.clearActivePotionEffects();
         }
 
-        if (Objects.equals(Main.getPlugin().getConfig().get("disableCollisions"), true)) {
+        if (Objects.equals(Config.DISABLE_COLLISIONS.booleanValue(), true)) {
             Services.disableCollision(player);
         }
 
@@ -221,7 +222,7 @@ public class GameInstance {
         Integer gameID = Pdc.getInt(player, "parkourID");
         if (gameID == null) return;
 
-        if (Objects.equals(Main.getPlugin().getConfig().get("returnToStart"), true)) {
+        if (Objects.equals(Config.RETURN_TO_START.booleanValue(), true)) {
             Location location = GameRegistry.getParkourGame(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
             location.setX(location.getX() + 0.5);
             location.setZ(location.getZ() + 0.5);
