@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 import org.zeroxamr.parkourEX.Main;
 import org.zeroxamr.parkourEX.config.Config;
@@ -20,27 +21,58 @@ import java.util.Map;
 import java.util.Objects;
 
 public class GameItems implements Listener {
-    private static final HashMap<String, Material> PARKOUR_ITEMS = new HashMap<>(Map.of(
-            "RESET_ITEM", Material.RED_BED,
-            "CANCEL_ITEM", Material.OAK_DOOR,
-            "CHECKPOINT_ITEM", Material.ARROW
-    ));
+    private static final HashMap<String, ItemStack> PARKOUR_ITEMS = new HashMap<>();
 
-    public static void createItems() {
-        PARKOUR_ITEMS.put("RESET_ITEM", Material.matchMaterial(Config.RESET_ITEM.stringValue()));
-        PARKOUR_ITEMS.put("CANCEL_ITEM", Material.matchMaterial(Config.CANCEL_ITEM.stringValue()));
-        PARKOUR_ITEMS.put("CHECKPOINT_ITEM", Material.matchMaterial(Config.CHECKPOINT_ITEM.stringValue()));
+public static void createItems() {
+    Material material = Material.matchMaterial(Config.RESET_ITEM.stringValue());
+    if (material == null) {
+        Main.getPlugin().getLogger().info("Failed to read RESET_ITEM material, falling back to RED_BED");
+        material = Material.RED_BED;
     }
+    ItemStack item = new ItemStack(material);
+    ItemMeta arr = item.getItemMeta();
+    arr.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset");
+    item.setItemMeta(arr);
+    Pdc.set(item, "parkourItem", "reset");
 
-    public static Material reset() {
+    PARKOUR_ITEMS.put("RESET_ITEM", item);
+
+    material = Material.matchMaterial(Config.CANCEL_ITEM.stringValue());
+    if (material == null) {
+        Main.getPlugin().getLogger().info("Failed to read CANCEL_ITEM material, falling back to OAK_DOOR");
+        material = Material.OAK_DOOR;
+    }
+    item = new ItemStack(material);
+    arr = item.getItemMeta();
+    arr.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "Cancel");
+    item.setItemMeta(arr);
+    Pdc.set(item, "parkourItem", "cancel");
+
+    PARKOUR_ITEMS.put("CANCEL_ITEM", item);
+
+    material = Material.matchMaterial(Config.CHECKPOINT_ITEM.stringValue());
+    if (material == null) {
+        Main.getPlugin().getLogger().info("Failed to read CHECKPOINT_ITEM material, falling back to ARROW");
+        material = Material.ARROW;
+    }
+    item = new ItemStack(material);
+    arr = item.getItemMeta();
+    arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Teleport to Last Checkpoint");
+    item.setItemMeta(arr);
+    Pdc.set(item, "parkourItem", "checkpoint");
+
+    PARKOUR_ITEMS.put("CHECKPOINT_ITEM", item);
+}
+
+    public static ItemStack reset() {
         return PARKOUR_ITEMS.get("RESET_ITEM");
     }
 
-    public static Material cancel() {
+    public static ItemStack cancel() {
         return PARKOUR_ITEMS.get("CANCEL_ITEM");
     }
 
-    public static Material checkpoint() {
+    public static ItemStack checkpoint() {
         return PARKOUR_ITEMS.get("CHECKPOINT_ITEM");
     }
 
@@ -92,7 +124,7 @@ public class GameItems implements Listener {
         ItemStack item = event.getItem();
         if (item == null) return;
 
-        if (!PARKOUR_ITEMS.containsValue(item.getType())) return;
+        if (!PARKOUR_ITEMS.containsValue(item)) return;
 
         if (Boolean.FALSE.equals(Pdc.getBoolean(player, "inParkour"))) return;
 

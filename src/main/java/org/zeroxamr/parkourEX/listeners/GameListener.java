@@ -22,7 +22,7 @@ import java.util.List;
 public class GameListener implements Listener {
     private List<String> fetched = new ArrayList<>();
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         Shared.resetPlayerInfo(player);
@@ -57,7 +57,7 @@ public class GameListener implements Listener {
         game.handleParkour(player, playerLocation);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerFallDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player player
                 && Boolean.TRUE.equals(Pdc.getBoolean(player, "inParkour"))
@@ -66,7 +66,7 @@ public class GameListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onVoidEntryTeleport(PlayerMoveEvent event) {
         if (!Config.VOID_TELEPORT_ENABLED.booleanValue()) return;
 

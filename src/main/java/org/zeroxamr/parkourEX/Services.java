@@ -28,81 +28,27 @@ import java.util.UUID;
 
 public class Services implements Listener {
     public static void addResetParkour(Player player) {
-        ItemStack item = new ItemStack(GameItems.reset());
-        ItemMeta arr = item.getItemMeta();
-
-        arr.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset");
-        item.setItemMeta(arr);
-
-        Pdc.set(item, "parkourItem", "reset");
-
-        player.getInventory().setItem(Config.RESET_SLOT.intValue(), item);
+        player.getInventory().setItem(Config.RESET_SLOT.intValue(), GameItems.reset());
     }
 
     public static void removeResetParkour(Player player) {
-        if (!player.getInventory().contains(GameItems.reset())) return;
-
-        ItemStack item = player.getInventory().getItem(player.getInventory().first(GameItems.reset()));
-        if (item == null) return;
-
-        ItemMeta arr = item.getItemMeta();
-        if (arr == null) return;
-
-        if (Pdc.has(arr, "parkourItem")) {
-            player.getInventory().remove(item);
-        }
+        player.getInventory().remove(GameItems.reset());
     }
 
     public static void addLeaveParkour(Player player) {
-        ItemStack item = new ItemStack(GameItems.cancel());
-        ItemMeta arr = item.getItemMeta();
-
-        arr.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "Cancel");
-        item.setItemMeta(arr);
-
-        Pdc.set(item, "parkourItem", "cancel");
-
-        player.getInventory().setItem(Config.CANCEL_SLOT.intValue(), item);
+        player.getInventory().setItem(Config.CANCEL_SLOT.intValue(), GameItems.cancel());
     }
 
     public static void removeLeaveParkour(Player player) {
-        if (!player.getInventory().contains(GameItems.cancel())) return;
-
-        ItemStack item = player.getInventory().getItem(player.getInventory().first(GameItems.cancel()));
-        if (item == null) return;
-
-        ItemMeta arr = item.getItemMeta();
-        if (arr == null) return;
-
-        if (Pdc.has(arr, "parkourItem")) {
-            player.getInventory().remove(item);
-        }
+        player.getInventory().remove(GameItems.cancel());
     }
 
     public static void addLastCheckpoint(Player player) {
-        ItemStack item = new ItemStack(GameItems.checkpoint());
-        ItemMeta arr = item.getItemMeta();
-
-        arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Teleport to Last Checkpoint");
-        item.setItemMeta(arr);
-
-        Pdc.set(item, "parkourItem", "checkpoint");
-
-        player.getInventory().setItem(Config.CHECKPOINT_SLOT.intValue(), item);
+        player.getInventory().setItem(Config.CHECKPOINT_SLOT.intValue(), GameItems.checkpoint());
     }
 
     public static void removeLastCheckpoint(Player player) {
-        if (!player.getInventory().contains(GameItems.checkpoint())) return;
-
-        ItemStack item = player.getInventory().getItem(player.getInventory().first(GameItems.checkpoint()));
-        if (item == null) return;
-
-        ItemMeta arr = item.getItemMeta();
-        if (arr == null) return;
-
-        if (Pdc.has(arr, "parkourItem")) {
-            player.getInventory().remove(item);
-        }
+        player.getInventory().remove(GameItems.checkpoint());
     }
 
     public static void giveCreateParkour(Player player) {
