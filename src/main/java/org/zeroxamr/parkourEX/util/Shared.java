@@ -1,12 +1,18 @@
 package org.zeroxamr.parkourEX.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.zeroxamr.parkourEX.Main;
+import org.zeroxamr.parkourEX.config.Config;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.Services;
 import org.zeroxamr.parkourEX.game.GameRegistry;
+import org.zeroxamr.parkourEX.listeners.GameItems;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -21,9 +27,9 @@ public class Shared {
         Pdc.set(player, "startTime", "none");
         Pdc.set(player, "latestCheckpointTime", "none");
 
-        Services.removeLastCheckpoint(player);
-        Services.removeResetParkour(player);
-        Services.removeLeaveParkour(player);
+        Services.removeParkourItem(player, GameItems.getItem("CHECKPOINT_ITEM"));
+        Services.removeParkourItem(player, GameItems.getItem("RESET_ITEM"));
+        Services.removeParkourItem(player, GameItems.getItem("CANCEL_ITEM"));
 
         Services.resetCollisionToDefault(player);
     }
@@ -37,9 +43,9 @@ public class Shared {
             Pdc.set(player, "startTime", "none");
             Pdc.set(player, "latestCheckpointTime", "none");
 
-            Services.removeLastCheckpoint(player);
-            Services.removeResetParkour(player);
-            Services.removeLeaveParkour(player);
+            Services.removeParkourItem(player, GameItems.getItem("CHECKPOINT_ITEM"));
+            Services.removeParkourItem(player, GameItems.getItem("RESET_ITEM"));
+            Services.removeParkourItem(player, GameItems.getItem("CANCEL_ITEM"));
 
             Services.resetCollisionToDefault(player);
         }
@@ -53,16 +59,22 @@ public class Shared {
                 .replace("%name", String.valueOf(GameRegistry.getParkourName(parkourID)));
     }
 
-    public static String getDurationOf(LocalTime duration1, LocalTime duration2) {
-        Duration duration = Duration.between(duration1, duration2);
+    public static ItemStack createItem(String displayName, String pdcKey, String pdcValue, String materialName) {
+        Material material = Material.matchMaterial(materialName);
 
-        long totalSeconds = duration.getSeconds();
-//        long h = totalSeconds / 3600;
-        long m = (totalSeconds % 3600) / 60;
-        long s = totalSeconds % 60;
-        long ms = duration.toMillis() % 1000;
+        if (material == null) {
+            Main.getPlugin().getLogger().info("Failed to read " + materialName + " material, falling back to BARRIER");
+            material = Material.BARRIER;
+        }
 
-        return String.format("%02d:%02d.%d", m, s, ms);
+        ItemStack item = new ItemStack(material);
+        ItemMeta arr = item.getItemMeta();
+        arr.setDisplayName(displayName);
+        item.setItemMeta(arr);
+
+        Pdc.set(item, pdcKey, pdcValue);
+
+        return item;
     }
 
     public static String formatTime(long time) {

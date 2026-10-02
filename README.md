@@ -1,7 +1,7 @@
 A simple parkour plugin in beta stage.
 
 TODO:
-- [ ] reduce/handle the code redundancy in those classes:
+- [x] reduce/handle the code redundancy in those classes:
   - ConfigManager (3 similar functions)
   - Services (6 different functions of same purpose)
   - GameItems (item creation)

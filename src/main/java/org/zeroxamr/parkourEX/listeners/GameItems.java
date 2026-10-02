@@ -15,6 +15,7 @@ import org.zeroxamr.parkourEX.config.Config;
 import org.zeroxamr.parkourEX.game.GameInstance;
 import org.zeroxamr.parkourEX.game.GameRegistry;
 import org.zeroxamr.parkourEX.util.Pdc;
+import org.zeroxamr.parkourEX.util.Shared;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,58 +24,30 @@ import java.util.Objects;
 public class GameItems implements Listener {
     private static final HashMap<String, ItemStack> PARKOUR_ITEMS = new HashMap<>();
 
-public static void createItems() {
-    Material material = Material.matchMaterial(Config.RESET_ITEM.stringValue());
-    if (material == null) {
-        Main.getPlugin().getLogger().info("Failed to read RESET_ITEM material, falling back to RED_BED");
-        material = Material.RED_BED;
-    }
-    ItemStack item = new ItemStack(material);
-    ItemMeta arr = item.getItemMeta();
-    arr.setDisplayName("" + ChatColor.RED + ChatColor.BOLD + "Reset");
-    item.setItemMeta(arr);
-    Pdc.set(item, "parkourItem", "reset");
+    public static void createItems() {
+        PARKOUR_ITEMS.put("RESET_ITEM", Shared.createItem(
+                "§c§lReset",
+                "parkourItem",
+                "RESET_ITEM",
+                Config.RESET_ITEM.stringValue()
+        ));
 
-    PARKOUR_ITEMS.put("RESET_ITEM", item);
+        PARKOUR_ITEMS.put("CANCEL_ITEM", Shared.createItem(
+                "§e§lCancel",
+                "parkourItem",
+                "CANCEL_ITEM",
+                Config.CANCEL_ITEM.stringValue()
+        ));
 
-    material = Material.matchMaterial(Config.CANCEL_ITEM.stringValue());
-    if (material == null) {
-        Main.getPlugin().getLogger().info("Failed to read CANCEL_ITEM material, falling back to OAK_DOOR");
-        material = Material.OAK_DOOR;
-    }
-    item = new ItemStack(material);
-    arr = item.getItemMeta();
-    arr.setDisplayName("" + ChatColor.YELLOW + ChatColor.BOLD + "Cancel");
-    item.setItemMeta(arr);
-    Pdc.set(item, "parkourItem", "cancel");
-
-    PARKOUR_ITEMS.put("CANCEL_ITEM", item);
-
-    material = Material.matchMaterial(Config.CHECKPOINT_ITEM.stringValue());
-    if (material == null) {
-        Main.getPlugin().getLogger().info("Failed to read CHECKPOINT_ITEM material, falling back to ARROW");
-        material = Material.ARROW;
-    }
-    item = new ItemStack(material);
-    arr = item.getItemMeta();
-    arr.setDisplayName("" + ChatColor.GREEN + ChatColor.BOLD + "Teleport to Last Checkpoint");
-    item.setItemMeta(arr);
-    Pdc.set(item, "parkourItem", "checkpoint");
-
-    PARKOUR_ITEMS.put("CHECKPOINT_ITEM", item);
-}
-
-    public static ItemStack reset() {
-        return PARKOUR_ITEMS.get("RESET_ITEM");
+        PARKOUR_ITEMS.put("CHECKPOINT_ITEM", Shared.createItem(
+                "§a§lTeleport to Last Checkpoint",
+                "parkourItem",
+                "CHECKPOINT_ITEM",
+                Config.CHECKPOINT_ITEM.stringValue()
+        ));
     }
 
-    public static ItemStack cancel() {
-        return PARKOUR_ITEMS.get("CANCEL_ITEM");
-    }
-
-    public static ItemStack checkpoint() {
-        return PARKOUR_ITEMS.get("CHECKPOINT_ITEM");
-    }
+    public static ItemStack getItem(String itemName) { return PARKOUR_ITEMS.get(itemName); }
 
     @EventHandler
     public void onPlayerInvClickParkourItem(InventoryClickEvent event) {
@@ -135,10 +108,10 @@ public static void createItems() {
             return;
         }
 
-        if ("checkpoint".equals(Pdc.getString(item, "parkourItem"))) {
+        if ("CHECKPOINT_ITEM".equals(Pdc.getString(item, "parkourItem"))) {
             GameInstance.playerStateCheckpoint(player);
         }
-        else if ("reset".equals(Pdc.getString(item, "parkourItem"))) {
+        else if ("RESET_ITEM".equals(Pdc.getString(item, "parkourItem"))) {
             Location location = GameRegistry.getParkourGame(gameID).getCheckpointMapWithYaw().firstEntry().getKey();
             location.setX(location.getX() + 0.5);
             location.setZ(location.getZ() + 0.5);
@@ -149,7 +122,7 @@ public static void createItems() {
 
             player.teleport(location);
         }
-        else if ("cancel".equals(Pdc.getString(item, "parkourItem"))) {
+        else if ("CANCEL_ITEM".equals(Pdc.getString(item, "parkourItem"))) {
             GameRegistry.getParkourGame(gameID).playerStateCancel(player);
             player.sendMessage("§c§lParkour challenge cancelled!");
             GameRegistry.executeExitCommands(gameID, player);

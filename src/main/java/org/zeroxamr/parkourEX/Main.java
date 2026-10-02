@@ -41,6 +41,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         GameHolograms.loadTags();
         GameSaver.startScheduler();
+        ConfigManager.loadCommandsConfig();
     }
 
     public static Main getPlugin() {

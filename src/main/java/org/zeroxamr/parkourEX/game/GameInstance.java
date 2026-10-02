@@ -8,6 +8,7 @@ import org.zeroxamr.parkourEX.Main;
 import org.zeroxamr.parkourEX.Services;
 import org.zeroxamr.parkourEX.commands.Commands;
 import org.zeroxamr.parkourEX.config.Config;
+import org.zeroxamr.parkourEX.listeners.GameItems;
 import org.zeroxamr.parkourEX.util.Pdc;
 import org.zeroxamr.parkourEX.util.Shared;
 
@@ -213,9 +214,9 @@ public class GameInstance {
         Pdc.set(player, "startTime", timeNow);
         Pdc.set(player, "latestCheckpointTime", timeNow);
 
-        Services.addLastCheckpoint(player);
-        Services.addResetParkour(player);
-        Services.addLeaveParkour(player);
+        Services.giveParkourItem(player, Config.CHECKPOINT_SLOT.intValue(), GameItems.getItem("CHECKPOINT_ITEM"));
+        Services.giveParkourItem(player, Config.RESET_SLOT.intValue(), GameItems.getItem("RESET_ITEM"));
+        Services.giveParkourItem(player, Config.CANCEL_SLOT.intValue(), GameItems.getItem("CANCEL_ITEM"));
     }
 
     public void playerStateCancel(Player player) {

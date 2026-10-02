@@ -8,10 +8,7 @@ import org.zeroxamr.parkourEX.Main;
 import org.zeroxamr.parkourEX.game.models.CommandMeta;
 import org.zeroxamr.parkourEX.util.Shared;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public class GameRegistry {
     private static final HashMap<Integer, GameInstance> parkourGames = new HashMap<>();
@@ -25,30 +22,32 @@ public class GameRegistry {
         exitCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
     }
 
-    public static void addExitCommandToAll(CommandMeta cmd) {
-        for (int id : parkourGames.keySet()) {
-            exitCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
+    public static void addCommand(String commandType, int parkourID, CommandMeta command) {
+        HashMap<Integer, List<CommandMeta>> commandsList =
+                Objects.equals(commandType, "onParkourStart") ? startCommands
+                        : Objects.equals(commandType, "onParkourEnd") ? endCommands
+                        : Objects.equals(commandType, "onParkourExit") ? exitCommands
+                        : null;
+
+        if (commandsList == null) {
+            Main.getPlugin().getLogger().info("Failed to register custom events in commands.yml");
+            return;
+        }
+
+        if (parkourID == -1) {
+            for (int id : parkourGames.keySet()) {
+                commandsList.computeIfAbsent(id, list -> new ArrayList<>()).add(command);
+            }
+        }
+        else {
+            commandsList.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(command);
         }
     }
 
-    public static void addFinishCommand(int parkourID, CommandMeta cmd) {
-        endCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
-    }
-
-    public static void addFinishCommandToAll(CommandMeta cmd) {
-        for (int id : parkourGames.keySet()) {
-            endCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
-        }
-    }
-
-    public static void addStartCommand(int parkourID, CommandMeta cmd) {
-        startCommands.computeIfAbsent(parkourID, list -> new ArrayList<>()).add(cmd);
-    }
-
-    public static void addStartCommandToAll(CommandMeta cmd) {
-        for (int id : parkourGames.keySet()) {
-            startCommands.computeIfAbsent(id, list -> new ArrayList<>()).add(cmd);
-        }
+    public static void clearCommands() {
+        startCommands.clear();
+        endCommands.clear();
+        exitCommands.clear();
     }
 
     public static void executeStartCommands(int parkourID, Player player) {

@@ -27,28 +27,12 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Services implements Listener {
-    public static void addResetParkour(Player player) {
-        player.getInventory().setItem(Config.RESET_SLOT.intValue(), GameItems.reset());
+    public static void giveParkourItem(Player player, int slot, ItemStack item) {
+        player.getInventory().setItem(slot, item);
     }
 
-    public static void removeResetParkour(Player player) {
-        player.getInventory().remove(GameItems.reset());
-    }
-
-    public static void addLeaveParkour(Player player) {
-        player.getInventory().setItem(Config.CANCEL_SLOT.intValue(), GameItems.cancel());
-    }
-
-    public static void removeLeaveParkour(Player player) {
-        player.getInventory().remove(GameItems.cancel());
-    }
-
-    public static void addLastCheckpoint(Player player) {
-        player.getInventory().setItem(Config.CHECKPOINT_SLOT.intValue(), GameItems.checkpoint());
-    }
-
-    public static void removeLastCheckpoint(Player player) {
-        player.getInventory().remove(GameItems.checkpoint());
+    public static void removeParkourItem(Player player, ItemStack item) {
+        player.getInventory().remove(item);
     }
 
     public static void giveCreateParkour(Player player) {
